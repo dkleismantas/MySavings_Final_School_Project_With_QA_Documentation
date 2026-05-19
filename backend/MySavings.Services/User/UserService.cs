@@ -32,6 +32,7 @@ namespace MySavings.Services
             {
                 UserName = userName,
                 Email = email,
+                Role = "user"
             };
 
             user.PasswordHash = passwordHasher.HashPassword(user, password);
@@ -87,9 +88,9 @@ namespace MySavings.Services
         {
             return await userRepository.DeleteAsync(userId);
         }
-        public async Task<User> LoginAsync(string userName, string password)
+        public async Task<User> LoginAsync(string userEmail, string password)
         {
-            var user = await userRepository.GetByUserNameAsync(userName);
+            var user = await userRepository.GetByEmailAsync(userEmail);
             if (user == null)
             {
                 return null;

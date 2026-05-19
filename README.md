@@ -56,3 +56,13 @@ dotnet ef migrations add UpdateUserTable -p ./backend/MySavings.Data/ -s ./backe
 ### Swagger nuoroda
 
 http://localhost:5141/swagger/index.html
+
+
+### JWT debugger (skaityti JWT tokenams)
+
+https://jwt.io
+
+
+### Postman (tikrinti autorizavimui)
+
+https://www.postman.com/downloads/
