@@ -25,7 +25,7 @@ docker run --name MySavings -e MYSQL_ROOT_PASSWORD=root -d -p 3306:3306 mysql:lt
 
 #### 2. API projekto paleidimas
 
-*\*leidžiama iš ./MySavings.API/ direktorijos*
+*\*leidžiama iš ./backend/MySavings.API/ direktorijos*
 ```
 dotnet run
 ```
@@ -50,7 +50,7 @@ dotnet ef database update
 *\*leidžiama iš projekto root direktorijos*  
 *\*Čia pavyzdys. Kuriant naują migraciją reikia pakeisti pavadinimą*
 ```
-dotnet ef migrations add AddTestMigration -p backend/MySavings.API/ -s backend/MySavings.Data/
+dotnet ef migrations add UpdateUserTable -p ./backend/MySavings.Data/ -s ./backend/MySavings.API/
 ```
 
 ### Swagger nuoroda

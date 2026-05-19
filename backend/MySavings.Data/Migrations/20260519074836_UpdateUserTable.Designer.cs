@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MySavings.Data;
 
@@ -10,9 +11,11 @@ using MySavings.Data;
 namespace MySavings.Data.Migrations
 {
     [DbContext(typeof(MySavingsDbContext))]
-    partial class MySavingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260519074836_UpdateUserTable")]
+    partial class UpdateUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
