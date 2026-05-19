@@ -15,8 +15,9 @@ dotnet run
 ```
 
 ### 3. React projekto paleidimas
-\*leidžiama iš ./MySavings.React/ direktorijos
+\*leidžiama iš ./frontend/ direktorijos, prieš tai dar paleisti komandą npm install, kad parsisiustų visi npm packages
 ```
+npm install
 npm run dev
 ```
 
