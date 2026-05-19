@@ -22,8 +22,6 @@ namespace MySavings.Data
                 o.Property(e => e.UserName).IsRequired();
                 o.Property(e => e.Email).IsRequired();
                 o.Property(e => e.PasswordHash).IsRequired();
-                o.Property(e => e.PasswordSalt).IsRequired();
-                o.Property(e => e.Iterations).IsRequired();
             });
         }
 

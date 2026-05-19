@@ -1,16 +1,16 @@
-// import { Route, Routes } from "react-router";
-// import Login from "./pages/Login";
+import { Route, Routes } from "react-router";
+import LoginPage from "./pages/Login/LoginPage";
 
 function App() {
-
-
   return (
-    <> 
-      {/* pvz: <Routes>
-        <Route path="/signup" element={<Login/>}/>
-      </Routes> */}
-    </>
-  )
+    <div>
+      {
+        <Routes>
+          <Route path="login" element={<LoginPage />} />
+        </Routes>
+      }
+    </div>
+  );
 }
 
-export default App
+export default App;
