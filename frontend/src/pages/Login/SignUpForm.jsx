@@ -1,7 +1,6 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_URL
+import { registerUser } from "../../services/User";
 
 function SignUpForm() {
   const {
@@ -9,7 +8,7 @@ function SignUpForm() {
     handleSubmit,
     reset,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
       email: "",
@@ -17,10 +16,30 @@ function SignUpForm() {
       username: "",
     },
   });
+
   const passwordValue = watch("password");
+
+  const [successMessage, setSuccessMessage] = useState("");
+  const [apiError, setApiError] = useState("");
+
   const registerHandler = async (formData) => {
-    await axios.post(`${API_URL}/api/User/create-user`, formData);
-    reset();
+    setSuccessMessage("");
+    setApiError("");
+
+    try {
+      const response = await registerUser(formData);
+      if (response.status === 201) {
+        setSuccessMessage("Vartotojas sėkmingai sukurtas!");
+        reset();
+        return;
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        setApiError(error.response.data);
+      } else {
+        setApiError("Įvyko serverio klaida. Bandykite dar kartą.");
+      }
+    }
   };
 
   return (
@@ -86,9 +105,17 @@ function SignUpForm() {
           })}
         />
         <p className="text-orange-600">{errors.confirmPassword?.message}</p>
-        <button type="submit" className="btn btn-neutral mt-4 w-full">
-          Registruotis
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="btn btn-neutral mt-4 w-full"
+        >
+          {isSubmitting ? "Kuriamas vartotojas..." : "Kurti vartotoją"}
         </button>
+        {!!apiError && <p className="text-orange-600 pt-5">{apiError}</p>}
+        {!!successMessage && (
+          <p className="text-green-600 text-center pt-5">{successMessage}</p>
+        )}
       </form>
     </>
   );

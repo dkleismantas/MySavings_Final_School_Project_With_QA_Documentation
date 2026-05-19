@@ -18,14 +18,14 @@ namespace MySavings.Services
         public async Task<int> AddAsync(string userName, string email,
             string password)
         {
-            if (await userRepository.GetByEmailAsync(email) != null)
-            {
-                throw new ArgumentException("Email already in use.");
-            }
-
             if (await userRepository.GetByUserNameAsync(userName) != null)
             {
                 throw new ArgumentException("Username already in use.");
+            }
+
+            if (await userRepository.GetByEmailAsync(email) != null)
+            {
+                throw new ArgumentException("Email already in use.");
             }
 
             var user = new User
