@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MySavings.Data;
+using MySavings.Entities;
 using MySavings.Repositories;
 using MySavings.Services;
 
@@ -21,6 +23,7 @@ builder.Services.AddDbContext<MySavingsDbContext>(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
