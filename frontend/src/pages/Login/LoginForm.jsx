@@ -1,10 +1,14 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import { loginUser } from "../../services/User";
 
 function LoginForm({ updateFormValue }) {
+  const { login } = useAuth();
   const {
     register,
     handleSubmit,
-    // reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -12,8 +16,27 @@ function LoginForm({ updateFormValue }) {
       password: "",
     },
   });
+  const [apiError, setApiError] = useState("");
+  const navigate = useNavigate();
 
-  const loginHandler = async () => {
+  const loginHandler = async (formData) => {
+    try {
+      const response = await loginUser(formData);
+      const { accessToken } = response.data;
+
+      if (accessToken) {
+        login(accessToken);
+        navigate("/");
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        setApiError(
+          "Prisijungti nepavyko. Patikrinkite el. paštą ir slaptažodį.",
+        );
+      } else {
+        setApiError("Įvyko serverio klaida. Bandykite dar kartą.");
+      }
+    }
   };
 
   return (
@@ -53,6 +76,7 @@ function LoginForm({ updateFormValue }) {
         <button type="submit" className="btn btn-neutral mt-4 w-full">
           Prisijungti
         </button>
+        {!!apiError && <p className="text-orange-600 pt-5">{apiError}</p>}
       </form>
       <p className="text-center pt-5">
         Neesate prisiregistravę?{" "}

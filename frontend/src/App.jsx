@@ -1,13 +1,16 @@
 import { Route, Routes } from "react-router";
 import LoginPage from "./pages/Login/LoginPage";
+import AuthProvider from "./context/AuthProvider";
 
 function App() {
   return (
     <div>
       {
-        <Routes>
-          <Route path="login" element={<LoginPage />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="login" element={<LoginPage />} />
+          </Routes>
+        </AuthProvider>
       }
     </div>
   );

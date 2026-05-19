@@ -36,13 +36,20 @@ namespace MySavings.API.Controllers
                     claims.Add(new Claim("admin", "false"));
                 }
 
-                var response = new
+                string accessToken = tokenService.GenerateAccessToken(claims);
+                string refreshToken = tokenService.GenerateRefreshToken();
+
+                var cookieOptions = new CookieOptions
                 {
-                    AccessToken = tokenService.GenerateAccessToken(claims),
-                    RefreshToken = tokenService.GenerateRefreshToken()
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.UtcNow.AddDays(7)
                 };
 
-                return Ok(response);
+                Response.Cookies.Append("RefreshToken", refreshToken, cookieOptions);
+
+                return Ok(new { accessToken });
             }
 
             return Unauthorized();
