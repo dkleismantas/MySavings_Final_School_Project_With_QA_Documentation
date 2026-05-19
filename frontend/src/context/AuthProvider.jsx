@@ -1,15 +1,33 @@
 import { useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "./AuthContext";
+
+const getClaimsFromToken = (token) => {
+  if (!token) return null;
+
+  try {
+    const decoded = jwtDecode(token);
+    return {
+      loggedIn: true,
+      id: decoded.Id,
+      username: decoded.Username,
+      email: decoded.Email,
+      role: decoded.Role,
+    };
+  } catch {
+    return null;
+  }
+};
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const token = localStorage.getItem("accessToken");
-    return token ? { loggedIn: true } : null;
+    return getClaimsFromToken(token);
   });
 
-  const login = (accessToken) => {
-    localStorage.setItem("accessToken", accessToken);
-    setUser({ loggedIn: true });
+  const login = (token) => {
+    localStorage.setItem("accessToken", token);
+    setUser(getClaimsFromToken(token));
   };
 
   const logout = () => {

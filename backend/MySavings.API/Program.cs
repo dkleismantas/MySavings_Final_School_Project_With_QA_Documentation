@@ -8,7 +8,6 @@ using MySavings.Entities;
 using MySavings.Repositories;
 using MySavings.Services;
 using Shop.API;
-using Microsoft.AspNetCore.Identity;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,8 +20,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("adminOnly", policy => policy.RequireClaim("admin", "true"));
-    options.AddPolicy("userOnly", policy => policy.RequireClaim("user", "true"));
+    options.AddPolicy("adminOnly", policy => policy.RequireClaim("Role", "admin"));
+    options.AddPolicy("userOnly", policy => policy.RequireClaim("Role", "admin", "user"));
 });
 
 builder.Services.AddAuthentication(options =>

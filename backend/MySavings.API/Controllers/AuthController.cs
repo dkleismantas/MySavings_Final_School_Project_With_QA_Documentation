@@ -24,17 +24,13 @@ namespace MySavings.API.Controllers
             var user = await userService.LoginAsync(loginRequest.Email, loginRequest.Password);
             if (user != null)
             {
-                var claims = new List<Claim>();
-                claims.Add(new Claim("user", "true"));
-
-                if (user.Role == "admin")
+                var claims = new List<Claim>
                 {
-                    claims.Add(new Claim("admin", "true"));
-                }
-                else
-                {
-                    claims.Add(new Claim("admin", "false"));
-                }
+                    new Claim("Id", user.Id.ToString()),
+                    new Claim("Username", user.UserName),
+                    new Claim("Email", user.Email),
+                    new Claim("Role", user.Role ?? "user")
+                };
 
                 string accessToken = tokenService.GenerateAccessToken(claims);
                 string refreshToken = tokenService.GenerateRefreshToken();
