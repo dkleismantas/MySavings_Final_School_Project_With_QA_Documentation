@@ -1,6 +1,9 @@
+//import reikalingas gauti vartotojo informacija ir prisijungimo statusa
 import { useAuth } from "../../hooks/useAuth";
 
 function NavBar() {
+  //autentifikavimo hook, su userio informacijos propsais 
+  //(jie aprasyti frontend/src/context/AuthContext.jsx)
   const { user, logout, isAuthenticated } = useAuth();
 
   return (
