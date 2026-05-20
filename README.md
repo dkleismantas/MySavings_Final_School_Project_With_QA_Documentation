@@ -66,3 +66,10 @@ https://jwt.io
 ### Postman (tikrinti autorizavimui)
 
 https://www.postman.com/downloads/
+
+### Unit test paleidimas
+
+*\*leidžiama iš ./backend/MysSavings.Services.Tests direktorijos*
+```
+dotnet test
+```
