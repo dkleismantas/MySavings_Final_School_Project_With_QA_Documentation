@@ -3,7 +3,7 @@ import { useAuth } from "../../hooks/useAuth";
 
 function NavBar() {
   //autentifikavimo hook, su userio informacijos propsais 
-  //(jie aprasyti frontend/src/context/AuthContext.jsx)
+  //(jie aprasyti frontend/src/context/AuthProvider.jsx)
   const { user, logout, isAuthenticated } = useAuth();
 
   return (
