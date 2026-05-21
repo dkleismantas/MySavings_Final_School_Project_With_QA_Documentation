@@ -20,9 +20,10 @@ namespace MySavings.Data
             modelBuilder.Entity<User>(o =>
             {
                 o.HasKey(e => e.Id);
-                o.Property(e => e.UserName).IsRequired();
-                o.Property(e => e.Email).IsRequired();
+                o.HasIndex(e => e.UserName).IsUnique();
+                o.HasIndex(e => e.Email).IsUnique();
                 o.Property(e => e.PasswordHash).IsRequired();
+                o.Property(e => e.Role).IsRequired();
             });
 
 

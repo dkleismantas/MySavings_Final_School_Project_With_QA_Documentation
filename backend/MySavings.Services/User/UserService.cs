@@ -20,18 +20,19 @@ namespace MySavings.Services
         {
             if (await userRepository.GetByUserNameAsync(userName) != null)
             {
-                throw new ArgumentException("Username already in use.");
+                throw new ArgumentException("Vartotojo vardas jau naudojamas.");
             }
 
             if (await userRepository.GetByEmailAsync(email) != null)
             {
-                throw new ArgumentException("Email already in use.");
+                throw new ArgumentException("El. paštas jau naudojamas.");
             }
 
             var user = new User
             {
                 UserName = userName,
                 Email = email,
+                Role = "user"
             };
 
             user.PasswordHash = passwordHasher.HashPassword(user, password);
@@ -50,12 +51,12 @@ namespace MySavings.Services
             var user = await userRepository.GetByIdAsync(userId);
             if (user == null)
             {
-                throw new ArgumentException("User not found.");
+                throw new ArgumentException("Vartotojas nerastas.");
             }
             if (!passwordHasher.VerifyHashedPassword(user, user.PasswordHash,
                 currentPassword).Equals(PasswordVerificationResult.Success))
             {
-                throw new ArgumentException("Current password is incorrect.");
+                throw new ArgumentException("Įvedėte neteisingą slaptažodį.");
             }
 
             user.PasswordHash = passwordHasher.HashPassword(user, newPassword);
@@ -67,7 +68,7 @@ namespace MySavings.Services
             var user = await userRepository.GetByIdAsync(userId);
             if (user == null)
             {
-                throw new ArgumentException("User not found.");
+                throw new ArgumentException("Vartotojas nerastas.");
             }
             if (user == null)
             {
@@ -76,7 +77,7 @@ namespace MySavings.Services
 
             if (await userRepository.GetByEmailAsync(email) != null)
             {
-                throw new ArgumentException("Email already in use.");
+                throw new ArgumentException("El. paštas jau naudojamas.");
             }
 
             user.Email = email;
@@ -87,9 +88,9 @@ namespace MySavings.Services
         {
             return await userRepository.DeleteAsync(userId);
         }
-        public async Task<User> LoginAsync(string userName, string password)
+        public async Task<User> LoginAsync(string userEmail, string password)
         {
-            var user = await userRepository.GetByUserNameAsync(userName);
+            var user = await userRepository.GetByEmailAsync(userEmail);
             if (user == null)
             {
                 return null;
