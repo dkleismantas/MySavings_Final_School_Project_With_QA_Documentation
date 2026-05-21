@@ -22,10 +22,11 @@ namespace MySavings.API.Controllers
             {
                 var savingGoalId = await savingGoalService.AddAsync(new MySavings.Entities.SavingGoal
                 {
-                    Name = createSavingGoal.Name,
+                    Title = createSavingGoal.Title,
                     TargetAmount = createSavingGoal.TargetAmount,
-                    CurrentAmount = createSavingGoal.CurrentAmount,
-                    UserId = createSavingGoal.UserId
+                    CurrentAmount = 0, //createSavingGoal.CurrentAmount,
+                    UserId = createSavingGoal.UserId,
+                    TargetDate = createSavingGoal.TargetDate
                 });
                 return Created("/", savingGoalId);
             }
@@ -69,7 +70,7 @@ namespace MySavings.API.Controllers
                     return NotFound();
                 }
 
-                savingGoal.Name = updateSavingGoal.Name;
+                savingGoal.Title = updateSavingGoal.Title;
                 savingGoal.TargetAmount = updateSavingGoal.TargetAmount;
                 savingGoal.CurrentAmount = updateSavingGoal.CurrentAmount;
 

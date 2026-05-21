@@ -6,8 +6,8 @@ namespace MySavings.API.Models.SavingGoal
         [Required(ErrorMessage = "Saving goal ID is required.")]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Name is required.")]
-        public string Name { get; set; }
+        [Required(ErrorMessage = "Title is required.")]
+        public string Title { get; set; }
 
         [Required(ErrorMessage = "Target amount is required.")]
         public decimal TargetAmount { get; set; }

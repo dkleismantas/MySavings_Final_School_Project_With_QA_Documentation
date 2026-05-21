@@ -2,7 +2,7 @@
 import { useAuth } from "../../hooks/useAuth";
 
 function NavBar() {
-  //autentifikavimo hook, su userio informacijos propsais 
+  //autentifikavimo hook, su userio informacijos propsais
   //(jie aprasyti frontend/src/context/AuthProvider.jsx)
   const { user, logout, isAuthenticated } = useAuth();
 
@@ -29,14 +29,24 @@ function NavBar() {
               className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
             >
               {isAuthenticated && (
-                <li>
-                  <button
-                    onClick={logout}
-                    className="btn btn-neutral mt-4 w-full"
-                  >
-                    Atsijungti
-                  </button>
-                </li>
+                <>
+                  <li>
+                    <button
+                      onClick={logout}
+                      className="btn btn-neutral mt-4 w-full"
+                    >
+                      Atsijungti
+                    </button>
+                  </li>
+                  <li>
+                    <a
+                      href="/create-goal"
+                      className="btn btn-neutral mt-4 w-full"
+                    >
+                      Sukurti naują taupymo tikslą
+                    </a>
+                  </li>
+                </>
               )}
             </ul>
           </div>

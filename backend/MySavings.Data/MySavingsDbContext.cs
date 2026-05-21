@@ -30,7 +30,7 @@ namespace MySavings.Data
             modelBuilder.Entity<SavingGoal>(o =>
                 {
                     o.HasKey(e => e.Id);
-                    o.Property(e => e.Name).IsRequired();
+                    o.Property(e => e.Title).IsRequired();
                     o.Property(e => e.TargetAmount).HasPrecision(18, 2).IsRequired();
                     o.Property(e => e.CurrentAmount).HasPrecision(18, 2).IsRequired();
                     o.HasOne(e => e.User)
