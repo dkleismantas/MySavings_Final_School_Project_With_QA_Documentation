@@ -19,16 +19,9 @@ namespace MySavings.API.Controllers
         public async Task<IActionResult> CreateAsync([FromBody]
             CreateUserRequest createUser)
         {
-            try
-            {
                 var userId = await userService.AddAsync(createUser.UserName,
                     createUser.Email, createUser.Password);
                 return Created("/", userId);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
         }
 
         // Endpointas skirtas testavimui
