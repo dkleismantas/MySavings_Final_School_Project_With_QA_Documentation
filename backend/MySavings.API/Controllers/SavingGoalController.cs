@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using MySavings.Services;
 using MySavings.API.Models.SavingGoal;
+using MySavings.Services;
 
 namespace MySavings.API.Controllers
 {
@@ -15,19 +15,25 @@ namespace MySavings.API.Controllers
         }
 
         [HttpPost("add-saving-goal")]
-        public async Task<IActionResult> AddAsync([FromBody]
-            CreateSavingGoalRequest createSavingGoal)
+        public async Task<IActionResult> AddAsync(
+            [FromBody] CreateSavingGoalRequest createSavingGoal
+        )
         {
+            if (createSavingGoal == null)
+                return BadRequest("Request body is null");
+
             try
             {
-                var savingGoalId = await savingGoalService.AddAsync(new MySavings.Entities.SavingGoal
-                {
-                    Title = createSavingGoal.Title,
-                    TargetAmount = createSavingGoal.TargetAmount,
-                    CurrentAmount = 0, //createSavingGoal.CurrentAmount,
-                    UserId = createSavingGoal.UserId,
-                    TargetDate = createSavingGoal.TargetDate
-                });
+                var savingGoalId = await savingGoalService.AddAsync(
+                    new MySavings.Entities.SavingGoal
+                    {
+                        Title = createSavingGoal.Title,
+                        TargetAmount = createSavingGoal.TargetAmount,
+                        CurrentAmount = 0, //createSavingGoal.CurrentAmount,
+                        UserId = createSavingGoal.UserId,
+                        TargetDate = createSavingGoal.TargetDate,
+                    }
+                );
                 return Created("/", savingGoalId);
             }
             catch (ArgumentException ex)
@@ -36,7 +42,6 @@ namespace MySavings.API.Controllers
             }
         }
 
-      
         [HttpGet("get-by-id/{savingGoalId}")]
         public async Task<IActionResult> GetByIdAsync(int savingGoalId)
         {
@@ -60,7 +65,9 @@ namespace MySavings.API.Controllers
         }
 
         [HttpPut("update-saving-goal")]
-        public async Task<IActionResult> UpdateAsync([FromBody] UpdateSavingGoalRequest updateSavingGoal)
+        public async Task<IActionResult> UpdateAsync(
+            [FromBody] UpdateSavingGoalRequest updateSavingGoal
+        )
         {
             try
             {
@@ -101,5 +108,4 @@ namespace MySavings.API.Controllers
             }
         }
     }
-
 }

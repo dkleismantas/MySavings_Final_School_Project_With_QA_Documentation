@@ -6,8 +6,24 @@ namespace MySavings.Entities
         public string Title { get; set; }
         public decimal TargetAmount { get; set; }
         public decimal CurrentAmount { get; set; }
-        public DateTime TargetDate { get; set; }
+        public DateTime? TargetDate { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }
+        public SavingGoalStatus Status { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+
+        public SavingGoal()
+        {
+            Status = SavingGoalStatus.Active;
+            CreatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
+        }
+    }
+
+    public enum SavingGoalStatus
+    {
+        Active,
+        Completed,
     }
 }
