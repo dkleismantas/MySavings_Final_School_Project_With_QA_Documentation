@@ -7,6 +7,7 @@ namespace MySavings.Data
     public class MySavingsDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<Goal> Goals { get; set; }
 
         public MySavingsDbContext(DbContextOptions<MySavingsDbContext> options) : base(options)
         {
