@@ -9,6 +9,6 @@ namespace MySavings.Repositories
         Task<IEnumerable<SavingGoal>> GetByUserIdAsync(int userId);
         Task<bool> UpdateAsync(SavingGoal savingGoal);
         Task<bool> DeleteAsync(int savingGoalId);
+        Task<IEnumerable<SavingGoal>> GetAllAsync();
     }
 }
-

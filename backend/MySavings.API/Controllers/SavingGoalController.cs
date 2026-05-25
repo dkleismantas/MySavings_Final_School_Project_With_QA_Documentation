@@ -107,5 +107,16 @@ namespace MySavings.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("get-all-saving-goals")]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var savingGoals = await savingGoalService.GetAllAsync();
+
+            if (savingGoals == null || !savingGoals.Any())
+                return NoContent();
+
+            return Ok(savingGoals);
+        }
     }
 }

@@ -43,16 +43,21 @@ namespace MySavings.Repositories
         }
 
         public async Task<bool> DeleteAsync(int savingGoalId)
-{
-    var entity = await dbContext.SavingGoals.FindAsync(savingGoalId);
+        {
+            var entity = await dbContext.SavingGoals.FindAsync(savingGoalId);
 
-    if (entity == null)
-        return false;
+            if (entity == null)
+                return false;
 
-    dbContext.SavingGoals.Remove(entity);
-    await dbContext.SaveChangesAsync();
+            dbContext.SavingGoals.Remove(entity);
+            await dbContext.SaveChangesAsync();
 
-    return true;
-}
+            return true;
+        }
+
+        public async Task<IEnumerable<SavingGoal>> GetAllAsync()
+        {
+            return await dbContext.SavingGoals.Include(x => x.User).ToListAsync();
+        }
     }
 }

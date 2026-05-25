@@ -9,14 +9,13 @@ namespace MySavings.Services
         public readonly IUserRepository userRepository;
         private readonly IPasswordHasher<User> passwordHasher;
 
-        public UserService(IUserRepository userRepository,
-            IPasswordHasher<User> passwordHasher)
+        public UserService(IUserRepository userRepository, IPasswordHasher<User> passwordHasher)
         {
             this.userRepository = userRepository;
             this.passwordHasher = passwordHasher;
         }
-        public async Task<int> AddAsync(string userName, string email,
-            string password)
+
+        public async Task<int> AddAsync(string userName, string email, string password)
         {
             if (await userRepository.GetByUserNameAsync(userName) != null)
             {
@@ -32,7 +31,7 @@ namespace MySavings.Services
             {
                 UserName = userName,
                 Email = email,
-                Role = "user"
+                Role = "user",
             };
 
             user.PasswordHash = passwordHasher.HashPassword(user, password);
@@ -45,16 +44,22 @@ namespace MySavings.Services
             return await userRepository.GetByIdAsync(userId);
         }
 
-        public async Task<bool> ChangePasswordAsync(int userId,
-            string currentPassword, string newPassword)
+        public async Task<bool> ChangePasswordAsync(
+            int userId,
+            string currentPassword,
+            string newPassword
+        )
         {
             var user = await userRepository.GetByIdAsync(userId);
             if (user == null)
             {
                 throw new ArgumentException("Vartotojas nerastas.");
             }
-            if (!passwordHasher.VerifyHashedPassword(user, user.PasswordHash,
-                currentPassword).Equals(PasswordVerificationResult.Success))
+            if (
+                !passwordHasher
+                    .VerifyHashedPassword(user, user.PasswordHash, currentPassword)
+                    .Equals(PasswordVerificationResult.Success)
+            )
             {
                 throw new ArgumentException("Įvedėte neteisingą slaptažodį.");
             }
@@ -88,6 +93,7 @@ namespace MySavings.Services
         {
             return await userRepository.DeleteAsync(userId);
         }
+
         public async Task<User> LoginAsync(string userEmail, string password)
         {
             var user = await userRepository.GetByEmailAsync(userEmail);
@@ -96,8 +102,7 @@ namespace MySavings.Services
                 return null;
             }
 
-            var result = passwordHasher.VerifyHashedPassword(user,
-                user.PasswordHash, password);
+            var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
             if (result == PasswordVerificationResult.Success)
             {
                 return user;

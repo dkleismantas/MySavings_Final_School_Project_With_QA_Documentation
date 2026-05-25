@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace MySavings.Entities
 {
     public class SavingGoal
@@ -8,6 +10,8 @@ namespace MySavings.Entities
         public decimal CurrentAmount { get; set; }
         public DateTime? TargetDate { get; set; }
         public int UserId { get; set; }
+
+        [JsonIgnore]
         public User User { get; set; }
         public SavingGoalStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
