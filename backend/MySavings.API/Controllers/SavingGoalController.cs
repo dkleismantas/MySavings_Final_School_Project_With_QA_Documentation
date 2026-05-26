@@ -1,107 +1,98 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MySavings.Services;
-using MySavings.API.Models.SavingGoal;
-using MySavings.Entities;
 
 namespace MySavings.API.Controllers
 {
     [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
     public class SavingGoalController : ControllerBase
     {
-        private readonly ISavingGoalService savingGoalService;
+        private readonly ISavingGoalService _savingGoalService;
 
         public SavingGoalController(ISavingGoalService savingGoalService)
         {
-            this.savingGoalService = savingGoalService;
+            _savingGoalService = savingGoalService;
         }
 
-        [HttpPost("add-saving-goal")]
-        public async Task<IActionResult> AddAsync([FromBody]
-            CreateSavingGoalRequest createSavingGoal)
+        // 🔐 GET USER ID FROM JWT
+        private int GetUserId()
         {
-            try
-            {
-                var savingGoalId = await savingGoalService.AddAsync(new MySavings.Entities.SavingGoal
-                {
-                    Title = createSavingGoal.Title,
-                    TargetAmount = createSavingGoal.TargetAmount,
-                    CurrentAmount = 0, //createSavingGoal.CurrentAmount,
-                    UserId = createSavingGoal.UserId,
-                    TargetDate = createSavingGoal.TargetDate,
-                    Status = SavingGoalStatus.Active
-                });
-                return Created("/", savingGoalId);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var userIdClaim = User.FindFirst("Id")?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+                throw new UnauthorizedAccessException("Invalid token");
+
+            return int.Parse(userIdClaim);
         }
 
-      
-        [HttpGet("get-by-id/{savingGoalId}")]
+        // CREATE
+        [HttpPost("add-saving-goal")]
+        public async Task<IActionResult> AddAsync([FromBody] CreateSavingGoalRequest request)
+        {
+            var userId = GetUserId();
+
+            var savingGoalId = await _savingGoalService.AddAsync(request, userId);
+
+            return CreatedAtRoute(
+                "GetSavingGoalById",
+                new { savingGoalId },
+                new { id = savingGoalId }
+            );
+        }
+
+        // GET BY ID
+        [HttpGet("get-by-id/{savingGoalId}", Name = "GetSavingGoalById")]
         public async Task<IActionResult> GetByIdAsync(int savingGoalId)
         {
-            var savingGoal = await savingGoalService.GetByIdAsync(savingGoalId);
-            if (savingGoal == null)
-            {
+            var userId = GetUserId();
+
+            var result = await _savingGoalService.GetByIdAsync(savingGoalId, userId);
+
+            if (result == null)
                 return NotFound();
-            }
-            return Ok(savingGoal);
+
+            return Ok(result);
         }
 
-        [HttpGet("get-saving-goals/{userId}")]
-        public async Task<IActionResult> GetByUserIdAsync(int userId)
+        // GET ALL FOR USER
+        [HttpGet("get-saving-goals")]
+        public async Task<IActionResult> GetByUserIdAsync()
         {
-            var savingGoals = await savingGoalService.GetByUserIdAsync(userId);
-            if (savingGoals == null || !savingGoals.Any())
-            {
-                return NoContent();
-            }
-            return Ok(savingGoals);
+            var userId = GetUserId();
+
+            var result = await _savingGoalService.GetByUserIdAsync(userId);
+
+            return Ok(result);
         }
 
+        // UPDATE
         [HttpPut("update-saving-goal")]
-        public async Task<IActionResult> UpdateAsync([FromBody] UpdateSavingGoalRequest updateSavingGoal)
+        public async Task<IActionResult> UpdateAsync([FromBody] UpdateSavingGoalRequest request)
         {
-            try
-            {
-                var savingGoal = await savingGoalService.GetByIdAsync(updateSavingGoal.Id);
-                if (savingGoal == null)
-                {
-                    return NotFound();
-                }
+            var userId = GetUserId();
 
-                savingGoal.Title = updateSavingGoal.Title;
-                savingGoal.TargetAmount = updateSavingGoal.TargetAmount;
-                savingGoal.CurrentAmount = updateSavingGoal.CurrentAmount;
+            var result = await _savingGoalService.UpdateAsync(request, userId);
 
-                await savingGoalService.UpdateAsync(savingGoal);
-                return Ok(savingGoal);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            if (!result)
+                return NotFound();
+
+            return Ok();
         }
 
+        // DELETE
         [HttpDelete("delete-saving-goal/{savingGoalId}")]
         public async Task<IActionResult> DeleteAsync(int savingGoalId)
         {
-            try
-            {
-                var result = await savingGoalService.DeleteAsync(savingGoalId);
-                if (!result)
-                {
-                    return NotFound();
-                }
-                return Ok();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var userId = GetUserId();
+
+            var result = await _savingGoalService.DeleteAsync(savingGoalId, userId);
+
+            if (!result)
+                return NotFound();
+
+            return NoContent();
         }
     }
-
 }

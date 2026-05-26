@@ -92,3 +92,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+/* 
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>(); */
