@@ -1,26 +1,37 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
 import { getDeposits } from "../../services/Deposits";
+import { getSavingGoalsByUserId } from "../../services/Goal"; 
 import NavBar from "../Components/NavBar";
 import SummaryMain from "../Components/SummaryMain";
 
 function HomePage() {
+  const { user } = useContext(AuthContext);
+
   const [deposits, setDeposits] = useState([]);
+  const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDeposits = async () => {
-      try {
-        const response = await getDeposits();
+    const fetchData = async () => {
+      if (!user?.id) return;
 
-        setDeposits(response.data);
+      try {
+        const [depositsRes, goalsRes] = await Promise.all([
+          getDeposits(),
+          getSavingGoalsByUserId(user.id), // laikinai userId = 1
+        ]);
+
+        setDeposits(depositsRes.data);
+        setGoals(goalsRes);
       } catch (error) {
-        console.error("Failed to fetch deposits:", error);
+        console.error("Failed to fetch data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDeposits();
+    fetchData();
   }, []);
 
   const totalSavings = deposits.reduce(
@@ -28,18 +39,26 @@ function HomePage() {
     0
   );
 
+  const activeGoalsCount = goals.filter((g) => g.status === 0).length;
+
+  const completedGoalsCount = goals.filter((g) => g.status !== 0).length;
+
   if (loading) {
     return <p>Loading...</p>;
   }
-
 
   return (
     <>
       <NavBar />
       <main>
-        <SummaryMain totalSavings={totalSavings} />
+        <SummaryMain
+          totalSavings={totalSavings}
+          activeCount={activeGoalsCount}
+          completedCount={completedGoalsCount}
+        />
       </main>
     </>
   );
 }
+
 export default HomePage;

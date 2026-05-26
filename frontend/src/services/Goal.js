@@ -6,3 +6,22 @@ export const createGoal = async (data) => {
   const response = await axios.post(`${API_URL}/api/SavingGoal/add-saving-goal`, data);
   return response;
 };
+
+// GET BY USER ID
+export const getSavingGoalsByUserId = async (userId) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/SavingGoal/get-saving-goals/${userId}`
+    );
+
+    return response.data ?? [];
+  } catch (error) {
+    // 204 No Content
+    if (error.response?.status === 204) {
+      return [];
+    }
+
+    console.error("Error fetching saving goals:", error);
+    throw error;
+  }
+};
