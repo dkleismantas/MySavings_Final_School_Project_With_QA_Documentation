@@ -4,6 +4,8 @@ using MySavings.Data;
 using MySavings.Entities;
 using MySavings.Repositories;
 using MySavings.Services;
+using MySavings.Repositories.SavingsGoal;
+using MySavings.Services.SavingsGoal;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +26,8 @@ builder.Services.AddDbContext<MySavingsDbContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<ISavingsGoalRepository, SavingsGoalRepository>();
+builder.Services.AddScoped<ISavingsGoalService, SavingsGoalService>();
 
 builder.Services.AddCors(options => {
     options.AddDefaultPolicy(policy => {
