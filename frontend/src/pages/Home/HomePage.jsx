@@ -1,32 +1,42 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
+
 import { getDeposits, getMonthlyDepositsSummary } from "../../services/Deposits";
-import { getSavingGoalsByUserId } from "../../services/Goal"; 
+import { getSavingGoalsByUserId } from "../../services/Goal";
+import { getWalletByUserId, updateBalance } from "../../services/Wallet";
 
 import NavBar from "../Components/NavBar";
 import SummaryMain from "../Components/SummaryMain";
 import MonthlyChart from "../Components/MonthlyChart";
+import WalletCard from "../Components/WalletCard";
 
 function HomePage() {
   const { user } = useContext(AuthContext);
 
   const [deposits, setDeposits] = useState([]);
   const [goals, setGoals] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [monthlyData, setMonthlyData] = useState([]);
+  const [wallet, setWallet] = useState(null);
 
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // MAIN DATA FETCH
   useEffect(() => {
     const fetchData = async () => {
       if (!user?.id) return;
 
       try {
-        const [depositsRes, goalsRes] = await Promise.all([
+        const [depositsRes, goalsRes, walletRes] = await Promise.all([
           getDeposits(),
-          getSavingGoalsByUserId(user.id), // laikinai userId = 1
+          getSavingGoalsByUserId(user.id),
+          getWalletByUserId(user.id),
         ]);
 
         setDeposits(depositsRes.data);
-        setGoals(goalsRes);
+        setGoals(goalsRes.data ?? goalsRes);
+        setWallet(walletRes);
+
+        // setNewBalance(walletRes.totalBalance);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -35,32 +45,29 @@ function HomePage() {
     };
 
     fetchData();
-  }, []);
+  }, [user]);
 
-  
-   useEffect(() => {
-    const fetchData = async () => {
+  // MONTHLY CHART DATA
+  useEffect(() => {
+    const fetchMonthly = async () => {
       try {
         const res = await getMonthlyDepositsSummary();
-
         setMonthlyData(res.data);
       } catch (err) {
         console.error(err);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchData();
+    fetchMonthly();
   }, []);
 
+  // STATS
   const totalSavings = deposits.reduce(
     (sum, deposit) => sum + deposit.amount,
     0
   );
 
   const activeGoalsCount = goals.filter((g) => g.status === 0).length;
-
   const completedGoalsCount = goals.filter((g) => g.status !== 0).length;
 
   if (loading) {
@@ -71,11 +78,24 @@ function HomePage() {
     <>
       <NavBar />
       <main>
+        <WalletCard
+          wallet={wallet}
+          onUpdate={async (newBalance) => {
+            const updated = await updateBalance({
+              userId: user.id,
+              newBalance,
+            });
+
+            setWallet(updated.data ?? updated);
+          }}
+        />
+
         <SummaryMain
           totalSavings={totalSavings}
           activeCount={activeGoalsCount}
           completedCount={completedGoalsCount}
         />
+
         <MonthlyChart data={monthlyData} />
       </main>
     </>
