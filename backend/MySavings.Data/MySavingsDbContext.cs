@@ -33,6 +33,8 @@ namespace MySavings.Data
                     o.Property(e => e.Title).IsRequired();
                     o.Property(e => e.TargetAmount).HasPrecision(18, 2).IsRequired();
                     o.Property(e => e.CurrentAmount).HasPrecision(18, 2).IsRequired();
+                    o.Property(e => e.TargetDate).IsRequired();
+                    o.Property(e => e.Status).IsRequired();
                     o.HasOne(e => e.User)
                             .WithMany(u => u.SavingGoals)
                             .HasForeignKey(e => e.UserId);

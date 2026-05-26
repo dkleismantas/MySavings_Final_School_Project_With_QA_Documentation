@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MySavings.Services;
 using MySavings.API.Models.SavingGoal;
+using MySavings.Entities;
 
 namespace MySavings.API.Controllers
 {
@@ -26,7 +27,8 @@ namespace MySavings.API.Controllers
                     TargetAmount = createSavingGoal.TargetAmount,
                     CurrentAmount = 0, //createSavingGoal.CurrentAmount,
                     UserId = createSavingGoal.UserId,
-                    TargetDate = createSavingGoal.TargetDate
+                    TargetDate = createSavingGoal.TargetDate,
+                    Status = SavingGoalStatus.Active
                 });
                 return Created("/", savingGoalId);
             }
