@@ -1,5 +1,5 @@
 // import axios from "axios"; atkomentuot kai bus bakend
-import deposits from "../data/deposits.json";
+import deposits from "../mock-data/deposits.json";
 
 // const API_URL = import.meta.env.VITE_API_URL; atkomentuot kai bus bakend
 
