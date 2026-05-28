@@ -50,10 +50,6 @@ function LoginForm({ updateFormValue }) {
           id="email"
           {...register("email", {
             required: "Please enter your email",
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Invalid email format",
-            },
           })}
         />
         <p className="text-orange-600">{errors.email?.message}</p>
@@ -66,10 +62,6 @@ function LoginForm({ updateFormValue }) {
           id="password"
           {...register("password", {
             required: "Please enter your password",
-            minLength: {
-              value: 6,
-              message: "Password must be at least 6 characters long",
-            },
           })}
         />
         <p className="text-orange-600">{errors.password?.message}</p>
