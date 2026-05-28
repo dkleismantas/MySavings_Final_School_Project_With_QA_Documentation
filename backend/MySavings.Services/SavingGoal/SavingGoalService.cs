@@ -40,14 +40,19 @@ namespace MySavings.Services
             return goal;
         }
 
-        public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(int userId)
+        public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(
+            int userId,
+            SavingGoalStatus? status,
+            DateTime? targetDateFrom,
+            DateTime? targetDateTo,
+            string? name)
         {
-            var goals = await _savingGoalRepository.GetByUserIdAsync(userId);
-
-            if (!goals.Any())
-                throw new ArgumentException("No saving goals found for this user.");
-
-            return goals;
+        return await _savingGoalRepository.GetByUserIdAsync(
+        userId,
+        status,
+        targetDateFrom,
+        targetDateTo,
+        name);
         }
 
         public async Task<bool> UpdateAsync(SavingGoal savingGoal)
