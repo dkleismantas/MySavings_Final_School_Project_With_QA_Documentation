@@ -29,7 +29,7 @@ function SignUpForm() {
     try {
       const response = await registerUser(formData);
       if (response.status === 201) {
-        setSuccessMessage("Vartotojas sėkmingai sukurtas. Galite prisijungti.");
+        setSuccessMessage("User created successfully! You can now log in.");
         reset();
         return;
       }
@@ -37,7 +37,7 @@ function SignUpForm() {
       if (error.response && error.response.status === 400) {
         setApiError(error.response.data);
       } else {
-        setApiError("Įvyko serverio klaida. Bandykite dar kartą.");
+        setApiError("An error occurred on the server. Please try again.");
       }
     }
   };
@@ -45,17 +45,26 @@ function SignUpForm() {
   return (
     <>
       <form onSubmit={handleSubmit(registerHandler)} noValidate>
-        <label className="label pt-5">Vartotojo vardas</label>
+        <label className="label pt-5">User name</label>
         <input
           type="text"
           className="input"
-          placeholder="Vartotojo vardas"
+          placeholder="User name"
           id="username"
           {...register("username", {
-            required: "Įveskite vartotojo vardą",
+            required: "Please enter a user name",
             minLength: {
               value: 3,
-              message: "Ne mažiau kaip 3 simboliai",
+              message: "Please enter a username with at least 3 characters",
+            },
+            maxLength: {
+              value: 30,
+              message: "Please enter a username with no more than 30 characters",
+            },
+            pattern: {
+              value: /^[a-zA-Z][a-zA-Z0-9._-]*$/,
+              message:
+                "Username must start with a letter and can only contain letters, numbers, dots, hyphens, or underscores",
             },
           })}
         />
@@ -65,13 +74,13 @@ function SignUpForm() {
         <input
           type="email"
           className="input"
-          placeholder="El. paštas"
+          placeholder="Email"
           id="email"
           {...register("email", {
-            required: "Įveskite el. paštą",
+            required: "Please enter an email address",
             pattern: {
               value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Neteisingas el. pašto formatas",
+              message: "Invalid email format",
             },
           })}
         />
@@ -81,13 +90,13 @@ function SignUpForm() {
         <input
           type="password"
           className="input"
-          placeholder="Įveskite slaptažodį"
+          placeholder="Enter password"
           id="password"
           {...register("password", {
-            required: "Įveskite slaptažodį",
+            required: "Please enter a password",
             minLength: {
               value: 6,
-              message: "Ne mažiau kaip 6 simboliai",
+              message: "Password must be at least 6 characters long",
             },
           })}
         />
@@ -96,12 +105,12 @@ function SignUpForm() {
         <input
           type="password"
           className="input"
-          placeholder="Pakartokite slaptažodį"
+          placeholder="Enter password again"
           id="confirmPassword"
           {...register("confirmPassword", {
-            required: "Pakartokite slaptažodį",
+            required: "Please confirm your password",
             validate: (value) =>
-              value === passwordValue || "Slaptažodžiai nesutampa",
+              value === passwordValue || "Passwords do not match",
           })}
         />
         <p className="text-orange-600">{errors.confirmPassword?.message}</p>
@@ -110,7 +119,7 @@ function SignUpForm() {
           disabled={isSubmitting}
           className="btn btn-neutral mt-4 w-full"
         >
-          {isSubmitting ? "Kuriamas vartotojas..." : "Kurti vartotoją"}
+          {isSubmitting ? "Creating user..." : "Create User"}
         </button>
         {!!apiError && <p className="text-orange-600 pt-5">{apiError}</p>}
         {!!successMessage && (

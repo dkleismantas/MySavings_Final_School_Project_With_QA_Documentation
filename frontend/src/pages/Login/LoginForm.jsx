@@ -31,10 +31,10 @@ function LoginForm({ updateFormValue }) {
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setApiError(
-          "Prisijungti nepavyko. Patikrinkite el. paštą ir slaptažodį.",
+          "Failed to log in. Please check your email and password.",
         );
       } else {
-        setApiError("Įvyko serverio klaida. Bandykite dar kartą.");
+        setApiError("An error occurred on the server. Please try again.");
       }
     }
   };
@@ -42,44 +42,44 @@ function LoginForm({ updateFormValue }) {
   return (
     <>
       <form onSubmit={handleSubmit(loginHandler)} noValidate>
-        <label className="label pt-5">El. paštas</label>
+        <label className="label pt-5">Email</label>
         <input
           type="email"
           className="input"
-          placeholder="El. paštas"
+          placeholder="Email"
           id="email"
           {...register("email", {
-            required: "Įveskite el. paštą",
+            required: "Please enter your email",
             pattern: {
               value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Neteisingas el. pašto formatas",
+              message: "Invalid email format",
             },
           })}
         />
         <p className="text-orange-600">{errors.email?.message}</p>
 
-        <label className="label pt-5">Slaptažodis</label>
+        <label className="label pt-5">Password</label>
         <input
           type="password"
           className="input"
-          placeholder="Slaptažodis"
+          placeholder="Password"
           id="password"
           {...register("password", {
-            required: "Įveskite slaptažodį",
+            required: "Please enter your password",
             minLength: {
               value: 6,
-              message: "Ne mažiau kaip 6 simboliai",
+              message: "Password must be at least 6 characters long",
             },
           })}
         />
         <p className="text-orange-600">{errors.password?.message}</p>
         <button type="submit" className="btn btn-neutral mt-4 w-full">
-          Prisijungti
+          Log In
         </button>
         {!!apiError && <p className="text-orange-600 pt-5">{apiError}</p>}
       </form>
       <p className="text-center pt-5">
-        Neesate prisiregistravę?{" "}
+        Don't have an account?{" "}
         <a
           href="#"
           onClick={(e) => {
@@ -88,7 +88,7 @@ function LoginForm({ updateFormValue }) {
           }}
           className="link link-primary"
         >
-          Registruokitės
+          Sign Up
         </a>
       </p>
     </>

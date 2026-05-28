@@ -14,10 +14,10 @@ function NavBar() {
       <div className="flex grow justify-end px-2">
         <div className="flex items-center justify-center">
           {user ? (
-            <p className="text-lg font-bold ">Sveiki, {user.username}!</p>
+            <p className="text-lg font-bold ">Hello, {user.username}!</p>
           ) : (
             <a href="/login" className="btn btn-neutral">
-              Prisijungti
+              Log In
             </a>
           )}
           <div className="dropdown dropdown-bottom dropdown-end">
@@ -35,7 +35,7 @@ function NavBar() {
                       onClick={logout}
                       className="btn btn-neutral mt-4 w-full"
                     >
-                      Atsijungti
+                      Log out
                     </button>
                   </li>
                   <li>
@@ -43,7 +43,7 @@ function NavBar() {
                       href="/create-goal"
                       className="btn btn-neutral mt-4 w-full"
                     >
-                      Sukurti naują taupymo tikslą
+                      Create New Savings Goal
                     </a>
                   </li>
                 </>

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MySavings.API.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
@@ -19,9 +20,9 @@ namespace MySavings.API.Controllers
         public async Task<IActionResult> CreateAsync([FromBody]
             CreateUserRequest createUser)
         {
-                var userId = await userService.AddAsync(createUser.UserName,
-                    createUser.Email, createUser.Password);
-                return Created("/", userId);
+            var userId = await userService.AddAsync(createUser.UserName,
+                createUser.Email, createUser.Password);
+            return Created("/", userId);
         }
 
         // Endpointas skirtas testavimui

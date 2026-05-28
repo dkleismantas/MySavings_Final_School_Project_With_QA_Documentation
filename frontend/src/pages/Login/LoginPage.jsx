@@ -14,7 +14,7 @@ function LoginPage() {
               type="radio"
               name="my_tabs_1"
               className="tab flex-1 "
-              aria-label="Prisijungti"
+              aria-label="Log in"
               checked={isLogin}
               onChange={() => setIsLogin(true)}
             />
@@ -22,7 +22,7 @@ function LoginPage() {
               type="radio"
               name="my_tabs_1"
               className="tab flex-1"
-              aria-label="Registruotis"
+              aria-label="Sign Up"
               checked={!isLogin}
               onChange={() => setIsLogin(false)}
             />
