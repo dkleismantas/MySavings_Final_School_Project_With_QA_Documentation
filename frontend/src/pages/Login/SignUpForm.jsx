@@ -70,7 +70,7 @@ function SignUpForm() {
         />
         <p className="text-orange-600">{errors.username?.message}</p>
 
-        <label className="label pt-5">El. paštas</label>
+        <label className="label pt-5">Email</label>
         <input
           type="email"
           className="input"
@@ -86,7 +86,7 @@ function SignUpForm() {
         />
         <p className="text-orange-600">{errors.email?.message}</p>
 
-        <label className="label pt-5">Slaptažodis</label>
+        <label className="label pt-5">Password</label>
         <input
           type="password"
           className="input"
