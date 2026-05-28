@@ -6,7 +6,7 @@ namespace MySavings.API.Models.Requests
     {
         [Required(ErrorMessage = "User ID is required.")]
         public int UserId { get; set; }
-        [Required(ErrorMessage = "New email is required.")]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "New email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string Email { get; set; }
     }

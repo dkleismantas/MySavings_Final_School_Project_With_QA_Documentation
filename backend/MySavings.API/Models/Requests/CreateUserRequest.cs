@@ -11,7 +11,7 @@ namespace MySavings.API.Models.Requests
             ErrorMessage = "Username must be between 3 and 30 characters long.")]
         public string? UserName { get; set; }
 
-        [Required(ErrorMessage = "Email is required.")]
+        [Required(AllowEmptyStrings = false,ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string? Email { get; set; }
         [Required(ErrorMessage = "Password is required.")]

@@ -24,7 +24,7 @@ namespace MySavings.API.Controllers
             {
                 var userId = await userService.AddAsync(createUser.UserName,
                     createUser.Email, createUser.Password);
-                return Created("/", userId);
+                return Created($"/api/user/get-user/{userId}", userId);
             }
             catch (ArgumentException ex)
             {
