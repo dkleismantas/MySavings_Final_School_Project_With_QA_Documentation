@@ -61,9 +61,9 @@ export const getMonthlyDepositsSummary = async () => {
       const summary = {};
 
       deposits.forEach((deposit) => {
-        const month = new Date(deposit.createdAt).toLocaleString("lt-LT", {
-          month: "long",
-        });
+       const month = new Date(deposit.createdAt).toLocaleString("en-US", {
+        month: "long",
+      });
 
         summary[month] = (summary[month] || 0) + deposit.amount;
       });

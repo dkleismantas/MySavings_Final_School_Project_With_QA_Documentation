@@ -35,7 +35,7 @@ const MonthlyChart = ({ data }) => {
     responsive: true,
     plugins: {
       legend: {
-        display: true,
+        display: false,
       },
     },
   };
