@@ -26,7 +26,7 @@ namespace MySavings.API.Controllers
                     createUser.Email, createUser.Password);
                 return Created("/", userId);
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
