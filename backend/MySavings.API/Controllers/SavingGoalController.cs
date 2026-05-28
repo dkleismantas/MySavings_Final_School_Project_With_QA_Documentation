@@ -50,15 +50,22 @@ namespace MySavings.API.Controllers
             return Ok(savingGoal);
         }
 
-        [HttpGet("get-saving-goals/{userId}")]
-        public async Task<IActionResult> GetByUserIdAsync(int userId)
+         [HttpGet("get-saving-goals/{userId}")]
+        public async Task<IActionResult> GetByUserIdAsync(
+        int userId,
+        [FromQuery] SavingGoalStatus? status,
+        [FromQuery] DateTime? targetDateFrom,
+        [FromQuery] DateTime? targetDateTo,
+        [FromQuery] string? name)
         {
-            var savingGoals = await savingGoalService.GetByUserIdAsync(userId);
-            if (savingGoals == null || !savingGoals.Any())
-            {
-                return NoContent();
-            }
-            return Ok(savingGoals);
+            var savingGoals = await savingGoalService.GetByUserIdAsync(
+        userId,
+        status,
+        targetDateFrom,
+        targetDateTo,
+        name);
+
+        return Ok(savingGoals);
         }
 
         [HttpPut("update-saving-goal")]
