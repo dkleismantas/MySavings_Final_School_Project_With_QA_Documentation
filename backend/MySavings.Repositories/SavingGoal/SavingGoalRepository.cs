@@ -25,9 +25,21 @@ namespace MySavings.Repositories
             return await dbContext.SavingGoals.FindAsync(savingGoalId);
         }
 
-        public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(int userId)
+        public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(int userId, string? sortBy)
         {
-            return await dbContext.SavingGoals.Where(sg => sg.UserId == userId).ToListAsync();
+            var query = dbContext.SavingGoals.Where(sg => sg.UserId == userId);
+
+            query = sortBy?.ToLowerInvariant() switch
+            {
+                null or "" or "newest" => query.OrderByDescending(sg => sg.Id),
+                "deadline" => query.OrderBy(sg => sg.TargetDate),
+                "amount" => query.OrderByDescending(sg => sg.TargetAmount),
+                "progress" => query.OrderByDescending(sg =>
+                    sg.TargetAmount > 0 ? sg.CurrentAmount / sg.TargetAmount : 0),
+                _ => throw new ArgumentException("Invalid sort parameter.")
+            };
+
+            return await query.ToListAsync();
         }
 
         public async Task<bool> UpdateAsync(SavingGoal savingGoal)
