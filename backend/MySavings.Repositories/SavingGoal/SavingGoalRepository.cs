@@ -25,9 +25,40 @@ namespace MySavings.Repositories
             return await dbContext.SavingGoals.FindAsync(savingGoalId);
         }
 
-        public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(int userId)
+        public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(
+        int userId,
+        SavingGoalStatus? status,
+        DateTime? targetDateFrom,
+        DateTime? targetDateTo,
+        string? name)
         {
-            return await dbContext.SavingGoals.Where(sg => sg.UserId == userId).ToListAsync();
+         var query = dbContext.SavingGoals
+         .Where(sg => sg.UserId == userId)
+         .AsQueryable();
+
+        if (status.HasValue)
+        {
+        query = query.Where(sg => sg.Status == status.Value);
+        }
+
+        if (targetDateFrom.HasValue)
+        {
+        query = query.Where(sg => sg.TargetDate >= targetDateFrom.Value.Date);
+        }
+
+        if (targetDateTo.HasValue)
+        {
+         var toDate = targetDateTo.Value.Date.AddDays(1);
+         query = query.Where(sg => sg.TargetDate < toDate);
+        }
+
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+        var searchName = name.Trim();
+        query = query.Where(sg => sg.Title.Contains(searchName));
+        }
+
+        return await query.ToListAsync();
         }
 
         public async Task<bool> UpdateAsync(SavingGoal savingGoal)
