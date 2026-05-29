@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace MySavings.Entities
 {
     public class Deposit
@@ -12,6 +14,7 @@ namespace MySavings.Entities
 
         public int SavingGoalId { get; set; }
 
+        [JsonIgnore]
         public SavingGoal SavingGoal { get; set; } = null!;
     }
 }
