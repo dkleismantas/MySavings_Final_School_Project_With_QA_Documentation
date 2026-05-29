@@ -15,6 +15,16 @@ function HomePage() {
 
   const [deposits, setDeposits] = useState([]);
   const [goals, setGoals] = useState([]);
+
+  const defaultGoalFilters = {
+    status: "",
+    targetDateFrom: "",
+    targetDateTo: "",
+    name: "",
+  };
+
+  const [goalFilters, setGoalFilters] = useState(defaultGoalFilters);
+
   const [wallet, setWallet] = useState(null);
 
   const [monthlyData, setMonthlyData] = useState([]);
@@ -28,7 +38,7 @@ function HomePage() {
       try {
         const [depositsRes, goalsRes, walletRes] = await Promise.all([
           getDeposits(),
-          getSavingGoalsByUserId(user.id),
+          getSavingGoalsByUserId(user.id, goalFilters),
           getWalletByUserId(user.id),
         ]);
 
@@ -45,7 +55,7 @@ function HomePage() {
     };
 
     fetchData();
-  }, [user]);
+  }, [user?.id, goalFilters]);
 
   // MONTHLY CHART DATA
   useEffect(() => {
@@ -60,6 +70,17 @@ function HomePage() {
 
     fetchMonthly();
   }, []);
+
+  const handleGoalFilterChange = (name, value) => {
+  setGoalFilters((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+  };
+
+  const clearGoalFilters = () => {
+    setGoalFilters(defaultGoalFilters);
+  };
 
   // STATS
   const totalSavings = deposits.reduce(
@@ -91,11 +112,61 @@ function HomePage() {
         />
 
         <SummaryMain
-          totalSavings={totalSavings}
-          activeCount={activeGoalsCount}
-          completedCount={completedGoalsCount}
-        />
+  totalSavings={totalSavings}
+  activeCount={activeGoalsCount}
+  completedCount={completedGoalsCount}
+/>
 
+<section style={{ margin: "20px 0" }}>
+  <h2>Tikslų filtravimas</h2>
+
+  <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+    <input
+      type="text"
+      placeholder="Ieškoti pagal pavadinimą"
+      value={goalFilters.name}
+      onChange={(e) => handleGoalFilterChange("name", e.target.value)}
+    />
+
+    <select
+      value={goalFilters.status}
+      onChange={(e) => handleGoalFilterChange("status", e.target.value)}
+    >
+    <option value="">Visi statusai</option>
+    <option value="0">Active</option>
+    <option value="1">Completed</option>
+    <option value="2">Paused</option>
+    <option value="3">Cancelled</option>
+    </select>
+
+    <input
+      type="date"
+      value={goalFilters.targetDateFrom}
+      onChange={(e) =>
+        handleGoalFilterChange("targetDateFrom", e.target.value)
+      }
+    />
+
+    <input
+      type="date"
+      value={goalFilters.targetDateTo}
+      onChange={(e) =>
+        handleGoalFilterChange("targetDateTo", e.target.value)
+      }
+    />
+
+    <button type="button" onClick={clearGoalFilters}>
+      Išvalyti filtrus
+    </button>
+  </div>
+  <ul>
+  {goals.map((goal) => (
+    <li key={goal.id}>
+      {goal.title} — {goal.status} — {goal.targetDate}
+    </li>
+  ))}
+</ul>
+</section>
         <MonthlyChart data={monthlyData} />
       </main>
     </>
