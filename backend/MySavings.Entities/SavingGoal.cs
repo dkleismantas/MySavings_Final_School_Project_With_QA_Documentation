@@ -10,5 +10,6 @@ namespace MySavings.Entities
         public DateTime TargetDate { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }
+        public ICollection<Deposit> Deposits { get; set; } = new List<Deposit>();
     }
 }
