@@ -54,5 +54,14 @@ namespace MySavings.API.Controllers
 
             return Ok(deposits);
         }
+
+        // GET: api/deposit/monthly-summary
+        [HttpGet("monthly-summary")]
+        public async Task<IActionResult> GetMonthlySummary()
+        {
+            var summary = await _depositService.GetMonthlySummaryAsync();
+
+            return Ok(summary);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using MySavings.Data;
 using MySavings.Entities;
+using MySavings.Entities.Models;
 using MySavings.Repositories;
 
 namespace MySavings.Services
@@ -85,6 +86,22 @@ namespace MySavings.Services
         public async Task<List<Deposit>> GetDepositsByUserIdAsync(int userId)
         {
             return await _depositRepository.GetByUserIdAsync(userId);
+        }
+
+        public async Task<List<MonthlyDepositSummaryResponse>> GetMonthlySummaryAsync()
+        {
+            var deposits = await _depositRepository.GetAllAsync();
+
+            var summary = deposits
+                .GroupBy(d => d.CreatedAt.Month)
+                .Select(g => new MonthlyDepositSummaryResponse
+                {
+                    Month = new DateTime(1, g.Key, 1).ToString("MMMM"),
+                    TotalAmount = g.Sum(d => d.Amount),
+                })
+                .ToList();
+
+            return summary;
         }
     }
 }

@@ -1,4 +1,5 @@
 using MySavings.Entities;
+using MySavings.Entities.Models;
 
 namespace MySavings.Services
 {
@@ -11,5 +12,6 @@ namespace MySavings.Services
         Task<List<Deposit>> GetDepositsByGoalIdAsync(int goalId);
 
         Task<List<Deposit>> GetDepositsByUserIdAsync(int userId);
+        Task<List<MonthlyDepositSummaryResponse>> GetMonthlySummaryAsync();
     }
 }
