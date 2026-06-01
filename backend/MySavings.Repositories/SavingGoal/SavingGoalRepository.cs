@@ -25,6 +25,11 @@ namespace MySavings.Repositories
             return await dbContext.SavingGoals.FindAsync(savingGoalId);
         }
 
+        public async Task<IEnumerable<SavingGoal>> GetAllAsync()
+        {
+            return await dbContext.SavingGoals.ToListAsync();
+        }
+
         public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(int userId)
         {
             return await dbContext.SavingGoals.Where(sg => sg.UserId == userId).ToListAsync();
