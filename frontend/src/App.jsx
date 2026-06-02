@@ -1,9 +1,9 @@
 import { Route, Routes } from "react-router";
 import LoginPage from "./pages/Login/LoginPage";
-import HomePage from "./pages/Home/HomePage";
+import HomePage from "./pages/Components/HomePage";
 import CreateGoalPage from "./pages/CreateGoalPage/CreateGoalForm";
 import AuthProvider from "./context/AuthProvider";
-import GoalsPage from "./pages/Goals/GoalsPage";
+
 
 function App() {
   return (
@@ -14,7 +14,6 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="create-goal" element={<CreateGoalPage />} />
-            <Route path="goals" element={<GoalsPage />} />
           </Routes>
         </AuthProvider>
       }
