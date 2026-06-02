@@ -8,11 +8,18 @@ export const createGoal = async (data) => {
 };
 
 // GET BY USER ID
-export const getSavingGoalsByUserId = async (userId) => {
+export const getSavingGoalsByUserId = async (userId, sortBy = "newest") => {
   try {
     const response = await axios.get(
-      `${API_URL}/api/SavingGoal/get-saving-goals/${userId}`
+      `${API_URL}/api/SavingGoal/get-saving-goals/${userId}`,
+      {
+        params: { sortBy },
+      }
     );
+
+    if (response.status === 204) {
+      return [];
+    }
 
     return response.data ?? [];
   } catch (error) {
@@ -32,4 +39,13 @@ export const getSavingGoalById = async (id) => {
   );
 
   return response;
+};
+export const getGoals = async () => {
+  const token = localStorage.getItem("accessToken");
+  const response = await axios.get(`${API_URL}/api/SavingGoal/goals`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data ?? [];
 };

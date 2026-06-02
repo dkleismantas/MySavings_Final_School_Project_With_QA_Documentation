@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import NavBar from "../Components/NavBar";
-import GoalCard from "../Components/GoalCard";
+import GoalCardDetails from "../Components/GoalCardDetails";
 import AddDepositForm from "../Components/AddDepositForm";
 import DepositHistory from "../Components/DepositHistory";
 
@@ -87,7 +87,7 @@ function DetailsPage() {
       <main className="max-w-7xl mx-auto p-6">
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <GoalCard goal={goal} />
+            <GoalCardDetails goal={goal} />
           </div>
           <div>
             <AddDepositForm onSubmit={handleSubmit} saving={saving} />

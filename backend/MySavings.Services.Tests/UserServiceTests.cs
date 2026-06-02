@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Moq;
+using MySavings.Data;
 using MySavings.Entities;
 using MySavings.Repositories;
 
@@ -11,12 +13,22 @@ namespace MySavings.Services.Tests
             new Mock<IUserRepository>();
         private readonly Mock<IPasswordHasher<User>> passwordHasherMock =
             new Mock<IPasswordHasher<User>>();
+        private readonly Mock<IWalletRepository> walletRepositoryMock =
+            new Mock<IWalletRepository>();
+        private readonly Mock<MySavingsDbContext> dbContextMock;
         private readonly UserService userService;
 
         public UserServiceTests()
         {
-            userService = new UserService(userRepositoryMock.Object,
-                passwordHasherMock.Object);
+            var dbContextOptions = new DbContextOptionsBuilder<MySavingsDbContext>().Options;
+            dbContextMock = new Mock<MySavingsDbContext>(dbContextOptions);
+
+            userService = new UserService(
+                userRepositoryMock.Object,
+                walletRepositoryMock.Object,
+                passwordHasherMock.Object,
+                dbContextMock.Object
+            );
         }
 
         [Fact]
@@ -38,6 +50,12 @@ namespace MySavings.Services.Tests
 
             userRepositoryMock.Setup(dbContext => dbContext.AddAsync(It.IsAny<User>()))
                 .ReturnsAsync(expectedUserId);
+
+            walletRepositoryMock.Setup(repository => repository.AddAsync(It.IsAny<Wallet>()))
+                .Returns(Task.CompletedTask);
+
+            dbContextMock.Setup(dbContext => dbContext.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
 
             var result = await userService.AddAsync(userName, email, password);
 

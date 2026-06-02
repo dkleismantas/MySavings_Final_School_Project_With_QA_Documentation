@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using MySavings.Services;
 using MySavings.API.Models.SavingGoal;
 using MySavings.Entities;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace MySavings.API.Controllers
 {
@@ -51,15 +53,40 @@ namespace MySavings.API.Controllers
         }
 
         [HttpGet("get-saving-goals/{userId}")]
-        public async Task<IActionResult> GetByUserIdAsync(int userId)
+        public async Task<IActionResult> GetByUserIdAsync(int userId, [FromQuery] string? sortBy)
         {
-            var savingGoals = await savingGoalService.GetByUserIdAsync(userId);
-            if (savingGoals == null || !savingGoals.Any())
+            try
             {
-                return NoContent();
+                var savingGoals = await savingGoalService.GetByUserIdAsync(userId, sortBy);
+                if (savingGoals == null || !savingGoals.Any())
+                {
+                    return NoContent();
+                }
+                return Ok(savingGoals);
             }
-            return Ok(savingGoals);
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
+        [HttpGet("goals")]
+        [Authorize(Policy = "userOnly")]
+        public async Task<IActionResult> GetGoalsAsync()
+        {
+            var userIdClaim = User.FindFirst("Id");
+        if (userIdClaim == null)
+        return Unauthorized();
+
+            var userId = int.Parse(userIdClaim.Value);
+            var savingGoals = await savingGoalService.GetByUserIdAsync(userId);
+
+        if (savingGoals == null || !savingGoals.Any())
+        return Ok(new List<object>());
+
+        return Ok(savingGoals);
+        }
+
 
         [HttpPut("update-saving-goal")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateSavingGoalRequest updateSavingGoal)

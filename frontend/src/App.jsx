@@ -5,6 +5,7 @@ import CreateGoalPage from "./pages/CreateGoalPage/CreateGoalForm";
 import AuthProvider from "./context/AuthProvider";
 import DetailsPage from "./pages/Details/DetailsPage";
 
+
 function App() {
   return (
     <div>
