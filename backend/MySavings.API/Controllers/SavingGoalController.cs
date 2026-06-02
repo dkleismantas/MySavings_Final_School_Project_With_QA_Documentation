@@ -79,7 +79,12 @@ namespace MySavings.API.Controllers
         return Unauthorized();
 
             var userId = int.Parse(userIdClaim.Value);
-            var savingGoals = await savingGoalService.GetByUserIdAsync(userId);
+            var savingGoals = await savingGoalService.GetByUserIdAsync(
+                userId,
+                null,
+                null,
+                null,
+                null);
 
         if (savingGoals == null || !savingGoals.Any())
         return Ok(new List<object>());
