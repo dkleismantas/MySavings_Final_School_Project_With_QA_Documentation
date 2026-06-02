@@ -12,6 +12,13 @@ const formatDate = (date) =>
     day: "numeric",
   }).format(new Date(date));
 
+const formatCurrency = (amount) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(amount ?? 0);
+
 const getProgress = (goal) => {
   if (!goal.targetAmount || goal.targetAmount <= 0) {
     return 0;
@@ -20,26 +27,34 @@ const getProgress = (goal) => {
   return Math.min(100, Math.round((goal.currentAmount / goal.targetAmount) * 100));
 };
 
+const getStatusLabel = (status) => (status === 0 ? "Active" : "Completed");
+
 const GoalsList = ({ goals, sortBy, onSortChange, loading }) => {
   return (
-    <section className="mt-6">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-xl font-semibold">Saving goals</h2>
+    <section className="mx-auto mt-6 w-full max-w-md px-4 sm:max-w-3xl">
+      <div className="mb-5 space-y-4">
+        <h2 className="text-3xl font-bold tracking-normal">Saving goals</h2>
 
-        <label className="form-control w-full sm:w-56">
-          <span className="label-text mb-1">Sort by</span>
-          <select
-            className="select select-bordered w-full"
-            value={sortBy}
-            onChange={(event) => onSortChange(event.target.value)}
-          >
-            {sortOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <button type="button" className="btn btn-outline rounded-full">
+            Filters
+          </button>
+
+          <label className="relative">
+            <span className="sr-only">Sort by</span>
+            <select
+              className="select select-bordered h-12 w-full rounded-full text-center font-semibold"
+              value={sortBy}
+              onChange={(event) => onSortChange(event.target.value)}
+            >
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  Sort by {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
 
       {loading ? (
@@ -49,42 +64,67 @@ const GoalsList = ({ goals, sortBy, onSortChange, loading }) => {
           No saving goals yet.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-box border border-base-300 bg-base-100">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Goal</th>
-                <th>Deadline</th>
-                <th>Amount</th>
-                <th>Progress</th>
-              </tr>
-            </thead>
-            <tbody>
-              {goals.map((goal) => {
-                const progress = getProgress(goal);
+        <div className="space-y-4">
+          {goals.map((goal, index) => {
+            const progress = getProgress(goal);
+            const isPrimaryCard = index === 0;
 
-                return (
-                  <tr key={goal.id}>
-                    <td className="font-medium">{goal.title}</td>
-                    <td>{formatDate(goal.targetDate)}</td>
-                    <td>
-                      €{goal.currentAmount} / €{goal.targetAmount}
-                    </td>
-                    <td className="min-w-44">
-                      <div className="flex items-center gap-3">
-                        <progress
-                          className="progress progress-primary w-28"
-                          value={progress}
-                          max="100"
-                        />
-                        <span className="w-10 text-right text-sm">{progress}%</span>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+            return (
+              <article
+                key={goal.id}
+                className={[
+                  "card border shadow-sm",
+                  isPrimaryCard
+                    ? "border-primary/30 bg-primary text-primary-content"
+                    : "border-base-300 bg-base-100 text-base-content",
+                ].join(" ")}
+              >
+                <div className="card-body gap-5 p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="min-w-0 text-xl font-bold leading-tight">
+                      {goal.title}
+                    </h3>
+                    <span
+                      className={[
+                        "badge shrink-0 border-0",
+                        isPrimaryCard
+                          ? "bg-primary-content/20 text-primary-content"
+                          : "badge-primary",
+                      ].join(" ")}
+                    >
+                      {getStatusLabel(goal.status)}
+                    </span>
+                  </div>
+
+                  <div>
+                    <p className="mb-3 text-5xl font-bold leading-none">{progress}%</p>
+                    <progress
+                      className={[
+                        "progress h-3 w-full",
+                        isPrimaryCard ? "progress-neutral" : "progress-primary",
+                      ].join(" ")}
+                      value={progress}
+                      max="100"
+                    />
+                  </div>
+
+                  <div
+                    className={[
+                      "flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold",
+                      isPrimaryCard ? "text-primary-content/90" : "text-base-content/70",
+                    ].join(" ")}
+                  >
+                    <span>
+                      {formatCurrency(goal.currentAmount)} of{" "}
+                      {formatCurrency(goal.targetAmount)}
+                    </span>
+                    <span aria-hidden="true">•</span>
+                    <span>Due {formatDate(goal.targetDate)}</span>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
     </section>
