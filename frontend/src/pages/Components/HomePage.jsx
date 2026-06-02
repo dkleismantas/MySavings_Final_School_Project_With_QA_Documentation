@@ -9,7 +9,6 @@ import NavBar from "../Components/NavBar";
 import SummaryMain from "../Components/SummaryMain";
 import MonthlyChart from "../Components/MonthlyChart";
 import WalletCard from "../Components/WalletCard";
-import GoalsList from "../Components/GoalsList";
 
 function HomePage() {
   const { user } = useContext(AuthContext);
@@ -20,8 +19,6 @@ function HomePage() {
 
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [goalsLoading, setGoalsLoading] = useState(false);
-  const [sortBy, setSortBy] = useState("newest");
 
   // MAIN DATA FETCH
   useEffect(() => {
@@ -29,12 +26,14 @@ function HomePage() {
       if (!user?.id) return;
 
       try {
-        const [depositsRes, walletRes] = await Promise.all([
+        const [depositsRes, goalsRes, walletRes] = await Promise.all([
           getDeposits(),
+          getSavingGoalsByUserId(user.id),
           getWalletByUserId(user.id),
         ]);
 
         setDeposits(depositsRes.data);
+        setGoals(goalsRes.data ?? goalsRes);
         setWallet(walletRes);
 
         // setNewBalance(walletRes.totalBalance);
@@ -47,24 +46,6 @@ function HomePage() {
 
     fetchData();
   }, [user]);
-
-  useEffect(() => {
-    const fetchSortedGoals = async () => {
-      if (!user?.id) return;
-
-      try {
-        setGoalsLoading(true);
-        const goalsRes = await getSavingGoalsByUserId(user.id, sortBy);
-        setGoals(goalsRes.data ?? goalsRes);
-      } catch (error) {
-        console.error("Failed to fetch sorted goals:", error);
-      } finally {
-        setGoalsLoading(false);
-      }
-    };
-
-    fetchSortedGoals();
-  }, [sortBy, user]);
 
   // MONTHLY CHART DATA
   useEffect(() => {
@@ -89,7 +70,7 @@ function HomePage() {
   const activeGoalsCount = goals.filter((g) => g.status === 0).length;
   const completedGoalsCount = goals.filter((g) => g.status !== 0).length;
 
-  if (loading || (goalsLoading && goals.length === 0)) {
+  if (loading) {
     return <p>Loading...</p>;
   }
 
@@ -116,13 +97,6 @@ function HomePage() {
         />
 
         <MonthlyChart data={monthlyData} />
-
-        <GoalsList
-          goals={goals}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-          loading={goalsLoading}
-        />
       </main>
     </>
   );
