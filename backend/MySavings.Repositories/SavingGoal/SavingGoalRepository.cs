@@ -25,6 +25,11 @@ namespace MySavings.Repositories
             return await dbContext.SavingGoals.FindAsync(savingGoalId);
         }
 
+        public async Task<IEnumerable<SavingGoal>> GetAllAsync()
+        {
+            return await dbContext.SavingGoals.ToListAsync();
+        }
+
         public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(int userId, string? sortBy)
         {
             var query = dbContext.SavingGoals.Where(sg => sg.UserId == userId);
@@ -35,8 +40,9 @@ namespace MySavings.Repositories
                 "deadline" => query.OrderBy(sg => sg.TargetDate),
                 "amount" => query.OrderByDescending(sg => sg.TargetAmount),
                 "progress" => query.OrderByDescending(sg =>
-                    sg.TargetAmount > 0 ? sg.CurrentAmount / sg.TargetAmount : 0),
-                _ => throw new ArgumentException("Invalid sort parameter.")
+                    sg.TargetAmount > 0 ? sg.CurrentAmount / sg.TargetAmount : 0
+                ),
+                _ => throw new ArgumentException("Invalid sort parameter."),
             };
 
             return await query.ToListAsync();
@@ -55,16 +61,16 @@ namespace MySavings.Repositories
         }
 
         public async Task<bool> DeleteAsync(int savingGoalId)
-{
-    var entity = await dbContext.SavingGoals.FindAsync(savingGoalId);
+        {
+            var entity = await dbContext.SavingGoals.FindAsync(savingGoalId);
 
-    if (entity == null)
-        return false;
+            if (entity == null)
+                return false;
 
-    dbContext.SavingGoals.Remove(entity);
-    await dbContext.SaveChangesAsync();
+            dbContext.SavingGoals.Remove(entity);
+            await dbContext.SaveChangesAsync();
 
-    return true;
-}
+            return true;
+        }
     }
 }

@@ -8,7 +8,11 @@ namespace MySavings.Services
     {
         private readonly ISavingGoalRepository _savingGoalRepository;
         private readonly IUserRepository _userRepository;
-        public SavingGoalService(ISavingGoalRepository savingGoalRepository, IUserRepository userRepository)
+
+        public SavingGoalService(
+            ISavingGoalRepository savingGoalRepository,
+            IUserRepository userRepository
+        )
         {
             _savingGoalRepository = savingGoalRepository;
             _userRepository = userRepository;
@@ -61,6 +65,11 @@ namespace MySavings.Services
                 throw new ArgumentException("Saving goal not found.");
             }
             return await _savingGoalRepository.DeleteAsync(savingGoalId);
+        }
+
+        public async Task<IEnumerable<SavingGoal>> GetAllAsync()
+        {
+            return await _savingGoalRepository.GetAllAsync();
         }
     }
 }

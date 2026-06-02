@@ -4,6 +4,7 @@ import HomePage from "./pages/Home/HomePage";
 import CreateGoalPage from "./pages/CreateGoalPage/CreateGoalForm";
 import AuthProvider from "./context/AuthProvider";
 
+
 function App() {
   return (
     <div>
