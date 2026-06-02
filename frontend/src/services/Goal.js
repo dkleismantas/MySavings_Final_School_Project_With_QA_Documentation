@@ -46,3 +46,13 @@ export const getSavingGoalsByUserId = async (userId, filters = {}) => {
     throw error;
   }
 };
+
+export const getGoals = async () => {
+  const token = localStorage.getItem("accessToken");
+  const response = await axios.get(`${API_URL}/api/SavingGoal/goals`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data ?? [];
+};

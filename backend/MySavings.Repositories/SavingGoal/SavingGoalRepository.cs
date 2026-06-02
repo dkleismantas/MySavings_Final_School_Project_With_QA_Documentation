@@ -25,42 +25,46 @@ namespace MySavings.Repositories
             return await dbContext.SavingGoals.FindAsync(savingGoalId);
         }
 
-        public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(
-        int userId,
-        SavingGoalStatus? status,
-        DateTime? targetDateFrom,
-        DateTime? targetDateTo,
-        string? name)
-        {
-         var query = dbContext.SavingGoals
-         .Where(sg => sg.UserId == userId)
-         .AsQueryable();
+public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(
+    int userId,
+    SavingGoalStatus? status,
+    DateTime? targetDateFrom,
+    DateTime? targetDateTo,
+    string? name)
+{
+    var query = dbContext.SavingGoals
+        .Where(sg => sg.UserId == userId)
+        .AsQueryable();
 
-        if (status.HasValue)
-        {
+    if (status.HasValue)
+    {
         query = query.Where(sg => sg.Status == status.Value);
-        }
+    }
 
-        if (targetDateFrom.HasValue)
-        {
+    if (targetDateFrom.HasValue)
+    {
         query = query.Where(sg => sg.TargetDate >= targetDateFrom.Value.Date);
-        }
+    }
 
-        if (targetDateTo.HasValue)
-        {
-         var toDate = targetDateTo.Value.Date.AddDays(1);
-         query = query.Where(sg => sg.TargetDate < toDate);
-        }
+    if (targetDateTo.HasValue)
+    {
+        var toDate = targetDateTo.Value.Date.AddDays(1);
+        query = query.Where(sg => sg.TargetDate < toDate);
+    }
 
-        if (!string.IsNullOrWhiteSpace(name))
-        {
+    if (!string.IsNullOrWhiteSpace(name))
+    {
         var searchName = name.Trim();
         query = query.Where(sg => sg.Title.Contains(searchName));
-        }
+    }
 
-        return await query.ToListAsync();
-        }
+    return await query.ToListAsync();
+}
 
+public async Task<IEnumerable<SavingGoal>> GetAllAsync()
+{
+    return await dbContext.SavingGoals.ToListAsync();
+}
         public async Task<bool> UpdateAsync(SavingGoal savingGoal)
         {
             dbContext.SavingGoals.Update(savingGoal);
