@@ -25,3 +25,11 @@ export const getSavingGoalsByUserId = async (userId) => {
     throw error;
   }
 };
+
+export const getSavingGoalById = async (id) => {
+  const response = await axios.get(
+    `${API_URL}/api/SavingGoal/get-by-id/${id}`
+  );
+
+  return response;
+};
