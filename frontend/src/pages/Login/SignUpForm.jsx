@@ -29,7 +29,7 @@ function SignUpForm() {
     try {
       const response = await registerUser(formData);
       if (response.status === 201) {
-        setSuccessMessage("Vartotojas sėkmingai sukurtas!");
+        setSuccessMessage("Vartotojas sėkmingai sukurtas. Galite prisijungti.");
         reset();
         return;
       }
