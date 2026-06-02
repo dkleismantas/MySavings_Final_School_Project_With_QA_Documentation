@@ -67,5 +67,10 @@ namespace MySavings.Services
             }
             return await _savingGoalRepository.DeleteAsync(savingGoalId);
         }
+
+        public async Task<IEnumerable<SavingGoal>> GetAllAsync()
+{
+    return await _savingGoalRepository.GetAllAsync();
+}
     }
 }

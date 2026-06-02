@@ -5,10 +5,11 @@ import { getDeposits, getMonthlyDepositsSummary } from "../../services/Deposits"
 import { getSavingGoalsByUserId } from "../../services/Goal";
 import { getWalletByUserId, updateBalance } from "../../services/Wallet";
 
-import NavBar from "../Components/NavBar";
-import SummaryMain from "../Components/SummaryMain";
-import MonthlyChart from "../Components/MonthlyChart";
-import WalletCard from "../Components/WalletCard";
+import NavBar from "./NavBar";
+import SummaryMain from "./SummaryMain";
+import MonthlyChart from "./MonthlyChart";
+import WalletCard from "./WalletCard";
+import GoalCard from "./GoalCard";
 
 function HomePage() {
   const { user } = useContext(AuthContext);
@@ -97,6 +98,17 @@ function HomePage() {
         />
 
         <MonthlyChart data={monthlyData} />
+
+        <div className="flex flex-col gap-4 mt-6 px-4 pb-10">
+        <h2 className="text-xl font-bold text-white mb-2">Your goals</h2>
+        {goals.length === 0 ? (
+          <p className="text-gray-400">No saving goals found.</p>
+        ) : (
+          goals.map((goal) => (
+            <GoalCard key={goal.id} goal={goal} />
+          ))
+        )}
+      </div>
       </main>
     </>
   );
