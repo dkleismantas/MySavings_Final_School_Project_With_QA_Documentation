@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router";
 import LoginPage from "./pages/Login/LoginPage";
-import HomePage from "./pages/Components/HomePage";
+import HomePage from "./pages/Home/HomePage";
 import CreateGoalPage from "./pages/CreateGoalPage/CreateGoalForm";
 import AuthProvider from "./context/AuthProvider";
 

@@ -53,14 +53,21 @@ namespace MySavings.API.Controllers
         }
 
         [HttpGet("get-saving-goals/{userId}")]
-        public async Task<IActionResult> GetByUserIdAsync(int userId)
+        public async Task<IActionResult> GetByUserIdAsync(int userId, [FromQuery] string? sortBy)
         {
-            var savingGoals = await savingGoalService.GetByUserIdAsync(userId);
-            if (savingGoals == null || !savingGoals.Any())
+            try
             {
-                return NoContent();
+                var savingGoals = await savingGoalService.GetByUserIdAsync(userId, sortBy);
+                if (savingGoals == null || !savingGoals.Any())
+                {
+                    return NoContent();
+                }
+                return Ok(savingGoals);
             }
-            return Ok(savingGoals);
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("goals")]

@@ -5,11 +5,11 @@ import { getDeposits, getMonthlyDepositsSummary } from "../../services/Deposits"
 import { getSavingGoalsByUserId } from "../../services/Goal";
 import { getWalletByUserId, updateBalance } from "../../services/Wallet";
 
-import NavBar from "./NavBar";
-import SummaryMain from "./SummaryMain";
-import MonthlyChart from "./MonthlyChart";
-import WalletCard from "./WalletCard";
-import GoalCard from "./GoalCard";
+import NavBar from "../Components/NavBar";
+import SummaryMain from "../Components/SummaryMain";
+import MonthlyChart from "../Components/MonthlyChart";
+import WalletCard from "../Components/WalletCard";
+import GoalsList from "../Components/GoalsList";
 
 function HomePage() {
   const { user } = useContext(AuthContext);
@@ -20,6 +20,8 @@ function HomePage() {
 
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [goalsLoading, setGoalsLoading] = useState(false);
+  const [sortBy, setSortBy] = useState("newest");
 
   // MAIN DATA FETCH
   useEffect(() => {
@@ -27,14 +29,12 @@ function HomePage() {
       if (!user?.id) return;
 
       try {
-        const [depositsRes, goalsRes, walletRes] = await Promise.all([
+        const [depositsRes, walletRes] = await Promise.all([
           getDeposits(),
-          getSavingGoalsByUserId(user.id),
           getWalletByUserId(user.id),
         ]);
 
         setDeposits(depositsRes.data);
-        setGoals(goalsRes.data ?? goalsRes);
         setWallet(walletRes);
 
         // setNewBalance(walletRes.totalBalance);
@@ -47,6 +47,24 @@ function HomePage() {
 
     fetchData();
   }, [user]);
+
+  useEffect(() => {
+    const fetchSortedGoals = async () => {
+      if (!user?.id) return;
+
+      try {
+        setGoalsLoading(true);
+        const goalsRes = await getSavingGoalsByUserId(user.id, sortBy);
+        setGoals(goalsRes.data ?? goalsRes);
+      } catch (error) {
+        console.error("Failed to fetch sorted goals:", error);
+      } finally {
+        setGoalsLoading(false);
+      }
+    };
+
+    fetchSortedGoals();
+  }, [sortBy, user]);
 
   // MONTHLY CHART DATA
   useEffect(() => {
@@ -71,7 +89,7 @@ function HomePage() {
   const activeGoalsCount = goals.filter((g) => g.status === 0).length;
   const completedGoalsCount = goals.filter((g) => g.status !== 0).length;
 
-  if (loading) {
+  if (loading || (goalsLoading && goals.length === 0)) {
     return <p>Loading...</p>;
   }
 
@@ -99,16 +117,12 @@ function HomePage() {
 
         <MonthlyChart data={monthlyData} />
 
-        <div className="flex flex-col gap-4 mt-6 px-4 pb-10">
-        <h2 className="text-xl font-bold text-white mb-2">Your goals</h2>
-        {goals.length === 0 ? (
-          <p className="text-gray-400">No saving goals found.</p>
-        ) : (
-          goals.map((goal) => (
-            <GoalCard key={goal.id} goal={goal} />
-          ))
-        )}
-      </div>
+        <GoalsList
+          goals={goals}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          loading={goalsLoading}
+        />
       </main>
     </>
   );

@@ -8,7 +8,11 @@ namespace MySavings.Services
     {
         private readonly ISavingGoalRepository _savingGoalRepository;
         private readonly IUserRepository _userRepository;
-        public SavingGoalService(ISavingGoalRepository savingGoalRepository, IUserRepository userRepository)
+
+        public SavingGoalService(
+            ISavingGoalRepository savingGoalRepository,
+            IUserRepository userRepository
+        )
         {
             _savingGoalRepository = savingGoalRepository;
             _userRepository = userRepository;
@@ -40,14 +44,9 @@ namespace MySavings.Services
             return goal;
         }
 
-        public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(int userId)
+        public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(int userId, string? sortBy)
         {
-            var goals = await _savingGoalRepository.GetByUserIdAsync(userId);
-
-            if (!goals.Any())
-                throw new ArgumentException("No saving goals found for this user.");
-
-            return goals;
+            return await _savingGoalRepository.GetByUserIdAsync(userId, sortBy);
         }
 
         public async Task<bool> UpdateAsync(SavingGoal savingGoal)
@@ -69,8 +68,8 @@ namespace MySavings.Services
         }
 
         public async Task<IEnumerable<SavingGoal>> GetAllAsync()
-{
-    return await _savingGoalRepository.GetAllAsync();
-}
+        {
+            return await _savingGoalRepository.GetAllAsync();
+        }
     }
 }
