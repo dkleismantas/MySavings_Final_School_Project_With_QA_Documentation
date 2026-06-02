@@ -6,8 +6,3 @@ export const registerUser = async (formData) => {
   const response = await axios.post(`${API_URL}/api/User/create-user`, formData);
   return response;
 };
-
-export const loginUser = async (formData) => {
-  const response = await axios.post(`${API_URL}/api/Auth/login`, formData);
-  return response;
-}
