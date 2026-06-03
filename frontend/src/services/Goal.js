@@ -33,6 +33,13 @@ export const getSavingGoalsByUserId = async (userId, sortBy = "newest") => {
   }
 };
 
+export const getSavingGoalById = async (id) => {
+  const response = await axios.get(
+    `${API_URL}/api/SavingGoal/get-by-id/${id}`
+  );
+
+  return response;
+};
 export const getGoals = async () => {
   const token = localStorage.getItem("accessToken");
   const response = await axios.get(`${API_URL}/api/SavingGoal/goals`, {

@@ -62,6 +62,10 @@ builder.Services.AddScoped<ISavingGoalService, SavingGoalService>();
 
 builder.Services.AddScoped<IWalletRepository, WalletRepository>();
 builder.Services.AddScoped<IWalletService, WalletService>();
+
+builder.Services.AddScoped<IDepositRepository, DepositRepository>();
+builder.Services.AddScoped<IDepositService, DepositService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
