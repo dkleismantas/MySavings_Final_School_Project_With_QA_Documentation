@@ -3,7 +3,10 @@ import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const createGoal = async (data) => {
-  const response = await axios.post(`${API_URL}/api/SavingGoal/add-saving-goal`, data);
+  const response = await axios.post(
+    `${API_URL}/api/SavingGoal/add-saving-goal`,
+    data
+  );
   return response;
 };
 
@@ -28,6 +31,10 @@ export const getSavingGoalsByUserId = async (userId, filters = {}) => {
       params.append("name", filters.name.trim());
     }
 
+    if (filters.sortBy) {
+      params.append("sortBy", filters.sortBy);
+    }
+
     const queryString = params.toString();
 
     const response = await axios.get(
@@ -35,6 +42,10 @@ export const getSavingGoalsByUserId = async (userId, filters = {}) => {
         queryString ? `?${queryString}` : ""
       }`
     );
+
+    if (response.status === 204) {
+      return [];
+    }
 
     return response.data ?? [];
   } catch (error) {
@@ -45,6 +56,14 @@ export const getSavingGoalsByUserId = async (userId, filters = {}) => {
     console.error("Error fetching saving goals:", error);
     throw error;
   }
+};
+
+export const getSavingGoalById = async (id) => {
+  const response = await axios.get(
+    `${API_URL}/api/SavingGoal/get-by-id/${id}`
+  );
+
+  return response;
 };
 
 export const getGoals = async () => {

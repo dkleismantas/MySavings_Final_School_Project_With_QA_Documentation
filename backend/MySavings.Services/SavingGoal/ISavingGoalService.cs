@@ -12,7 +12,8 @@ namespace MySavings.Services
             SavingGoalStatus? status,
             DateTime? targetDateFrom,
             DateTime? targetDateTo,
-            string? name);
+            string? name,
+            string? sortBy);
 
         Task<IEnumerable<SavingGoal>> GetAllAsync();
 

@@ -1,15 +1,18 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
-import { getDeposits, getMonthlyDepositsSummary } from "../../services/Deposits";
+import {
+  getDeposits,
+  getMonthlyDepositsSummary,
+} from "../../services/Deposits";
 import { getSavingGoalsByUserId } from "../../services/Goal";
 import { getWalletByUserId, updateBalance } from "../../services/Wallet";
 
-import NavBar from "./NavBar";
-import SummaryMain from "./SummaryMain";
-import MonthlyChart from "./MonthlyChart";
-import WalletCard from "./WalletCard";
-import GoalCard from "./GoalCard";
+import NavBar from "../Components/NavBar";
+import SummaryMain from "../Components/SummaryMain";
+import MonthlyChart from "../Components/MonthlyChart";
+import WalletCard from "../Components/WalletCard";
+import GoalsList from "../Components/GoalsList";
 
 function HomePage() {
   const { user } = useContext(AuthContext);
@@ -30,6 +33,8 @@ function HomePage() {
 
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [goalsLoading, setGoalsLoading] = useState(false);
+  const [sortBy, setSortBy] = useState("newest");
 
   // MAIN DATA FETCH
   useEffect(() => {
@@ -37,14 +42,12 @@ function HomePage() {
       if (!user?.id) return;
 
       try {
-        const [depositsRes, goalsRes, walletRes] = await Promise.all([
+        const [depositsRes, walletRes] = await Promise.all([
           getDeposits(),
-          getSavingGoalsByUserId(user.id, goalFilters),
           getWalletByUserId(user.id),
         ]);
 
         setDeposits(depositsRes.data);
-        setGoals(goalsRes.data ?? goalsRes);
         setWallet(walletRes);
 
         // setNewBalance(walletRes.totalBalance);
@@ -56,7 +59,28 @@ function HomePage() {
     };
 
     fetchData();
-  }, [user?.id, goalFilters]);
+  }, [user?.id]);
+
+  useEffect(() => {
+    const fetchSortedGoals = async () => {
+      if (!user?.id) return;
+
+      try {
+        setGoalsLoading(true);
+        const goalsRes = await getSavingGoalsByUserId(user.id, {
+          ...goalFilters,
+          sortBy,
+        });
+        setGoals(goalsRes.data ?? goalsRes);
+      } catch (error) {
+        console.error("Failed to fetch sorted goals:", error);
+      } finally {
+        setGoalsLoading(false);
+      }
+    };
+
+    fetchSortedGoals();
+  }, [user?.id, goalFilters, sortBy]);
 
   // MONTHLY CHART DATA
   useEffect(() => {
@@ -73,10 +97,10 @@ function HomePage() {
   }, []);
 
   const handleGoalFilterChange = (name, value) => {
-  setGoalFilters((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
+    setGoalFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const clearGoalFilters = () => {
@@ -86,13 +110,13 @@ function HomePage() {
   // STATS
   const totalSavings = deposits.reduce(
     (sum, deposit) => sum + deposit.amount,
-    0
+    0,
   );
 
   const activeGoalsCount = goals.filter((g) => g.status === 0).length;
   const completedGoalsCount = goals.filter((g) => g.status !== 0).length;
 
-  if (loading) {
+  if (loading || (goalsLoading && goals.length === 0)) {
     return <p>Loading...</p>;
   }
 
@@ -113,73 +137,22 @@ function HomePage() {
         />
 
         <SummaryMain
-  totalSavings={totalSavings}
-  activeCount={activeGoalsCount}
-  completedCount={completedGoalsCount}
-/>
+          totalSavings={totalSavings}
+          activeCount={activeGoalsCount}
+          completedCount={completedGoalsCount}
+        />
 
-<section style={{ margin: "20px 0" }}>
-  <h2>Tikslų filtravimas</h2>
-
-  <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-    <input
-      type="text"
-      placeholder="Ieškoti pagal pavadinimą"
-      value={goalFilters.name}
-      onChange={(e) => handleGoalFilterChange("name", e.target.value)}
-    />
-
-    <select
-      value={goalFilters.status}
-      onChange={(e) => handleGoalFilterChange("status", e.target.value)}
-    >
-    <option value="">Visi statusai</option>
-    <option value="0">Active</option>
-    <option value="1">Completed</option>
-    <option value="2">Paused</option>
-    <option value="3">Cancelled</option>
-    </select>
-
-    <input
-      type="date"
-      value={goalFilters.targetDateFrom}
-      onChange={(e) =>
-        handleGoalFilterChange("targetDateFrom", e.target.value)
-      }
-    />
-
-    <input
-      type="date"
-      value={goalFilters.targetDateTo}
-      onChange={(e) =>
-        handleGoalFilterChange("targetDateTo", e.target.value)
-      }
-    />
-
-    <button type="button" onClick={clearGoalFilters}>
-      Išvalyti filtrus
-    </button>
-  </div>
-  <ul>
-  {goals.map((goal) => (
-    <li key={goal.id}>
-      {goal.title} — {goal.status} — {goal.targetDate}
-    </li>
-  ))}
-</ul>
-</section>
         <MonthlyChart data={monthlyData} />
 
-        <div className="flex flex-col gap-4 mt-6 px-4 pb-10">
-        <h2 className="text-xl font-bold text-white mb-2">Your goals</h2>
-        {goals.length === 0 ? (
-          <p className="text-gray-400">No saving goals found.</p>
-        ) : (
-          goals.map((goal) => (
-            <GoalCard key={goal.id} goal={goal} />
-          ))
-        )}
-      </div>
+        <GoalsList
+          goals={goals}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          loading={goalsLoading}
+          filters={goalFilters}
+          onFilterChange={handleGoalFilterChange}
+          onClearFilters={clearGoalFilters}
+        />
       </main>
     </>
   );

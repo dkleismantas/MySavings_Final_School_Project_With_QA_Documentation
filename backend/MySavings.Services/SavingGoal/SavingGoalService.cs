@@ -8,7 +8,11 @@ namespace MySavings.Services
     {
         private readonly ISavingGoalRepository _savingGoalRepository;
         private readonly IUserRepository _userRepository;
-        public SavingGoalService(ISavingGoalRepository savingGoalRepository, IUserRepository userRepository)
+
+        public SavingGoalService(
+            ISavingGoalRepository savingGoalRepository,
+            IUserRepository userRepository
+        )
         {
             _savingGoalRepository = savingGoalRepository;
             _userRepository = userRepository;
@@ -40,19 +44,31 @@ namespace MySavings.Services
             return goal;
         }
 
+        public async Task<SavingGoal> GetByIdAsync(int savingGoalId)
+        {
+            var goal = await _savingGoalRepository.GetByIdAsync(savingGoalId);
+
+            if (goal == null)
+                throw new ArgumentException("Saving goal not found.");
+
+            return goal;
+        }
+
         public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(
             int userId,
             SavingGoalStatus? status,
             DateTime? targetDateFrom,
             DateTime? targetDateTo,
-            string? name)
+            string? name,
+            string? sortBy)
         {
-        return await _savingGoalRepository.GetByUserIdAsync(
-        userId,
-        status,
-        targetDateFrom,
-        targetDateTo,
-        name);
+            return await _savingGoalRepository.GetByUserIdAsync(
+                userId,
+                status,
+                targetDateFrom,
+                targetDateTo,
+                name,
+                sortBy);
         }
 
         public async Task<bool> UpdateAsync(SavingGoal savingGoal)
@@ -74,8 +90,8 @@ namespace MySavings.Services
         }
 
         public async Task<IEnumerable<SavingGoal>> GetAllAsync()
-{
-    return await _savingGoalRepository.GetAllAsync();
-}
+        {
+            return await _savingGoalRepository.GetAllAsync();
+        }
     }
 }

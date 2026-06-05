@@ -1,9 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MySavings.Services;
 using MySavings.API.Models.SavingGoal;
 using MySavings.Entities;
-using Microsoft.AspNetCore.Authorization;
-
+using MySavings.Services;
 
 namespace MySavings.API.Controllers
 {
@@ -18,20 +17,23 @@ namespace MySavings.API.Controllers
         }
 
         [HttpPost("add-saving-goal")]
-        public async Task<IActionResult> AddAsync([FromBody]
-            CreateSavingGoalRequest createSavingGoal)
+        public async Task<IActionResult> AddAsync(
+            [FromBody] CreateSavingGoalRequest createSavingGoal
+        )
         {
             try
             {
-                var savingGoalId = await savingGoalService.AddAsync(new MySavings.Entities.SavingGoal
-                {
-                    Title = createSavingGoal.Title,
-                    TargetAmount = createSavingGoal.TargetAmount,
-                    CurrentAmount = 0, //createSavingGoal.CurrentAmount,
-                    UserId = createSavingGoal.UserId,
-                    TargetDate = createSavingGoal.TargetDate,
-                    Status = SavingGoalStatus.Active
-                });
+                var savingGoalId = await savingGoalService.AddAsync(
+                    new MySavings.Entities.SavingGoal
+                    {
+                        Title = createSavingGoal.Title,
+                        TargetAmount = createSavingGoal.TargetAmount,
+                        CurrentAmount = 0,
+                        UserId = createSavingGoal.UserId,
+                        TargetDate = createSavingGoal.TargetDate,
+                        Status = SavingGoalStatus.Active,
+                    }
+                );
                 return Created("/", savingGoalId);
             }
             catch (ArgumentException ex)
@@ -40,69 +42,85 @@ namespace MySavings.API.Controllers
             }
         }
 
-      
         [HttpGet("get-by-id/{savingGoalId}")]
         public async Task<IActionResult> GetByIdAsync(int savingGoalId)
         {
             var savingGoal = await savingGoalService.GetByIdAsync(savingGoalId);
             if (savingGoal == null)
-            {
                 return NotFound();
-            }
+
             return Ok(savingGoal);
         }
 
-         [HttpGet("get-saving-goals/{userId}")]
+
+        [HttpGet("get-saving-goals/{userId}")]
         public async Task<IActionResult> GetByUserIdAsync(
         int userId,
         [FromQuery] SavingGoalStatus? status,
         [FromQuery] DateTime? targetDateFrom,
         [FromQuery] DateTime? targetDateTo,
-        [FromQuery] string? name)
+        [FromQuery] string? name,
+        [FromQuery] string? sortBy)
         {
-            var savingGoals = await savingGoalService.GetByUserIdAsync(
-        userId,
-        status,
-        targetDateFrom,
-        targetDateTo,
-        name);
+            try
+            {
+                var savingGoals = await savingGoalService.GetByUserIdAsync(
+                    userId,
+                    status,
+                    targetDateFrom,
+                    targetDateTo,
+                    name,
+                    sortBy);
 
-        return Ok(savingGoals);
+                if (savingGoals == null || !savingGoals.Any())
+                {
+                    return NoContent();
+                }
+
+                return Ok(savingGoals);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
+
 
         [HttpGet("goals")]
         [Authorize(Policy = "userOnly")]
         public async Task<IActionResult> GetGoalsAsync()
         {
             var userIdClaim = User.FindFirst("Id");
-        if (userIdClaim == null)
-        return Unauthorized();
+            if (userIdClaim == null)
+                return Unauthorized();
 
             var userId = int.Parse(userIdClaim.Value);
+
             var savingGoals = await savingGoalService.GetByUserIdAsync(
-                userId,
-                null,
-                null,
-                null,
-                null);
+            userId,
+              null,
+              null,
+              null,
+              null,
+              null);
 
-        if (savingGoals == null || !savingGoals.Any())
-        return Ok(new List<object>());
+            if (savingGoals == null || !savingGoals.Any())
+                return Ok(new List<object>());
 
-        return Ok(savingGoals);
+            return Ok(savingGoals);
         }
 
-
         [HttpPut("update-saving-goal")]
-        public async Task<IActionResult> UpdateAsync([FromBody] UpdateSavingGoalRequest updateSavingGoal)
+        public async Task<IActionResult> UpdateAsync(
+            [FromBody] UpdateSavingGoalRequest updateSavingGoal
+        )
         {
             try
             {
                 var savingGoal = await savingGoalService.GetByIdAsync(updateSavingGoal.Id);
                 if (savingGoal == null)
-                {
                     return NotFound();
-                }
 
                 savingGoal.Title = updateSavingGoal.Title;
                 savingGoal.TargetAmount = updateSavingGoal.TargetAmount;
@@ -124,9 +142,8 @@ namespace MySavings.API.Controllers
             {
                 var result = await savingGoalService.DeleteAsync(savingGoalId);
                 if (!result)
-                {
                     return NotFound();
-                }
+
                 return Ok();
             }
             catch (ArgumentException ex)
@@ -135,5 +152,4 @@ namespace MySavings.API.Controllers
             }
         }
     }
-
 }
