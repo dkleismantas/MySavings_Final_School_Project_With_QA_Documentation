@@ -1,52 +1,26 @@
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
-// GET wallet by userId
-export const getWalletByUserId = async (userId) => {
-  const response = await axios.get(
-    `${API_URL}/api/wallet/${userId}`
-  );
-
+export const getWalletByUserId = async () => {
+  const response = await axiosInstance.get("/api/wallet");
   return response.data;
 };
 
-// CREATE wallet
 export const createWallet = async (walletData) => {
-  const response = await axios.post(
-    `${API_URL}/api/wallet/create`,
-    walletData
-  );
-
+  const response = await axiosInstance.post("/api/wallet/create", walletData);
   return response.data;
 };
 
-// ADD balance
 export const addBalance = async (walletData) => {
-  const response = await axios.post(
-    `${API_URL}/api/wallet/add`,
-    walletData
-  );
-
+  const response = await axiosInstance.post("/api/wallet/add", walletData);
   return response.data;
 };
 
-// SUBTRACT balance
 export const subtractBalance = async (walletData) => {
-  const response = await axios.post(
-    `${API_URL}/api/wallet/subtract`,
-    walletData
-  );
-
+  const response = await axiosInstance.post("/api/wallet/subtract", walletData);
   return response.data;
 };
 
-// UPDATE balance
 export const updateBalance = async (walletData) => {
-  const response = await axios.put(
-    `${API_URL}/api/wallet/update`,
-    walletData
-  );
-
+  const response = await axiosInstance.put("/api/wallet/update", walletData);
   return response.data;
 };
