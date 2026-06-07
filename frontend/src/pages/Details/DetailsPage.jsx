@@ -30,8 +30,8 @@ function DetailsPage() {
         ]);
 
         if (!cancelled) {
-          setGoal(goalRes.data);
-          setDeposits(depositsRes.data);
+          setGoal(goalRes);
+          setDeposits(depositsRes);
         }
       } catch (error) {
         console.error("Failed to load goal data:", error);

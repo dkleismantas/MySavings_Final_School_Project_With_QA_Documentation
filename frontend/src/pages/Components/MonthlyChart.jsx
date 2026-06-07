@@ -20,6 +20,16 @@ ChartJS.register(
 );
 
 const MonthlyChart = ({ data }) => {
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="card bg-base-100 shadow p-4">
+        <h2 className="text-lg font-bold mb-4">Monthly deposits</h2>
+        <p className="text-base-content/50 text-sm">No deposit data yet.</p>
+      </div>
+    );
+  }
+
   const chartData = {
     labels: data.map((item) => item.month),
     datasets: [
@@ -33,6 +43,7 @@ const MonthlyChart = ({ data }) => {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: false,
