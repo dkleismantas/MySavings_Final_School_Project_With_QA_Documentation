@@ -44,9 +44,21 @@ namespace MySavings.Services
             return goal;
         }
 
-        public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(int userId, string? sortBy)
+        public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(
+            int userId,
+            SavingGoalStatus? status,
+            DateTime? targetDateFrom,
+            DateTime? targetDateTo,
+            string? name,
+            string? sortBy)
         {
-            return await _savingGoalRepository.GetByUserIdAsync(userId, sortBy);
+            return await _savingGoalRepository.GetByUserIdAsync(
+                userId,
+                status,
+                targetDateFrom,
+                targetDateTo,
+                name,
+                sortBy);
         }
 
         public async Task<bool> UpdateAsync(SavingGoal savingGoal)

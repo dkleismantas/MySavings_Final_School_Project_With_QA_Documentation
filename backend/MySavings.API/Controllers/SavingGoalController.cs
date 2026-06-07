@@ -52,14 +52,30 @@ namespace MySavings.API.Controllers
             return Ok(savingGoal);
         }
 
+
         [HttpGet("get-saving-goals/{userId}")]
-        public async Task<IActionResult> GetByUserIdAsync(int userId, [FromQuery] string? sortBy)
+        public async Task<IActionResult> GetByUserIdAsync(
+        int userId,
+        [FromQuery] SavingGoalStatus? status,
+        [FromQuery] DateTime? targetDateFrom,
+        [FromQuery] DateTime? targetDateTo,
+        [FromQuery] string? name,
+        [FromQuery] string? sortBy)
         {
             try
             {
-                var savingGoals = await savingGoalService.GetByUserIdAsync(userId, sortBy);
+                var savingGoals = await savingGoalService.GetByUserIdAsync(
+                    userId,
+                    status,
+                    targetDateFrom,
+                    targetDateTo,
+                    name,
+                    sortBy);
+
                 if (savingGoals == null || !savingGoals.Any())
+                {
                     return NoContent();
+                }
 
                 return Ok(savingGoals);
             }
@@ -68,6 +84,8 @@ namespace MySavings.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
 
         [HttpGet("goals")]
         [Authorize(Policy = "userOnly")]
@@ -78,7 +96,14 @@ namespace MySavings.API.Controllers
                 return Unauthorized();
 
             var userId = int.Parse(userIdClaim.Value);
-            var savingGoals = await savingGoalService.GetByUserIdAsync(userId, sortBy: null);
+
+            var savingGoals = await savingGoalService.GetByUserIdAsync(
+            userId,
+              null,
+              null,
+              null,
+              null,
+              null);
 
             if (savingGoals == null || !savingGoals.Any())
                 return Ok(new List<object>());

@@ -1,7 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
-import { getDeposits, getMonthlyDepositsSummary } from "../../services/Deposits";
+import {
+  getDeposits,
+  getMonthlyDepositsSummary,
+} from "../../services/Deposits";
 import { getSavingGoalsByUserId } from "../../services/Goal";
 import { getWalletByUserId, updateBalance } from "../../services/Wallet";
 
@@ -16,6 +19,16 @@ function HomePage() {
 
   const [deposits, setDeposits] = useState([]);
   const [goals, setGoals] = useState([]);
+
+  const defaultGoalFilters = {
+    status: "",
+    targetDateFrom: "",
+    targetDateTo: "",
+    name: "",
+  };
+
+  const [goalFilters, setGoalFilters] = useState(defaultGoalFilters);
+
   const [wallet, setWallet] = useState(null);
 
   const [monthlyData, setMonthlyData] = useState([]);
@@ -46,7 +59,7 @@ function HomePage() {
     };
 
     fetchData();
-  }, [user]);
+  }, [user?.id]);
 
   useEffect(() => {
     const fetchSortedGoals = async () => {
@@ -54,7 +67,10 @@ function HomePage() {
 
       try {
         setGoalsLoading(true);
-        const goalsRes = await getSavingGoalsByUserId(user.id, sortBy);
+        const goalsRes = await getSavingGoalsByUserId(user.id, {
+          ...goalFilters,
+          sortBy,
+        });
         setGoals(goalsRes.data ?? goalsRes);
       } catch (error) {
         console.error("Failed to fetch sorted goals:", error);
@@ -64,7 +80,7 @@ function HomePage() {
     };
 
     fetchSortedGoals();
-  }, [sortBy, user]);
+  }, [user?.id, goalFilters, sortBy]);
 
   // MONTHLY CHART DATA
   useEffect(() => {
@@ -80,10 +96,21 @@ function HomePage() {
     fetchMonthly();
   }, []);
 
+  const handleGoalFilterChange = (name, value) => {
+    setGoalFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const clearGoalFilters = () => {
+    setGoalFilters(defaultGoalFilters);
+  };
+
   // STATS
   const totalSavings = deposits.reduce(
     (sum, deposit) => sum + deposit.amount,
-    0
+    0,
   );
 
   const activeGoalsCount = goals.filter((g) => g.status === 0).length;
@@ -122,6 +149,9 @@ function HomePage() {
           sortBy={sortBy}
           onSortChange={setSortBy}
           loading={goalsLoading}
+          filters={goalFilters}
+          onFilterChange={handleGoalFilterChange}
+          onClearFilters={clearGoalFilters}
         />
       </main>
     </>
