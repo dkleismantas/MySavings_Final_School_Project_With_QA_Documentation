@@ -22,10 +22,15 @@ namespace MySavings.Services
 
         public async Task<Wallet> CreateWalletAsync(int userId, decimal initialBalance)
         {
-            var exists = await _walletRepository.ExistsByUserIdAsync(userId);
+            if (initialBalance <= 0)
+                throw new ArgumentException(
+                    "InitialBalance must be greater than 0.",
+                    nameof(initialBalance)
+                );
 
+            var exists = await _walletRepository.ExistsByUserIdAsync(userId);
             if (exists)
-                throw new Exception("Wallet already exists for this user.");
+                throw new InvalidOperationException("Wallet already exists for this user.");
 
             var wallet = new Wallet
             {
@@ -44,11 +49,11 @@ namespace MySavings.Services
         public async Task<Wallet> AddBalanceAsync(int userId, decimal amount)
         {
             if (amount <= 0)
-                throw new Exception("Amount must be greater than 0.");
+                throw new ArgumentException("Amount must be greater than 0.", nameof(amount));
 
             var wallet =
                 await _walletRepository.GetByUserIdAsync(userId)
-                ?? throw new Exception("Wallet not found.");
+                ?? throw new KeyNotFoundException("Wallet not found.");
 
             wallet.TotalBalance += amount;
             wallet.UpdatedAt = DateTime.UtcNow;
@@ -62,14 +67,14 @@ namespace MySavings.Services
         public async Task<Wallet> SubtractBalanceAsync(int userId, decimal amount)
         {
             if (amount <= 0)
-                throw new Exception("Amount must be greater than 0.");
+                throw new ArgumentException("Amount must be greater than 0.", nameof(amount));
 
             var wallet =
                 await _walletRepository.GetByUserIdAsync(userId)
-                ?? throw new Exception("Wallet not found.");
+                ?? throw new KeyNotFoundException("Wallet not found.");
 
             if (wallet.TotalBalance < amount)
-                throw new Exception("Insufficient balance.");
+                throw new InvalidOperationException("Insufficient balance.");
 
             wallet.TotalBalance -= amount;
             wallet.UpdatedAt = DateTime.UtcNow;
@@ -82,9 +87,15 @@ namespace MySavings.Services
 
         public async Task<Wallet> UpdateBalanceAsync(int userId, decimal newBalance)
         {
+            if (newBalance <= 0)
+                throw new ArgumentException(
+                    "NewBalance must be greater than 0.",
+                    nameof(newBalance)
+                );
+
             var wallet =
                 await _walletRepository.GetByUserIdAsync(userId)
-                ?? throw new Exception("Wallet not found.");
+                ?? throw new KeyNotFoundException("Wallet not found.");
 
             wallet.TotalBalance = newBalance;
             wallet.UpdatedAt = DateTime.UtcNow;
