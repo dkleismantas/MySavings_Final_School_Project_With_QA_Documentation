@@ -1,5 +1,6 @@
 //import reikalingas gauti vartotojo informacija ir prisijungimo statusa
 import { useAuth } from "../../hooks/useAuth";
+import { Link } from "react-router-dom";
 
 function NavBar() {
   //autentifikavimo hook, su userio informacijos propsais
@@ -9,7 +10,9 @@ function NavBar() {
   return (
     <div className="navbar bg-base-200">
       <div className="ps-4">
-        <a className="text-lg font-bold">MySavings</a>
+        <Link to="/" className="text-lg font-bold hover:opacity-70">
+          MySavings
+        </Link>
       </div>
       <div className="flex grow justify-end px-2">
         <div className="flex items-center justify-center">
