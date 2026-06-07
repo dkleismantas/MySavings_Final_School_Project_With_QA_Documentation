@@ -43,6 +43,19 @@ builder
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
             ),
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("Token validated successfully");
+                return Task.CompletedTask;
+            },
+        };
     });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -76,6 +89,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -86,8 +100,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors();
-app.UseCors();
 app.MapControllers();
 
 // Auto migrate db
