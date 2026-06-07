@@ -171,6 +171,7 @@ namespace MySavings.API.Controllers
                 savingGoal.Title = updateSavingGoal.Title;
                 savingGoal.TargetAmount = updateSavingGoal.TargetAmount;
                 savingGoal.CurrentAmount = updateSavingGoal.CurrentAmount;
+                savingGoal.TargetDate = updateSavingGoal.TargetDate;
 
                 await savingGoalService.UpdateAsync(savingGoal);
                 return Ok(savingGoal);
