@@ -87,6 +87,7 @@ app.UseExceptionHandler(errorApp =>
         {
             ArgumentException ex => (400, ex.Message),
             KeyNotFoundException ex => (404, ex.Message),
+            UnauthorizedAccessException ex => (403, ex.Message),
             InvalidOperationException ex => (409, ex.Message),
             _ => (500, "An unexpected error occurred."),
         };
