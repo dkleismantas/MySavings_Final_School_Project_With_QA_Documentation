@@ -9,16 +9,15 @@ const getClaimsFromToken = (token) => {
     const decoded = jwtDecode(token);
     return {
       loggedIn: true,
-      id: decoded.Id,
-      username: decoded.Username,
-      email: decoded.Email,
-      role: decoded.Role,
+      id: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
+      username: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+      email: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
+      role: decoded.Role, 
     };
   } catch {
     return null;
   }
 };
-
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const token = localStorage.getItem("accessToken");

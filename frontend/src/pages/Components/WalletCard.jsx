@@ -4,14 +4,35 @@ function WalletCard({ wallet, onUpdate }) {
   const [editing, setEditing] = useState(false);
   const [newBalance, setNewBalance] = useState(wallet?.totalBalance || 0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSave = async () => {
+    const parsed = Number(newBalance);
+
+    if (isNaN(parsed) || parsed <= 0) {
+      setError("Balance must be a number greater than 0.");
+      return;
+    }
+
+    setError("");
     setLoading(true);
 
-    await onUpdate(Number(newBalance));
+    try {
+      await onUpdate(parsed);
+      setEditing(false);
+    } catch (err) {
+      const message =
+        err?.response?.data?.error ?? "Something went wrong. Please try again.";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    setLoading(false);
+  const handleCancel = () => {
     setEditing(false);
+    setError("");
+    setNewBalance(wallet?.totalBalance || 0); 
   };
 
   return (
@@ -21,9 +42,7 @@ function WalletCard({ wallet, onUpdate }) {
 
         {!editing ? (
           <>
-            <p className="text-3xl font-bold">
-              {wallet?.totalBalance ?? 0} €
-            </p>
+            <p className="text-3xl font-bold">{wallet?.totalBalance ?? 0} €</p>
 
             <div className="card-actions justify-end">
               <button
@@ -38,10 +57,16 @@ function WalletCard({ wallet, onUpdate }) {
           <>
             <input
               type="number"
-              className="input input-bordered w-full"
+              className={`input input-bordered w-full ${error ? "input-error" : ""}`}
               value={newBalance}
-              onChange={(e) => setNewBalance(e.target.value)}
+              onChange={(e) => {
+                setNewBalance(e.target.value);
+                setError(""); 
+              }}
             />
+
+            {/* ✅ Inline error message */}
+            {error && <p className="text-error text-sm mt-1">{error}</p>}
 
             <div className="flex gap-2 justify-end mt-4">
               <button
@@ -54,7 +79,7 @@ function WalletCard({ wallet, onUpdate }) {
 
               <button
                 className="btn btn-ghost btn-sm"
-                onClick={() => setEditing(false)}
+                onClick={handleCancel}
                 disabled={loading}
               >
                 Cancel

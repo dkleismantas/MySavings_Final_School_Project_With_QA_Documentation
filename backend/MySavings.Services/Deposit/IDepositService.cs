@@ -5,13 +5,17 @@ namespace MySavings.Services
 {
     public interface IDepositService
     {
-        Task<Deposit> CreateDepositAsync(int savingGoalId, decimal amount, string? note);
+        Task<Deposit> CreateDepositAsync(
+            int userId,
+            int savingGoalId,
+            decimal amount,
+            string? note
+        );
 
-        Task<List<Deposit>> GetAllDepositsAsync();
+        Task<List<Deposit>> GetAllDepositsAsync(int userId);
 
-        Task<List<Deposit>> GetDepositsByGoalIdAsync(int goalId);
+        Task<List<Deposit>> GetDepositsByGoalIdAsync(int userId, int goalId);
 
-        Task<List<Deposit>> GetDepositsByUserIdAsync(int userId);
-        Task<List<MonthlyDepositSummaryResponse>> GetMonthlySummaryAsync();
+        Task<List<MonthlyDepositSummaryResponse>> GetMonthlySummaryAsync(int userId);
     }
 }

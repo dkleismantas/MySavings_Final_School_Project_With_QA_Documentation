@@ -35,22 +35,23 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
   const [goalsLoading, setGoalsLoading] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
+  const [refreshKey, setRefreshKey] = useState(0);
+
 
   // MAIN DATA FETCH
   useEffect(() => {
     const fetchData = async () => {
-      if (!user?.id) return;
+      if (!user) return;
 
       try {
         const [depositsRes, walletRes] = await Promise.all([
           getDeposits(),
-          getWalletByUserId(user.id),
+          getWalletByUserId(),
         ]);
 
-        setDeposits(depositsRes.data);
+        setDeposits(depositsRes);
         setWallet(walletRes);
 
-        // setNewBalance(walletRes.totalBalance);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -59,7 +60,7 @@ function HomePage() {
     };
 
     fetchData();
-  }, [user?.id]);
+  }, [user]);
 
   useEffect(() => {
     const fetchSortedGoals = async () => {
@@ -67,11 +68,8 @@ function HomePage() {
 
       try {
         setGoalsLoading(true);
-        const goalsRes = await getSavingGoalsByUserId(user.id, {
-          ...goalFilters,
-          sortBy,
-        });
-        setGoals(goalsRes.data ?? goalsRes);
+        const goalsRes = await getSavingGoalsByUserId({ ...goalFilters, sortBy });
+        setGoals(goalsRes);
       } catch (error) {
         console.error("Failed to fetch sorted goals:", error);
       } finally {
@@ -80,14 +78,14 @@ function HomePage() {
     };
 
     fetchSortedGoals();
-  }, [user?.id, goalFilters, sortBy]);
+  }, [user, goalFilters, sortBy, refreshKey]);
 
   // MONTHLY CHART DATA
   useEffect(() => {
     const fetchMonthly = async () => {
       try {
         const res = await getMonthlyDepositsSummary();
-        setMonthlyData(res.data);
+        setMonthlyData(res);
       } catch (err) {
         console.error(err);
       }
@@ -122,17 +120,13 @@ function HomePage() {
 
   return (
     <>
-      <NavBar />
+      <NavBar onGoalCreated={() => setRefreshKey((k) => k + 1)}/>
       <main>
         <WalletCard
           wallet={wallet}
           onUpdate={async (newBalance) => {
-            const updated = await updateBalance({
-              userId: user.id,
-              newBalance,
-            });
-
-            setWallet(updated.data ?? updated);
+            const updated = await updateBalance({ newBalance });
+            setWallet(updated);
           }}
         />
 

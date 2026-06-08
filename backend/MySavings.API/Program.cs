@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -76,6 +77,27 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+
+        (int status, string message) = exception switch
+        {
+            ArgumentException ex => (400, ex.Message),
+            KeyNotFoundException ex => (404, ex.Message),
+            UnauthorizedAccessException ex => (403, ex.Message),
+            InvalidOperationException ex => (409, ex.Message),
+            _ => (500, "An unexpected error occurred."),
+        };
+
+        context.Response.StatusCode = status;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(new { error = message });
+    });
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -86,7 +108,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors();
 app.UseCors();
 app.MapControllers();
 
