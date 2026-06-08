@@ -94,7 +94,7 @@ namespace MySavings.API.Controllers
 
             savingGoal.Title = request.Title;
             savingGoal.TargetAmount = request.TargetAmount;
-            savingGoal.CurrentAmount = request.CurrentAmount;
+            savingGoal.TargetDate = request.TargetDate;
 
             await _savingGoalService.UpdateAsync(savingGoal);
             return Ok(savingGoal);

@@ -6,10 +6,8 @@ namespace MySavings.Services.Tests
 {
     public class SavingGoalServiceTests
     {
-        private readonly Mock<ISavingGoalRepository> savingGoalRepositoryMock =
-            new Mock<ISavingGoalRepository>();
-        private readonly Mock<IUserRepository> userRepositoryMock =
-            new Mock<IUserRepository>();
+        private readonly Mock<ISavingGoalRepository> savingGoalRepositoryMock = new();
+        private readonly Mock<IUserRepository> userRepositoryMock = new();
         private readonly SavingGoalService savingGoalService;
 
         public SavingGoalServiceTests()
@@ -39,14 +37,22 @@ namespace MySavings.Services.Tests
             };
 
             savingGoalRepositoryMock
-                .Setup(repository => repository.GetByUserIdAsync(userId, sortBy))
+                .Setup(repo => repo.GetByUserIdAsync(
+                    userId,
+                    null,
+                    null,
+                    null,
+                    null,
+                    sortBy))
                 .ReturnsAsync(expectedGoals);
 
-            var result = await savingGoalService.GetByUserIdAsync(userId, sortBy);
+            var result = await savingGoalService.GetByUserIdAsync(
+                userId, null, null, null, null, sortBy);
 
             Assert.Equal(expectedGoals, result);
             savingGoalRepositoryMock.Verify(
-                repository => repository.GetByUserIdAsync(userId, sortBy),
+                repo => repo.GetByUserIdAsync(
+                    userId, null, null, null, null, sortBy),
                 Times.Once
             );
         }
@@ -58,10 +64,12 @@ namespace MySavings.Services.Tests
             var expectedGoals = Enumerable.Empty<SavingGoal>();
 
             savingGoalRepositoryMock
-                .Setup(repository => repository.GetByUserIdAsync(userId, "newest"))
+                .Setup(repo => repo.GetByUserIdAsync(
+                    userId, null, null, null, null, "newest"))
                 .ReturnsAsync(expectedGoals);
 
-            var result = await savingGoalService.GetByUserIdAsync(userId, "newest");
+            var result = await savingGoalService.GetByUserIdAsync(
+                userId, null, null, null, null, "newest");
 
             Assert.Empty(result);
         }
