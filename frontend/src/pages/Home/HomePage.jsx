@@ -52,7 +52,6 @@ function HomePage() {
         setDeposits(depositsRes);
         setWallet(walletRes);
 
-        // setNewBalance(walletRes.totalBalance);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {

@@ -5,11 +5,6 @@ export const getWalletByUserId = async () => {
   return response.data;
 };
 
-export const addBalance = async (walletData) => {
-  const response = await axiosInstance.post("/api/wallet/add", walletData);
-  return response.data;
-};
-
 export const updateBalance = async (walletData) => {
   const response = await axiosInstance.put("/api/wallet/update", walletData);
   return response.data;

@@ -32,15 +32,6 @@ namespace MySavings.Controllers
             return Ok(wallet);
         }
 
-        // POST: api/wallet/add
-        [HttpPost("add")]
-        public async Task<IActionResult> AddBalance([FromBody] WalletAmountRequest request)
-        {
-            var wallet = await _walletService.AddBalanceAsync(GetUserId(), request.Amount);
-
-            return Ok(wallet);
-        }
-
         // PUT: api/wallet/update
         [HttpPut("update")]
         public async Task<IActionResult> UpdateBalance([FromBody] UpdateWalletRequest request)

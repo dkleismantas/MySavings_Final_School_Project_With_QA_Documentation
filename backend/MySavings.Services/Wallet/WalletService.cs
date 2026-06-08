@@ -20,24 +20,6 @@ namespace MySavings.Services
             return await _walletRepository.GetByUserIdAsync(userId);
         }
 
-        public async Task<Wallet> AddBalanceAsync(int userId, decimal amount)
-        {
-            if (amount <= 0)
-                throw new ArgumentException("Amount must be greater than 0.", nameof(amount));
-
-            var wallet =
-                await _walletRepository.GetByUserIdAsync(userId)
-                ?? throw new KeyNotFoundException("Wallet not found.");
-
-            wallet.TotalBalance += amount;
-            wallet.UpdatedAt = DateTime.UtcNow;
-
-            await _walletRepository.UpdateAsync(wallet);
-            await _context.SaveChangesAsync();
-
-            return wallet;
-        }
-
         public async Task<Wallet> UpdateBalanceAsync(int userId, decimal newBalance)
         {
             if (newBalance <= 0)
