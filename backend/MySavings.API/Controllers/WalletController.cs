@@ -32,32 +32,11 @@ namespace MySavings.Controllers
             return Ok(wallet);
         }
 
-        // POST: api/wallet/create
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateWallet([FromBody] CreateWalletRequest request)
-        {
-            var wallet = await _walletService.CreateWalletAsync(
-                GetUserId(),
-                request.InitialBalance
-            );
-
-            return Ok(wallet);
-        }
-
         // POST: api/wallet/add
         [HttpPost("add")]
         public async Task<IActionResult> AddBalance([FromBody] WalletAmountRequest request)
         {
             var wallet = await _walletService.AddBalanceAsync(GetUserId(), request.Amount);
-
-            return Ok(wallet);
-        }
-
-        // POST: api/wallet/subtract
-        [HttpPost("subtract")]
-        public async Task<IActionResult> SubtractBalance([FromBody] WalletAmountRequest request)
-        {
-            var wallet = await _walletService.SubtractBalanceAsync(GetUserId(), request.Amount);
 
             return Ok(wallet);
         }

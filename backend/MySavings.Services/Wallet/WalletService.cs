@@ -20,32 +20,6 @@ namespace MySavings.Services
             return await _walletRepository.GetByUserIdAsync(userId);
         }
 
-        public async Task<Wallet> CreateWalletAsync(int userId, decimal initialBalance)
-        {
-            if (initialBalance <= 0)
-                throw new ArgumentException(
-                    "InitialBalance must be greater than 0.",
-                    nameof(initialBalance)
-                );
-
-            var exists = await _walletRepository.ExistsByUserIdAsync(userId);
-            if (exists)
-                throw new InvalidOperationException("Wallet already exists for this user.");
-
-            var wallet = new Wallet
-            {
-                UserId = userId,
-                TotalBalance = initialBalance,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-            };
-
-            await _walletRepository.AddAsync(wallet);
-            await _context.SaveChangesAsync();
-
-            return wallet;
-        }
-
         public async Task<Wallet> AddBalanceAsync(int userId, decimal amount)
         {
             if (amount <= 0)
@@ -56,27 +30,6 @@ namespace MySavings.Services
                 ?? throw new KeyNotFoundException("Wallet not found.");
 
             wallet.TotalBalance += amount;
-            wallet.UpdatedAt = DateTime.UtcNow;
-
-            await _walletRepository.UpdateAsync(wallet);
-            await _context.SaveChangesAsync();
-
-            return wallet;
-        }
-
-        public async Task<Wallet> SubtractBalanceAsync(int userId, decimal amount)
-        {
-            if (amount <= 0)
-                throw new ArgumentException("Amount must be greater than 0.", nameof(amount));
-
-            var wallet =
-                await _walletRepository.GetByUserIdAsync(userId)
-                ?? throw new KeyNotFoundException("Wallet not found.");
-
-            if (wallet.TotalBalance < amount)
-                throw new InvalidOperationException("Insufficient balance.");
-
-            wallet.TotalBalance -= amount;
             wallet.UpdatedAt = DateTime.UtcNow;
 
             await _walletRepository.UpdateAsync(wallet);
