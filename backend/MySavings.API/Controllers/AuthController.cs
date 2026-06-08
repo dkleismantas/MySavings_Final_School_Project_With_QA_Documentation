@@ -1,4 +1,3 @@
-
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using MySavings.API.Models.Requests;
@@ -12,6 +11,7 @@ namespace MySavings.API.Controllers
     {
         private readonly TokenService tokenService;
         private readonly IUserService userService;
+
         public AuthController(TokenService tokenService, IUserService userService)
         {
             this.tokenService = tokenService;
@@ -26,10 +26,10 @@ namespace MySavings.API.Controllers
             {
                 var claims = new List<Claim>
                 {
-                    new Claim("Id", user.Id.ToString()),
-                    new Claim("Username", user.UserName),
-                    new Claim("Email", user.Email),
-                    new Claim("Role", user.Role ?? "user")
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim("Role", user.Role ?? "user"),
                 };
 
                 string accessToken = tokenService.GenerateAccessToken(claims);
@@ -40,7 +40,7 @@ namespace MySavings.API.Controllers
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.Strict,
-                    Expires = DateTime.UtcNow.AddDays(7)
+                    Expires = DateTime.UtcNow.AddDays(7),
                 };
 
                 Response.Cookies.Append("RefreshToken", refreshToken, cookieOptions);

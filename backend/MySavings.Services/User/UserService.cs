@@ -50,7 +50,7 @@ namespace MySavings.Services
 
             var wallet = new Wallet
             {
-                UserId = user.Id, // arba userId jei repo grąžina
+                UserId = userId,
                 TotalBalance = 0,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,

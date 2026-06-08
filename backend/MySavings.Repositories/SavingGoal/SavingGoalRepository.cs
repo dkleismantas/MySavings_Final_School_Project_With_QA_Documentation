@@ -25,9 +25,39 @@ namespace MySavings.Repositories
             return await dbContext.SavingGoals.FindAsync(savingGoalId);
         }
 
-        public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(int userId, string? sortBy)
+        public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(
+            int userId,
+            SavingGoalStatus? status,
+            DateTime? targetDateFrom,
+            DateTime? targetDateTo,
+            string? name,
+            string? sortBy)
         {
-            var query = dbContext.SavingGoals.Where(sg => sg.UserId == userId);
+            var query = dbContext.SavingGoals
+                .Where(sg => sg.UserId == userId)
+                .AsQueryable();
+
+            if (status.HasValue)
+            {
+                query = query.Where(sg => sg.Status == status.Value);
+            }
+
+            if (targetDateFrom.HasValue)
+            {
+                query = query.Where(sg => sg.TargetDate >= targetDateFrom.Value.Date);
+            }
+
+            if (targetDateTo.HasValue)
+            {
+                var toDate = targetDateTo.Value.Date.AddDays(1);
+                query = query.Where(sg => sg.TargetDate < toDate);
+            }
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                var searchName = name.Trim();
+                query = query.Where(sg => sg.Title.Contains(searchName));
+            }
 
             query = sortBy?.ToLowerInvariant() switch
             {
@@ -36,10 +66,15 @@ namespace MySavings.Repositories
                 "amount" => query.OrderByDescending(sg => sg.TargetAmount),
                 "progress" => query.OrderByDescending(sg =>
                     sg.TargetAmount > 0 ? sg.CurrentAmount / sg.TargetAmount : 0),
-                _ => throw new ArgumentException("Invalid sort parameter.")
+                _ => throw new ArgumentException("Invalid sort parameter."),
             };
 
             return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<SavingGoal>> GetAllAsync()
+        {
+            return await dbContext.SavingGoals.ToListAsync();
         }
 
         public async Task<bool> UpdateAsync(SavingGoal savingGoal)
@@ -51,20 +86,23 @@ namespace MySavings.Repositories
             {
                 return true;
             }
+
             return false;
         }
 
         public async Task<bool> DeleteAsync(int savingGoalId)
-{
-    var entity = await dbContext.SavingGoals.FindAsync(savingGoalId);
+        {
+            var entity = await dbContext.SavingGoals.FindAsync(savingGoalId);
 
-    if (entity == null)
-        return false;
+            if (entity == null)
+            {
+                return false;
+            }
 
-    dbContext.SavingGoals.Remove(entity);
-    await dbContext.SaveChangesAsync();
+            dbContext.SavingGoals.Remove(entity);
+            await dbContext.SaveChangesAsync();
 
-    return true;
-}
+            return true;
+        }
     }
 }

@@ -1,7 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
-import { getDeposits, getMonthlyDepositsSummary } from "../../services/Deposits";
+import {
+  getDeposits,
+  getMonthlyDepositsSummary,
+} from "../../services/Deposits";
 import { getSavingGoalsByUserId } from "../../services/Goal";
 import { getWalletByUserId, updateBalance } from "../../services/Wallet";
 
@@ -16,28 +19,39 @@ function HomePage() {
 
   const [deposits, setDeposits] = useState([]);
   const [goals, setGoals] = useState([]);
+
+  const defaultGoalFilters = {
+    status: "",
+    targetDateFrom: "",
+    targetDateTo: "",
+    name: "",
+  };
+
+  const [goalFilters, setGoalFilters] = useState(defaultGoalFilters);
+
   const [wallet, setWallet] = useState(null);
 
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [goalsLoading, setGoalsLoading] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
+  const [refreshKey, setRefreshKey] = useState(0);
+
 
   // MAIN DATA FETCH
   useEffect(() => {
     const fetchData = async () => {
-      if (!user?.id) return;
+      if (!user) return;
 
       try {
         const [depositsRes, walletRes] = await Promise.all([
           getDeposits(),
-          getWalletByUserId(user.id),
+          getWalletByUserId(),
         ]);
 
-        setDeposits(depositsRes.data);
+        setDeposits(depositsRes);
         setWallet(walletRes);
 
-        // setNewBalance(walletRes.totalBalance);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -54,8 +68,8 @@ function HomePage() {
 
       try {
         setGoalsLoading(true);
-        const goalsRes = await getSavingGoalsByUserId(user.id, sortBy);
-        setGoals(goalsRes.data ?? goalsRes);
+        const goalsRes = await getSavingGoalsByUserId({ ...goalFilters, sortBy });
+        setGoals(goalsRes);
       } catch (error) {
         console.error("Failed to fetch sorted goals:", error);
       } finally {
@@ -64,14 +78,14 @@ function HomePage() {
     };
 
     fetchSortedGoals();
-  }, [sortBy, user]);
+  }, [user, goalFilters, sortBy, refreshKey]);
 
   // MONTHLY CHART DATA
   useEffect(() => {
     const fetchMonthly = async () => {
       try {
         const res = await getMonthlyDepositsSummary();
-        setMonthlyData(res.data);
+        setMonthlyData(res);
       } catch (err) {
         console.error(err);
       }
@@ -80,10 +94,21 @@ function HomePage() {
     fetchMonthly();
   }, []);
 
+  const handleGoalFilterChange = (name, value) => {
+    setGoalFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const clearGoalFilters = () => {
+    setGoalFilters(defaultGoalFilters);
+  };
+
   // STATS
   const totalSavings = deposits.reduce(
     (sum, deposit) => sum + deposit.amount,
-    0
+    0,
   );
 
   const activeGoalsCount = goals.filter((g) => g.status === 0).length;
@@ -95,17 +120,13 @@ function HomePage() {
 
   return (
     <>
-      <NavBar />
+      <NavBar onGoalCreated={() => setRefreshKey((k) => k + 1)}/>
       <main>
         <WalletCard
           wallet={wallet}
           onUpdate={async (newBalance) => {
-            const updated = await updateBalance({
-              userId: user.id,
-              newBalance,
-            });
-
-            setWallet(updated.data ?? updated);
+            const updated = await updateBalance({ newBalance });
+            setWallet(updated);
           }}
         />
 
@@ -122,6 +143,9 @@ function HomePage() {
           sortBy={sortBy}
           onSortChange={setSortBy}
           loading={goalsLoading}
+          filters={goalFilters}
+          onFilterChange={handleGoalFilterChange}
+          onClearFilters={clearGoalFilters}
         />
       </main>
     </>

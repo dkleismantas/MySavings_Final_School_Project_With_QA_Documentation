@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import GoalCard from "./GoalCard";
+
 const sortOptions = [
   { value: "newest", label: "Newest" },
   { value: "deadline", label: "Deadline" },
@@ -5,86 +9,121 @@ const sortOptions = [
   { value: "progress", label: "Progress" },
 ];
 
-const formatDate = (date) =>
-  new Intl.DateTimeFormat("en-GB", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  }).format(new Date(date));
+const GoalsList = ({
+  goals,
+  sortBy,
+  onSortChange,
+  loading,
+  filters = {},
+  onFilterChange,
+  onClearFilters,
+}) => {
+  const navigate = useNavigate();
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
-const getProgress = (goal) => {
-  if (!goal.targetAmount || goal.targetAmount <= 0) {
-    return 0;
-  }
-
-  return Math.min(100, Math.round((goal.currentAmount / goal.targetAmount) * 100));
-};
-
-const GoalsList = ({ goals, sortBy, onSortChange, loading }) => {
   return (
-    <section className="mt-6">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-xl font-semibold">Saving goals</h2>
+    <section className="mx-auto mt-6 w-full max-w-md px-4 sm:max-w-3xl">
+      <div className="mb-5 space-y-4">
+        <h2 className="text-3xl font-bold tracking-normal">Saving goals</h2>
 
-        <label className="form-control w-full sm:w-56">
-          <span className="label-text mb-1">Sort by</span>
-          <select
-            className="select select-bordered w-full"
-            value={sortBy}
-            onChange={(event) => onSortChange(event.target.value)}
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            className="btn btn-outline rounded-full"
+            onClick={() => setIsFiltersOpen((prev) => !prev)}
           >
-            {sortOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+            Filters
+          </button>
+
+          <label className="relative">
+            <span className="sr-only">Sort by</span>
+            <select
+              className="select select-bordered h-12 w-full rounded-full text-center font-semibold"
+              value={sortBy}
+              onChange={(e) => onSortChange(e.target.value)}
+            >
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  Sort by {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        {isFiltersOpen && (
+          <div className="rounded-box border border-base-300 bg-base-100 p-4">
+            <div className="space-y-3">
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                placeholder="Search by name"
+                value={filters.name}
+                onChange={(e) => onFilterChange("name", e.target.value)}
+              />
+
+              <select
+                className="select select-bordered w-full"
+                value={filters.status}
+                onChange={(e) => onFilterChange("status", e.target.value)}
+              >
+                <option value="">All goals</option>
+                <option value="0">In progress</option>
+                <option value="1">Completed</option>
+                <option value="2">Paused</option>
+                <option value="3">Cancelled</option>
+              </select>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <input
+                  type="date"
+                  className="input input-bordered w-full"
+                  value={filters.targetDateFrom}
+                  onChange={(e) =>
+                    onFilterChange("targetDateFrom", e.target.value)
+                  }
+                />
+
+                <input
+                  type="date"
+                  className="input input-bordered w-full"
+                  value={filters.targetDateTo}
+                  onChange={(e) =>
+                    onFilterChange("targetDateTo", e.target.value)
+                  }
+                />
+              </div>
+
+              <button
+                type="button"
+                className="btn btn-ghost w-full"
+                onClick={onClearFilters}
+              >
+                Clear filters
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {loading ? (
-        <div className="py-8 text-center text-base-content/70">Loading goals...</div>
+        <div className="py-8 text-center text-base-content/70">
+          Loading goals...
+        </div>
       ) : goals.length === 0 ? (
         <div className="rounded-box border border-base-300 bg-base-100 p-6 text-base-content/70">
-          No saving goals yet.
+          No saving goals found.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-box border border-base-300 bg-base-100">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Goal</th>
-                <th>Deadline</th>
-                <th>Amount</th>
-                <th>Progress</th>
-              </tr>
-            </thead>
-            <tbody>
-              {goals.map((goal) => {
-                const progress = getProgress(goal);
-
-                return (
-                  <tr key={goal.id}>
-                    <td className="font-medium">{goal.title}</td>
-                    <td>{formatDate(goal.targetDate)}</td>
-                    <td>
-                      €{goal.currentAmount} / €{goal.targetAmount}
-                    </td>
-                    <td className="min-w-44">
-                      <div className="flex items-center gap-3">
-                        <progress
-                          className="progress progress-primary w-28"
-                          value={progress}
-                          max="100"
-                        />
-                        <span className="w-10 text-right text-sm">{progress}%</span>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="space-y-4">
+          {goals.map((goal, index) => (
+            <GoalCard
+              key={goal.id}
+              goal={goal}
+              isPrimary={index === 0}
+              onClick={() => navigate(`/details/${goal.id}`)}
+            />
+          ))}
         </div>
       )}
     </section>

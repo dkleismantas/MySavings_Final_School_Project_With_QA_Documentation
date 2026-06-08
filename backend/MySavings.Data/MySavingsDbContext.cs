@@ -8,6 +8,7 @@ namespace MySavings.Data
         public DbSet<User> Users { get; set; }
         public DbSet<SavingGoal> SavingGoals { get; set; }
         public DbSet<Wallet> Wallets => Set<Wallet>();
+        public DbSet<Deposit> Deposits { get; set; }
 
         public MySavingsDbContext(DbContextOptions<MySavingsDbContext> options)
             : base(options) { }
@@ -47,6 +48,19 @@ namespace MySavings.Data
                     .HasOne(w => w.User)
                     .WithOne()
                     .HasForeignKey<Wallet>(w => w.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Deposit>(o =>
+            {
+                o.ToTable("Deposits");
+                o.HasKey(d => d.Id);
+                o.Property(d => d.Amount).IsRequired().HasPrecision(18, 2);
+                o.Property(d => d.Note);
+                o.Property(d => d.CreatedAt).IsRequired();
+                o.HasOne(d => d.SavingGoal)
+                    .WithMany(g => g.Deposits)
+                    .HasForeignKey(d => d.SavingGoalId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
         }
