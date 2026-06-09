@@ -20,6 +20,7 @@ const GoalsList = ({
 }) => {
   const navigate = useNavigate();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [draftFilters, setDraftFilters] = useState(filters);
 
   return (
     <section className="mx-auto mt-6 w-full max-w-md px-4 sm:max-w-3xl">
@@ -58,49 +59,91 @@ const GoalsList = ({
                 type="text"
                 className="input input-bordered w-full"
                 placeholder="Search by name"
-                value={filters.name}
-                onChange={(e) => onFilterChange("name", e.target.value)}
+                value={draftFilters.name}
+                onChange={(e) =>
+                  setDraftFilters((prev) => ({
+                    ...prev,
+                    name: e.target.value,
+                  }))
+                }
               />
 
               <select
                 className="select select-bordered w-full"
-                value={filters.status}
-                onChange={(e) => onFilterChange("status", e.target.value)}
+                value={draftFilters.status}
+                onChange={(e) =>
+                  setDraftFilters((prev) => ({
+                    ...prev,
+                    status: e.target.value,
+                  }))
+                }
               >
                 <option value="">All goals</option>
                 <option value="0">In progress</option>
                 <option value="1">Completed</option>
-                <option value="2">Paused</option>
-                <option value="3">Cancelled</option>
               </select>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <input
                   type="date"
                   className="input input-bordered w-full"
-                  value={filters.targetDateFrom}
+                  value={draftFilters.targetDateFrom}
                   onChange={(e) =>
-                    onFilterChange("targetDateFrom", e.target.value)
+                    setDraftFilters((prev) => ({
+                      ...prev,
+                      targetDateFrom: e.target.value,
+                    }))
                   }
                 />
 
                 <input
                   type="date"
                   className="input input-bordered w-full"
-                  value={filters.targetDateTo}
+                  value={draftFilters.targetDateTo}
                   onChange={(e) =>
-                    onFilterChange("targetDateTo", e.target.value)
+                    setDraftFilters((prev) => ({
+                      ...prev,
+                      targetDateTo: e.target.value,
+                    }))
                   }
                 />
               </div>
 
-              <button
-                type="button"
-                className="btn btn-ghost w-full"
-                onClick={onClearFilters}
-              >
-                Clear filters
-              </button>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  className="btn btn-primary w-full"
+                  onClick={() => {
+                    onFilterChange("name", draftFilters.name);
+                    onFilterChange("status", draftFilters.status);
+                    onFilterChange(
+                      "targetDateFrom",
+                      draftFilters.targetDateFrom,
+                    );
+                    onFilterChange("targetDateTo", draftFilters.targetDateTo);
+                  }}
+                >
+                  Apply filters
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-ghost w-full"
+                  onClick={() => {
+                    const emptyFilters = {
+                      status: "",
+                      targetDateFrom: "",
+                      targetDateTo: "",
+                      name: "",
+                    };
+
+                    setDraftFilters(emptyFilters);
+                    onClearFilters();
+                  }}
+                >
+                  Clear filters
+                </button>
+              </div>
             </div>
           </div>
         )}
