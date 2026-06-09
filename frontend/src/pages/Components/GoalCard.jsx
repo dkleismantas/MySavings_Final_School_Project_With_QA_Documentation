@@ -3,7 +3,20 @@ const getProgress = (goal) => {
   return Math.min(100, Math.round((goal.currentAmount / goal.targetAmount) * 100));
 };
 
-const getStatusLabel = (status) => (status === 0 ? "Active" : "Completed");
+const getStatusLabel = (status) => {
+  switch (status) {
+    case 0:
+      return "Active";
+    case 1:
+      return "Completed";
+    case 2:
+      return "Paused";
+    case 3:
+      return "Cancelled";
+    default:
+      return "Unknown";
+  }
+};
 
 const formatDate = (date) =>
   new Intl.DateTimeFormat("en-GB", {
@@ -21,18 +34,24 @@ const formatCurrency = (amount) =>
 
 const GoalCard = ({ goal, isPrimary = false, onClick }) => {
   const progress = getProgress(goal);
+  const dueDateText = formatDate(goal.targetDate);
+  const goalStatus = getStatusLabel(goal.status);
 
   return (
     <article
-      onClick={onClick}
       className={[
-        "card border shadow-sm transition-opacity hover:opacity-90 cursor-pointer",
+        "card border shadow-sm transition-opacity hover:opacity-90",
         isPrimary
           ? "border-primary/30 bg-primary text-primary-content"
           : "border-base-300 bg-base-100 text-base-content",
       ].join(" ")}
     >
-      <div className="card-body gap-5 p-5">
+      <button
+        type="button"
+        onClick={onClick}
+        className="card-body w-full cursor-pointer gap-5 p-5 text-left"
+        aria-label={`Open goal ${goal.title}. Status ${goalStatus}. ${progress}% complete. Due ${dueDateText}.`}
+      >
         <div className="flex items-start justify-between gap-3">
           <h3 className="min-w-0 text-xl font-bold leading-tight">{goal.title}</h3>
           <span
@@ -43,12 +62,12 @@ const GoalCard = ({ goal, isPrimary = false, onClick }) => {
                 : "badge-primary",
             ].join(" ")}
           >
-            {getStatusLabel(goal.status)}
+            {goalStatus}
           </span>
         </div>
 
         <div>
-          <p className="mb-3 text-5xl font-bold leading-none">{progress}%</p>
+          <p className="mb-3 text-4xl font-bold leading-none sm:text-5xl">{progress}%</p>
           <progress
             className={[
               "progress h-3 w-full",
@@ -56,22 +75,23 @@ const GoalCard = ({ goal, isPrimary = false, onClick }) => {
             ].join(" ")}
             value={progress}
             max="100"
+            aria-label={`Progress ${progress} percent`}
           />
         </div>
 
         <div
           className={[
             "flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold",
-            isPrimary ? "text-primary-content/90" : "text-base-content/70",
+            isPrimary ? "text-primary-content" : "text-base-content",
           ].join(" ")}
         >
           <span>
             {formatCurrency(goal.currentAmount)} of {formatCurrency(goal.targetAmount)}
           </span>
           <span aria-hidden="true">•</span>
-          <span>Due {formatDate(goal.targetDate)}</span>
+          <span>Due {dueDateText}</span>
         </div>
-      </div>
+      </button>
     </article>
   );
 };

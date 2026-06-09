@@ -1,28 +1,30 @@
-
-const SummaryMain = ({totalSavings, activeCount, completedCount}) => {
+const SummaryMain = ({ totalSavings, activeCount, completedCount }) => {
   return (
-    <div className="stats shadow w-full">
+    <section
+      className="rounded-box border border-base-300 bg-base-100 shadow"
+      aria-labelledby="summary-heading"
+    >
+      <h2 id="summary-heading" className="sr-only">
+        Savings summary
+      </h2>
+      <div className="stats stats-vertical w-full sm:stats-horizontal">
         <div className="stat">
-            <div className="stat-title">Total savings</div>
-            <div className="stat-value text-primary">€{totalSavings}</div>
+          <div className="stat-title text-base-content">Total savings</div>
+          <div className="stat-value text-base-content">€{totalSavings}</div>
         </div>
 
-       <div className="stat">
-        <div className="stat-title">Active goals</div>
-        <div className="stat-value">
-          {activeCount}
+        <div className="stat">
+          <div className="stat-title text-base-content">Active goals</div>
+          <div className="stat-value text-base-content">{activeCount}</div>
         </div>
-      </div>
 
-      <div className="stat">
-        <div className="stat-title">Completed goals</div>
-        <div className="stat-value text-success">
-          {completedCount}
+        <div className="stat">
+          <div className="stat-title text-base-content">Completed goals</div>
+          <div className="stat-value text-base-content">{completedCount}</div>
         </div>
       </div>
+    </section>
+  );
+};
 
-    </div>
-  )
-}
-
-export default SummaryMain
+export default SummaryMain;

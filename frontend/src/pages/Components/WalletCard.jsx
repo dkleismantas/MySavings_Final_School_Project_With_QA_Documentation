@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 
 function WalletCard({ wallet, onUpdate }) {
   const [editing, setEditing] = useState(false);
   const [newBalance, setNewBalance] = useState(wallet?.totalBalance || 0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const balanceFieldId = useId();
+  const balanceErrorId = `${balanceFieldId}-error`;
 
   const handleSave = async () => {
     const parsed = Number(newBalance);
@@ -36,7 +38,7 @@ function WalletCard({ wallet, onUpdate }) {
   };
 
   return (
-    <div className="card bg-base-100 shadow-xl w-full max-w-md">
+    <div className="card w-full max-w-md bg-base-100 shadow-xl">
       <div className="card-body">
         <h2 className="card-title">Wallet balance</h2>
 
@@ -47,7 +49,11 @@ function WalletCard({ wallet, onUpdate }) {
             <div className="card-actions justify-end">
               <button
                 className="btn btn-primary btn-sm"
-                onClick={() => setEditing(true)}
+                onClick={() => {
+                  setNewBalance(wallet?.totalBalance || 0);
+                  setError("");
+                  setEditing(true);
+                }}
               >
                 Edit
               </button>
@@ -55,18 +61,29 @@ function WalletCard({ wallet, onUpdate }) {
           </>
         ) : (
           <>
+            <label htmlFor={balanceFieldId} className="label">
+              <span className="label-text font-medium">Balance amount</span>
+            </label>
             <input
+              id={balanceFieldId}
               type="number"
+              inputMode="decimal"
               className={`input input-bordered w-full ${error ? "input-error" : ""}`}
               value={newBalance}
+              aria-label="Wallet balance"
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? balanceErrorId : undefined}
               onChange={(e) => {
                 setNewBalance(e.target.value);
-                setError(""); 
+                setError("");
               }}
             />
 
-            {/* ✅ Inline error message */}
-            {error && <p className="text-error text-sm mt-1">{error}</p>}
+            {error && (
+              <p id={balanceErrorId} className="mt-1 text-sm text-error" role="alert">
+                {error}
+              </p>
+            )}
 
             <div className="flex gap-2 justify-end mt-4">
               <button
