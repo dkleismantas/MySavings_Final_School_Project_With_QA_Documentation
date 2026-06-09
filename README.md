@@ -17,7 +17,7 @@ Baigiamasis projektas
 
 ## Projekto paleidimas
 
-#### 1. Docker konteinerio sukūrimo komanda
+#### 1. Duomenų bazės docker konteinerio sukūrimo komanda
 
 ```
 docker run --name MySavings -e MYSQL_ROOT_PASSWORD=root -d -p 3306:3306 mysql:lts
@@ -35,6 +35,13 @@ dotnet run
 *\*leidžiama iš ./frontend/ direktorijos*
 ```
 npm run dev
+```
+
+#### 4. Seq (logging) docker konteinerio sukūrimo komanda
+
+```
+docker run -d --name MySavings-seq -e ACCEPT_EULA=Y -p 5341:5341 -p 8081:80 datalust/seq:latest
+
 ```
 
 ### DB migracijos komandos
@@ -66,6 +73,10 @@ https://jwt.io
 ### Postman (tikrinti autorizavimui)
 
 https://www.postman.com/downloads/
+
+### Serilog (logų serveris)
+http://localhost:8081/
+
 
 ### Unit test paleidimas
 

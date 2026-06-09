@@ -2,21 +2,41 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MySavings.Data;
 using MySavings.Entities;
 using MySavings.Repositories;
 using MySavings.Services;
+using Serilog;
 using Shop.API;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//logging with serilog
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var errors = context.ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.Errors.Select(x => x.ErrorMessage).ToArray()
+                );
+
+            return new BadRequestObjectResult(new { error = "Invalid request data"});
+        };
+    });
 
 builder.Services.AddAuthorization(options =>
 {
@@ -81,6 +101,7 @@ app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
     {
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
         var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
 
         (int status, string message) = exception switch
@@ -91,6 +112,15 @@ app.UseExceptionHandler(errorApp =>
             InvalidOperationException ex => (409, ex.Message),
             _ => (500, "An unexpected error occurred."),
         };
+
+        // Log exception to Serilog with context
+        logger.LogError(
+            exception,
+            "Exception handled. Status: {StatusCode}, Path: {Path}, Method: {Method}",
+            status,
+            context.Request.Path,
+            context.Request.Method
+        );
 
         context.Response.StatusCode = status;
         context.Response.ContentType = "application/json";
@@ -110,6 +140,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors();
 app.MapControllers();
+
+//Request Logging
+app.UseSerilogRequestLogging();
 
 // Auto migrate db
 using (var scope = app.Services.CreateScope())

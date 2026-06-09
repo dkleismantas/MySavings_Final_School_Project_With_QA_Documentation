@@ -11,25 +11,44 @@ function NavBar({ onGoalCreated }) {
     <>
       <div className="navbar bg-base-200">
         <div className="ps-4">
-          <Link to="/" className="text-lg font-bold">MySavings</Link>
+          <Link to="/" className="text-lg font-bold">
+            MySavings
+          </Link>
         </div>
         <div className="flex grow justify-end px-2">
           <div className="flex items-center justify-center">
             {user ? (
               <p className="text-lg font-bold">Hello, {user.username}!</p>
             ) : (
-              <Link to="/login" className="btn btn-neutral">Login</Link>
+              <Link to="/login" className="btn btn-neutral">
+                Login
+              </Link>
             )}
             <div className="dropdown dropdown-bottom dropdown-end">
-              <div tabIndex={0} role="button" className="btn">⬇️</div>
+              <div tabIndex={0} role="button" className="btn">
+                ⬇️
+              </div>
               <ul
                 tabIndex="-1"
                 className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
               >
+                {user.role === "admin" && (
+                  <a
+                    href="http://localhost:8081/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-neutral mt-4 w-full"
+                  >
+                    Open Seq Dashboard
+                  </a>
+                )}
                 {user && (
                   <>
                     <li>
-                      <button onClick={logout} className="btn btn-neutral mt-4 w-full">
+                      <button
+                        onClick={logout}
+                        className="btn btn-neutral mt-4 w-full"
+                      >
                         Log Out
                       </button>
                     </li>
