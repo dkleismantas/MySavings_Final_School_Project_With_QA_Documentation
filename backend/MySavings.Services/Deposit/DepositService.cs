@@ -26,26 +26,29 @@ namespace MySavings.Services
         }
 
         public async Task<Deposit> CreateDepositAsync(
+            int userId,
             int savingGoalId,
             decimal amount,
             string? note
         )
         {
             if (amount <= 0)
-                throw new Exception("Amount must be greater than 0.");
+                throw new ArgumentException("Amount must be greater than 0.", nameof(amount));
 
             var goal =
                 await _goalRepository.GetByIdAsync(savingGoalId)
-                ?? throw new Exception("Goal not found.");
+                ?? throw new KeyNotFoundException("Goal not found.");
+
+            if (goal.UserId != userId)
+                throw new UnauthorizedAccessException("You do not have access to this goal.");
 
             var wallet =
-                await _walletRepository.GetByUserIdAsync(goal.UserId)
-                ?? throw new Exception("Wallet not found.");
+                await _walletRepository.GetByUserIdAsync(userId)
+                ?? throw new KeyNotFoundException("Wallet not found.");
 
             if (wallet.TotalBalance < amount)
-                throw new Exception("Insufficient wallet balance.");
+                throw new InvalidOperationException("Insufficient wallet balance.");
 
-            // CREATE DEPOSIT
             var deposit = new Deposit
             {
                 SavingGoalId = savingGoalId,
@@ -56,15 +59,11 @@ namespace MySavings.Services
 
             await _depositRepository.AddAsync(deposit);
 
-            // UPDATE GOAL
             goal.CurrentAmount += amount;
 
             if (goal.CurrentAmount >= goal.TargetAmount)
-            {
                 goal.Status = SavingGoalStatus.Completed;
-            }
 
-            // UPDATE WALLET
             wallet.TotalBalance -= amount;
             wallet.UpdatedAt = DateTime.UtcNow;
 
@@ -73,30 +72,34 @@ namespace MySavings.Services
             return deposit;
         }
 
-        public async Task<List<Deposit>> GetAllDepositsAsync()
-        {
-            return await _depositRepository.GetAllAsync();
-        }
-
-        public async Task<List<Deposit>> GetDepositsByGoalIdAsync(int goalId)
-        {
-            return await _depositRepository.GetByGoalIdAsync(goalId);
-        }
-
-        public async Task<List<Deposit>> GetDepositsByUserIdAsync(int userId)
+        public async Task<List<Deposit>> GetAllDepositsAsync(int userId)
         {
             return await _depositRepository.GetByUserIdAsync(userId);
         }
 
-        public async Task<List<MonthlyDepositSummaryResponse>> GetMonthlySummaryAsync()
+        public async Task<List<Deposit>> GetDepositsByGoalIdAsync(int userId, int goalId)
         {
-            var deposits = await _depositRepository.GetAllAsync();
+            var goal =
+                await _goalRepository.GetByIdAsync(goalId)
+                ?? throw new KeyNotFoundException("Goal not found.");
+
+            if (goal.UserId != userId)
+                throw new UnauthorizedAccessException("You do not have access to this goal.");
+
+            return await _depositRepository.GetByGoalIdAsync(goalId);
+        }
+
+        public async Task<List<MonthlyDepositSummaryResponse>> GetMonthlySummaryAsync(int userId)
+        {
+            var deposits = await _depositRepository.GetByUserIdAsync(userId);
 
             var summary = deposits
-                .GroupBy(d => d.CreatedAt.Month)
+                .GroupBy(d => new { d.CreatedAt.Year, d.CreatedAt.Month })
+                .OrderBy(g => g.Key.Year)
+                .ThenBy(g => g.Key.Month)
                 .Select(g => new MonthlyDepositSummaryResponse
                 {
-                    Month = new DateTime(1, g.Key, 1).ToString("MMMM"),
+                    Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMMM yyyy"),
                     TotalAmount = g.Sum(d => d.Amount),
                 })
                 .ToList();

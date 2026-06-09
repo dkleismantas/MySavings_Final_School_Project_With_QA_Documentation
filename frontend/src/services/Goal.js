@@ -1,51 +1,27 @@
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
+// CREATE GOAL
 export const createGoal = async (data) => {
-  const response = await axios.post(`${API_URL}/api/SavingGoal/add-saving-goal`, data);
-  return response;
+  const response = await axiosInstance.post("/api/SavingGoal/add-saving-goal", data);
+  return response.data;
 };
 
-// GET BY USER ID
-export const getSavingGoalsByUserId = async (userId, sortBy = "newest") => {
-  try {
-    const response = await axios.get(
-      `${API_URL}/api/SavingGoal/get-saving-goals/${userId}`,
-      {
-        params: { sortBy },
-      }
-    );
+// GET ALL GOALS FOR CURRENT USER (with optional filters)
+export const getSavingGoalsByUserId = async (filters = {}) => {
+  const params = new URLSearchParams();
 
-    if (response.status === 204) {
-      return [];
-    }
+  if (filters.status) params.append("status", filters.status);
+  if (filters.targetDateFrom) params.append("targetDateFrom", filters.targetDateFrom);
+  if (filters.targetDateTo) params.append("targetDateTo", filters.targetDateTo);
+  if (filters.name?.trim()) params.append("name", filters.name.trim());
+  if (filters.sortBy) params.append("sortBy", filters.sortBy);
 
-    return response.data ?? [];
-  } catch (error) {
-    // 204 No Content
-    if (error.response?.status === 204) {
-      return [];
-    }
-
-    console.error("Error fetching saving goals:", error);
-    throw error;
-  }
-};
-
-export const getSavingGoalById = async (id) => {
-  const response = await axios.get(
-    `${API_URL}/api/SavingGoal/get-by-id/${id}`
-  );
-
-  return response;
-};
-export const getGoals = async () => {
-  const token = localStorage.getItem("accessToken");
-  const response = await axios.get(`${API_URL}/api/SavingGoal/goals`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await axiosInstance.get("/api/SavingGoal/get-saving-goals", { params });
   return response.data ?? [];
+};
+
+// GET GOAL BY ID
+export const getSavingGoalById = async (id) => {
+  const response = await axiosInstance.get(`/api/SavingGoal/get-by-id/${id}`);
+  return response.data;
 };

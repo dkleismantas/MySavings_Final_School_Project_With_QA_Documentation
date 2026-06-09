@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GoalCard from "./GoalCard";
 
@@ -8,8 +9,17 @@ const sortOptions = [
   { value: "progress", label: "Progress" },
 ];
 
-const GoalsList = ({ goals, sortBy, onSortChange, loading }) => {
+const GoalsList = ({
+  goals,
+  sortBy,
+  onSortChange,
+  loading,
+  filters = {},
+  onFilterChange,
+  onClearFilters,
+}) => {
   const navigate = useNavigate();
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   return (
     <section className="mx-auto mt-6 w-full max-w-md px-4 sm:max-w-3xl">
@@ -17,7 +27,11 @@ const GoalsList = ({ goals, sortBy, onSortChange, loading }) => {
         <h2 className="text-3xl font-bold tracking-normal">Saving goals</h2>
 
         <div className="grid grid-cols-2 gap-3">
-          <button type="button" className="btn btn-outline rounded-full">
+          <button
+            type="button"
+            className="btn btn-outline rounded-full"
+            onClick={() => setIsFiltersOpen((prev) => !prev)}
+          >
             Filters
           </button>
 
@@ -36,13 +50,69 @@ const GoalsList = ({ goals, sortBy, onSortChange, loading }) => {
             </select>
           </label>
         </div>
+
+        {isFiltersOpen && (
+          <div className="rounded-box border border-base-300 bg-base-100 p-4">
+            <div className="space-y-3">
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                placeholder="Search by name"
+                value={filters.name}
+                onChange={(e) => onFilterChange("name", e.target.value)}
+              />
+
+              <select
+                className="select select-bordered w-full"
+                value={filters.status}
+                onChange={(e) => onFilterChange("status", e.target.value)}
+              >
+                <option value="">All goals</option>
+                <option value="0">In progress</option>
+                <option value="1">Completed</option>
+                <option value="2">Paused</option>
+                <option value="3">Cancelled</option>
+              </select>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <input
+                  type="date"
+                  className="input input-bordered w-full"
+                  value={filters.targetDateFrom}
+                  onChange={(e) =>
+                    onFilterChange("targetDateFrom", e.target.value)
+                  }
+                />
+
+                <input
+                  type="date"
+                  className="input input-bordered w-full"
+                  value={filters.targetDateTo}
+                  onChange={(e) =>
+                    onFilterChange("targetDateTo", e.target.value)
+                  }
+                />
+              </div>
+
+              <button
+                type="button"
+                className="btn btn-ghost w-full"
+                onClick={onClearFilters}
+              >
+                Clear filters
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {loading ? (
-        <div className="py-8 text-center text-base-content/70">Loading goals...</div>
+        <div className="py-8 text-center text-base-content/70">
+          Loading goals...
+        </div>
       ) : goals.length === 0 ? (
         <div className="rounded-box border border-base-300 bg-base-100 p-6 text-base-content/70">
-          No saving goals yet.
+          No saving goals found.
         </div>
       ) : (
         <div className="space-y-4">
