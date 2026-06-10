@@ -106,16 +106,19 @@ namespace MySavings.API.Controllers
         [HttpDelete("delete-saving-goal/{savingGoalId}")]
         public async Task<IActionResult> DeleteAsync(int savingGoalId)
         {
-            var savingGoal = await _savingGoalService.GetByIdAsync(savingGoalId);
-
-            if (savingGoal == null)
+            try
+            {
+                await _savingGoalService.DeleteAsync(savingGoalId, GetUserId());
+                return Ok();
+            }
+            catch (ArgumentException)
+            {
                 return NotFound();
-
-            if (savingGoal.UserId != GetUserId())
+            }
+            catch (UnauthorizedAccessException)
+            {
                 return Forbid();
-
-            await _savingGoalService.DeleteAsync(savingGoalId);
-            return Ok();
+            }
         }
     }
 }

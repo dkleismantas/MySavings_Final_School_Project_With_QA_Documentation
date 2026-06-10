@@ -8,13 +8,15 @@ namespace MySavings.Services.Tests
     {
         private readonly Mock<ISavingGoalRepository> savingGoalRepositoryMock = new();
         private readonly Mock<IUserRepository> userRepositoryMock = new();
+        private readonly Mock<IWalletService> walletServiceMock = new();
         private readonly SavingGoalService savingGoalService;
 
         public SavingGoalServiceTests()
         {
             savingGoalService = new SavingGoalService(
                 savingGoalRepositoryMock.Object,
-                userRepositoryMock.Object
+                userRepositoryMock.Object,
+                walletServiceMock.Object
             );
         }
 
