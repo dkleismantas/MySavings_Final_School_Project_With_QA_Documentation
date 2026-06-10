@@ -107,13 +107,17 @@ const GoalsList = ({
                 type="text"
                 className="input input-bordered w-full"
                 placeholder="Search by name"
-                value={draftFilters.name}
-                onChange={(e) =>
+                value={filters.name ?? ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+
                   setDraftFilters((prev) => ({
                     ...prev,
-                    name: e.target.value,
-                  }))
-                }
+                    name: value,
+                  }));
+
+                  onFilterChange("name", value);
+                }}
               />
 
               <select
@@ -201,7 +205,11 @@ const GoalsList = ({
       </div>
 
       {loading ? (
-        <div role="status" aria-live="polite" className="py-8 text-center text-base-content">
+        <div
+          role="status"
+          aria-live="polite"
+          className="py-8 text-center text-base-content"
+        >
           Loading goals...
         </div>
       ) : goals.length === 0 ? (
