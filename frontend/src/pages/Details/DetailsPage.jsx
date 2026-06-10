@@ -10,6 +10,7 @@ import DeleteConfirmModal from "../Components/DeleteConfirmModal";
 
 import { getSavingGoalById } from "../../services/Goal";
 import { getDepositsByGoalId, createDeposit } from "../../services/Deposits";
+import { getWalletByUserId } from "../../services/Wallet";
 
 function DetailsPage() {
   const { id } = useParams();
@@ -18,6 +19,7 @@ function DetailsPage() {
 
   const [goal, setGoal] = useState(null);
   const [deposits, setDeposits] = useState([]);
+   const [wallet, setWallet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -30,14 +32,16 @@ function DetailsPage() {
 
     async function fetchData() {
       try {
-        const [goalRes, depositsRes] = await Promise.all([
+        const [goalRes, depositsRes, walletRes] = await Promise.all([
           getSavingGoalById(goalId),
           getDepositsByGoalId(goalId),
+          getWalletByUserId(),
         ]);
 
         if (!cancelled) {
           setGoal(goalRes);
           setDeposits(depositsRes);
+          setWallet(walletRes);
         }
       } catch (error) {
         console.error("Failed to load goal data:", error);
@@ -138,7 +142,23 @@ function DetailsPage() {
             <GoalCardDetails goal={goal} />
           </div>
           <div>
-            <AddDepositForm onSubmit={handleSubmit} saving={saving} />
+            {goal.status === 0 ? (
+              <AddDepositForm
+                onSubmit={handleSubmit}
+                saving={saving}
+                goal={goal}
+                walletBalance={wallet?.totalBalance ?? 0}
+              />
+            ) : (
+              <div className="card bg-base-100 shadow-xl">
+                <div className="card-body">
+                  <h2 className="card-title">🎉 Goal Completed!</h2>
+                  <p className="text-base-content/60">
+                    This goal has been reached. No more deposits needed.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
