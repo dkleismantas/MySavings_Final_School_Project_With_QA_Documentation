@@ -5,7 +5,7 @@ namespace MySavings.Services
     public interface ISavingGoalService
     {
         Task<int> AddAsync(SavingGoal savingGoal);
-        Task<SavingGoal> GetByIdAsync(int savingGoalId);
+        Task<SavingGoal?> GetByIdAsync(int savingGoalId);
 
         Task<IEnumerable<SavingGoal>> GetByUserIdAsync(
             int userId,
