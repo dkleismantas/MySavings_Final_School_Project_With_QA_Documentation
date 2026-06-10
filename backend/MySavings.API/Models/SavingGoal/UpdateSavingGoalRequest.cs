@@ -8,7 +8,7 @@ namespace MySavings.API.Models.SavingGoal
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Title is required.")]
-        [StringLength(128, ErrorMessage = "Title cannot exceed 128 characters.")]
+        [StringLength(30, ErrorMessage = "Title cannot exceed 30 characters.")]
         public string Title { get; set; }
 
         [Required(ErrorMessage = "Target amount is required.")]

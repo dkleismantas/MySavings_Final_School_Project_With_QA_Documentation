@@ -4,7 +4,7 @@ namespace MySavings.API.Models.SavingGoal
     public class CreateSavingGoalRequest
     {
         [Required(ErrorMessage = "Goal title is required.")]
-        [StringLength(128, ErrorMessage = "Goal title cannot be longer than 128 characters.")]
+        [StringLength(30, ErrorMessage = "Goal title cannot be longer than 30 characters.")]
         public string Title { get; set; }
 
         [Required(ErrorMessage = "Target amount is required.")]
