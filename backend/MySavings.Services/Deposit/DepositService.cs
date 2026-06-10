@@ -1,3 +1,4 @@
+using System.Globalization;
 using MySavings.Data;
 using MySavings.Entities;
 using MySavings.Entities.Models;
@@ -99,7 +100,10 @@ namespace MySavings.Services
                 .ThenBy(g => g.Key.Month)
                 .Select(g => new MonthlyDepositSummaryResponse
                 {
-                    Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMMM yyyy"),
+                    Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString(
+                        "MMMM yyyy",
+                        CultureInfo.InvariantCulture
+                    ),
                     TotalAmount = g.Sum(d => d.Amount),
                 })
                 .ToList();
