@@ -26,6 +26,14 @@ const GoalsList = ({
   onClearFilters,
 }) => {
   const navigate = useNavigate();
+  const filterButtonId = useId();
+  const filterPanelId = useId();
+  const sortById = useId();
+  const sortDirectionId = useId();
+  const nameFilterId = useId();
+  const statusFilterId = useId();
+  const targetDateFromId = useId();
+  const targetDateToId = useId();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [draftFilters, setDraftFilters] = useState(filters);
 
@@ -95,6 +103,7 @@ const GoalsList = ({
           >
             <div className="space-y-3">
               <input
+                id={nameFilterId}
                 type="text"
                 className="input input-bordered w-full"
                 placeholder="Search by name"
@@ -108,6 +117,7 @@ const GoalsList = ({
               />
 
               <select
+                id={statusFilterId}
                 className="select select-bordered w-full"
                 value={draftFilters.status}
                 onChange={(e) =>
@@ -124,8 +134,8 @@ const GoalsList = ({
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <input
-                  id={nameFilterId}
-                  type="text"
+                  id={targetDateFromId}
+                  type="date"
                   className="input input-bordered w-full"
                   value={draftFilters.targetDateFrom}
                   onChange={(e) =>
@@ -135,9 +145,9 @@ const GoalsList = ({
                     }))
                   }
                 />
-              </div>
 
                 <input
+                  id={targetDateToId}
                   type="date"
                   className="input input-bordered w-full"
                   value={draftFilters.targetDateTo}
