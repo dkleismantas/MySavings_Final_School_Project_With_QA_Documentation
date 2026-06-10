@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using MySavings.Entities;
 using MySavings.Repositories;
 using MySavings.Services;
@@ -9,13 +10,17 @@ namespace MySavings.Services
         private readonly ISavingGoalRepository _savingGoalRepository;
         private readonly IUserRepository _userRepository;
 
+        private readonly ILogger<SavingGoalService> _logger;
+
         public SavingGoalService(
             ISavingGoalRepository savingGoalRepository,
-            IUserRepository userRepository
+            IUserRepository userRepository,
+            ILogger<SavingGoalService> logger
         )
         {
             _savingGoalRepository = savingGoalRepository;
             _userRepository = userRepository;
+            _logger = logger;
         }
 
         public async Task<int> AddAsync(SavingGoal savingGoal)
@@ -30,6 +35,12 @@ namespace MySavings.Services
             {
                 throw new ArgumentException("Invalid user ID.");
             }
+
+            _logger.LogInformation(
+                "Adding new saving goal. UserId: {UserId}, GoalName: {GoalName}",
+                savingGoal.UserId,
+                savingGoal.Title
+            );
 
             return await _savingGoalRepository.AddAsync(savingGoal);
         }

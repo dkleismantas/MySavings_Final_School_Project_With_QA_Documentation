@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using MySavings.Data;
 using MySavings.Entities;
 using MySavings.Repositories;
@@ -11,11 +12,13 @@ namespace MySavings.Services
         private readonly IPasswordHasher<User> passwordHasher;
         private readonly IWalletRepository walletRepository;
         private readonly MySavingsDbContext _context;
+        private readonly ILogger<UserService> _logger;
 
         public UserService(
             IUserRepository userRepository,
             IWalletRepository walletRepository,
             IPasswordHasher<User> passwordHasher,
+            ILogger<UserService> logger,
             MySavingsDbContext context
         )
         {
@@ -23,6 +26,7 @@ namespace MySavings.Services
             this.walletRepository = walletRepository;
             this.passwordHasher = passwordHasher;
             _context = context;
+            _logger = logger;
         }
 
         public async Task<int> AddAsync(string userName, string email, string password)
@@ -60,6 +64,12 @@ namespace MySavings.Services
 
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation(
+                "New user created. UserId: {UserId}, Email: {Email}, UserName: {UserName}",
+                userId,
+                email,
+                userName
+            );
             return userId;
         }
 
