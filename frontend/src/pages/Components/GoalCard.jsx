@@ -5,25 +5,22 @@ const getProgress = (goal) => {
 
 const getStatusLabel = (status) => {
   switch (status) {
-    case 0:
-      return "Active";
-    case 1:
-      return "Completed";
-    case 2:
-      return "Paused";
-    case 3:
-      return "Cancelled";
-    default:
-      return "Unknown";
+    case 0: return "Active";
+    case 1: return "Completed";
+    case 2: return "Paused";
+    case 3: return "Cancelled";
+    default: return "Unknown";
   }
 };
 
-const formatDate = (date) =>
-  new Intl.DateTimeFormat("en-GB", {
+const formatDate = (date) => {
+  if (!date) return "No deadline";
+  return new Intl.DateTimeFormat("en-GB", {
     year: "numeric",
     month: "short",
     day: "numeric",
   }).format(new Date(date));
+};
 
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("en-US", {
@@ -36,62 +33,75 @@ const GoalCard = ({ goal, isPrimary = false, onClick }) => {
   const progress = getProgress(goal);
   const dueDateText = formatDate(goal.targetDate);
   const goalStatus = getStatusLabel(goal.status);
+  const isComplete = goal.status === 1 || progress === 100;
 
   return (
     <article
-      className={[
-        "card border shadow-sm transition-opacity hover:opacity-90",
+      onClick={onClick}
+      className={`group w-full rounded-2xl p-6 transition-all duration-300 cursor-pointer border flex flex-col justify-between select-none min-h-[220px] ${
         isPrimary
-          ? "border-primary/30 bg-primary text-primary-content"
-          : "border-base-300 bg-base-100 text-base-content",
-      ].join(" ")}
+          ? "bg-gradient-to-br from-[#ff6a3d] via-[#FF5722] to-[#e44d1e] border-transparent text-white shadow-xl shadow-[#FF5722]/10"
+          : "bg-[#18181b] border-zinc-800 text-zinc-100 hover:border-zinc-700 shadow-sm"
+      }`}
     >
-      <button
-        type="button"
-        onClick={onClick}
-        className="card-body w-full cursor-pointer gap-5 p-5 text-left"
-        aria-label={`Open goal ${goal.title}. Status ${goalStatus}. ${progress}% complete. Due ${dueDateText}.`}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <h3 className="min-w-0 text-xl font-bold leading-tight">{goal.title}</h3>
-          <span
-            className={[
-              "badge shrink-0 border-0",
-              isPrimary
-                ? "bg-primary-content/20 text-primary-content"
-                : "badge-primary",
-            ].join(" ")}
-          >
-            {goalStatus}
-          </span>
-        </div>
+      {/* Title Row container block */}
+      <div className="flex items-start justify-between gap-4">
+        <h3 className="text-xl font-bold tracking-tight line-clamp-2 leading-snug group-hover:text-white">
+          {goal.title}
+        </h3>
+        
+        <span className={`text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border shrink-0 ${
+          isPrimary 
+            ? "bg-white/10 border-white/20 text-white" 
+            : isComplete 
+              ? "bg-emerald-950/40 border-emerald-500/30 text-emerald-400" 
+              : "bg-zinc-900 border-zinc-800 text-zinc-400"
+        }`}>
+          {isComplete ? "Complete" : goalStatus}
+        </span>
+      </div>
 
-        <div>
-          <p className="mb-3 text-4xl font-bold leading-none sm:text-5xl">{progress}%</p>
-          <progress
-            className={[
-              "progress h-3 w-full",
-              isPrimary ? "progress-neutral" : "progress-primary",
-            ].join(" ")}
-            value={progress}
-            max="100"
-            aria-label={`Progress ${progress} percent`}
+      {/* Massive Progress Percent Visual Block */}
+      <div className="my-5 space-y-3">
+        <div className="flex items-baseline gap-1">
+          <span className="text-5xl font-black tracking-tighter leading-none">
+            {progress}
+          </span>
+          <span className={`text-xl font-bold ${isPrimary ? "text-orange-100" : "text-zinc-500"}`}>%</span>
+        </div>
+        
+        {/* Customized Progress Track Bar Indicators */}
+        <div className={`w-full h-2 rounded-full overflow-hidden ${isPrimary ? "bg-black/15" : "bg-zinc-900"}`}>
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${
+              isPrimary 
+                ? "bg-white" 
+                : isComplete 
+                  ? "bg-emerald-500" 
+                  : "bg-[#FF5722]"
+            }`}
+            style={{ width: `${progress}%` }}
           />
         </div>
+      </div>
 
-        <div
-          className={[
-            "flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold",
-            isPrimary ? "text-primary-content" : "text-base-content",
-          ].join(" ")}
-        >
-          <span>
-            {formatCurrency(goal.currentAmount)} of {formatCurrency(goal.targetAmount)}
+      {/* Footer Meta Row Items */}
+      <div className={`flex flex-wrap items-center gap-2 text-xs font-semibold ${
+        isPrimary ? "text-orange-100/90" : "text-zinc-400"
+      }`}>
+        <div>
+          <span className={isPrimary ? "text-white font-bold" : "text-zinc-200 font-bold"}>
+            {formatCurrency(goal.currentAmount)}
           </span>
-          <span aria-hidden="true">•</span>
+          {" of "}
+          <span>{formatCurrency(goal.targetAmount)}</span>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <span className={`w-1 h-1 rounded-full ${isPrimary ? "bg-orange-200" : "bg-zinc-600"}`} />
           <span>Due {dueDateText}</span>
         </div>
-      </button>
+      </div>
     </article>
   );
 };

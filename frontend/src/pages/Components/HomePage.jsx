@@ -90,12 +90,12 @@ function HomePage() {
     <div className="min-h-screen bg-[#101010] text-white">
       <NavBar onOpenModal={() => setModalOpen(true)} />
       
-      <main className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6 2xl:space-y-10">
+      <main className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
         {/* Important Feature Action Block */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-zinc-900/40 p-4 sm:p-6 rounded-2xl border border-zinc-800/60 gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-zinc-900/20 p-5 sm:p-6 rounded-2xl border border-zinc-800/50 gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Your Financial Overview</h1>
-            <p className="text-xs sm:text-sm text-gray-400 mt-1">Track updates, control targets and monitor progress variants.</p>
+            <p className="text-xs sm:text-sm text-zinc-400 mt-1">Track updates, control targets and monitor progress variants.</p>
           </div>
           <button
             onClick={() => setModalOpen(true)}
