@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GoalCard from "./GoalCard";
 
@@ -36,6 +36,30 @@ const GoalsList = ({
   const targetDateToId = useId();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [draftFilters, setDraftFilters] = useState(filters);
+  const searchTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleNameSearchChange = (value) => {
+    setDraftFilters((prev) => ({
+      ...prev,
+      name: value,
+    }));
+
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      onFilterChange("name", value);
+    }, 1000);
+  };
 
   return (
     <section className="mx-auto mt-6 w-full max-w-4xl">
@@ -107,17 +131,8 @@ const GoalsList = ({
                 type="text"
                 className="input input-bordered w-full"
                 placeholder="Search by name"
-                value={filters.name ?? ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-
-                  setDraftFilters((prev) => ({
-                    ...prev,
-                    name: value,
-                  }));
-
-                  onFilterChange("name", value);
-                }}
+                value={draftFilters.name ?? ""}
+                onChange={(e) => handleNameSearchChange(e.target.value)}
               />
 
               <select
@@ -191,6 +206,10 @@ const GoalsList = ({
                       targetDateTo: "",
                       name: "",
                     };
+
+                    if (searchTimeoutRef.current) {
+                      clearTimeout(searchTimeoutRef.current);
+                    }
 
                     setDraftFilters(emptyFilters);
                     onClearFilters();
