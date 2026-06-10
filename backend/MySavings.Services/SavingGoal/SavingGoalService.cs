@@ -9,18 +9,19 @@ namespace MySavings.Services
     {
         private readonly ISavingGoalRepository _savingGoalRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IWalletService _walletService;
 
         private readonly ILogger<SavingGoalService> _logger;
 
-        public SavingGoalService(
+       public SavingGoalService(
             ISavingGoalRepository savingGoalRepository,
             IUserRepository userRepository,
-            ILogger<SavingGoalService> logger
+            IWalletService walletService
         )
         {
             _savingGoalRepository = savingGoalRepository;
             _userRepository = userRepository;
-            _logger = logger;
+            _walletService = walletService;
         }
 
         public async Task<int> AddAsync(SavingGoal savingGoal)
@@ -31,10 +32,7 @@ namespace MySavings.Services
             }
 
             var userExists = await _userRepository.GetByIdAsync(savingGoal.UserId);
-            if (userExists == null)
-            {
-                throw new ArgumentException("Invalid user ID.");
-            }
+
 
             _logger.LogInformation(
                 "Adding new saving goal. UserId: {UserId}, GoalName: {GoalName}",
@@ -83,13 +81,31 @@ namespace MySavings.Services
             return await _savingGoalRepository.UpdateAsync(savingGoal);
         }
 
-        public async Task<bool> DeleteAsync(int savingGoalId)
+        public async Task<bool> DeleteAsync(int savingGoalId, int userId)
         {
-            if (await _savingGoalRepository.GetByIdAsync(savingGoalId) == null)
+            var goal = await _savingGoalRepository.GetByIdAsync(savingGoalId);
+            if (goal == null)
             {
-                throw new ArgumentException("Saving goal not found.");
+                throw new KeyNotFoundException("Saving goal not found.");
             }
-            return await _savingGoalRepository.DeleteAsync(savingGoalId);
+
+            if (goal.UserId != userId)
+            {
+                throw new UnauthorizedAccessException("You do not own this saving goal.");
+            }
+
+            var deleted = await _savingGoalRepository.DeleteAsync(savingGoalId);
+
+            if (deleted && goal.CurrentAmount > 0)
+            {
+                var wallet = await _walletService.GetWalletByUserIdAsync(userId);
+                if (wallet != null)
+                {
+                    await _walletService.UpdateBalanceAsync(userId, wallet.TotalBalance + goal.CurrentAmount);
+                }
+            }
+
+            return deleted;
         }
 
         public async Task<IEnumerable<SavingGoal>> GetAllAsync()
