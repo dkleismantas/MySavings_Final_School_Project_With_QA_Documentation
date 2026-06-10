@@ -58,7 +58,7 @@ namespace MySavings.API.Controllers
         // GET: api/savinggoal/get-saving-goals
         [HttpGet("get-saving-goals")]
         public async Task<IActionResult> GetByUserIdAsync(
-            [FromQuery] SavingGoalFilterStatus? status,
+            [FromQuery] int? status,
             [FromQuery] DateTime? targetDateFrom,
             [FromQuery] DateTime? targetDateTo,
             [FromQuery] string? name,
@@ -67,8 +67,8 @@ namespace MySavings.API.Controllers
         )
         {
             SavingGoalStatus? goalStatus = status.HasValue
-          ? (SavingGoalStatus)(int)status.Value
-            : null;
+                ? (SavingGoalStatus)status.Value
+                : null;
             var savingGoals = await _savingGoalService.GetByUserIdAsync(
                 GetUserId(),
                 goalStatus,

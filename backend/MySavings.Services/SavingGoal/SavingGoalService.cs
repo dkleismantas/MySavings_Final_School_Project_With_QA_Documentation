@@ -34,7 +34,10 @@ namespace MySavings.Services
             }
 
             var userExists = await _userRepository.GetByIdAsync(savingGoal.UserId);
-
+            if (userExists == null)
+            {
+                throw new ArgumentException("User not found.");
+            }
 
             _logger.LogInformation(
                 "Adding new saving goal. UserId: {UserId}, GoalName: {GoalName}",
@@ -45,14 +48,9 @@ namespace MySavings.Services
             return await _savingGoalRepository.AddAsync(savingGoal);
         }
 
-        public async Task<SavingGoal> GetByIdAsync(int savingGoalId)
+        public async Task<SavingGoal?> GetByIdAsync(int savingGoalId)
         {
-            var goal = await _savingGoalRepository.GetByIdAsync(savingGoalId);
-
-            if (goal == null)
-                throw new ArgumentException("Saving goal not found.");
-
-            return goal;
+            return await _savingGoalRepository.GetByIdAsync(savingGoalId);
         }
 
         public async Task<IEnumerable<SavingGoal>> GetByUserIdAsync(
@@ -80,6 +78,12 @@ namespace MySavings.Services
             {
                 throw new ArgumentException("Saving goal not found.");
             }
+
+            if (savingGoal.Status == SavingGoalStatus.Completed && savingGoal.CurrentAmount < savingGoal.TargetAmount)
+            {
+                savingGoal.Status = SavingGoalStatus.Active;
+            }
+
             return await _savingGoalRepository.UpdateAsync(savingGoal);
         }
 

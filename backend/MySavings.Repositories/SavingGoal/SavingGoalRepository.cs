@@ -60,32 +60,39 @@ namespace MySavings.Repositories
                 query = query.Where(sg => sg.Title.Contains(searchName));
             }
 
-            var normalizedDirection = sortDirection?.Trim().ToLowerInvariant();
-            var isDirectionProvided = !string.IsNullOrWhiteSpace(normalizedDirection);
-            var isDescending = normalizedDirection switch
+            sortBy = sortBy?.Trim().ToLowerInvariant();
+            var sortField = string.IsNullOrWhiteSpace(sortBy) ? "newest" : sortBy;
+
+            var direction = sortDirection?.Trim().ToLowerInvariant();
+            var isDescending = direction switch
             {
-                null or "" or "desc" or "descending" => true,
+                null or "" => sortField switch
+                {
+                    "deadline" => false,  // deadline defaults to ascending (earliest first)
+                    _ => true             // newest, amount, progress default to descending
+                },
+                "desc" or "descending" => true,
                 "asc" or "ascending" => false,
-                _ => throw new ArgumentException("Invalid sort direction."),
+                _ => throw new ArgumentException("Invalid sort direction. Use 'asc', 'ascending', 'desc', or 'descending'."),
             };
 
-            query = sortBy?.ToLowerInvariant() switch
+            query = sortField switch
             {
-                null or "" or "newest" => (isDirectionProvided ? isDescending : true)
+                "newest" => isDescending
                     ? query.OrderByDescending(sg => sg.Id)
                     : query.OrderBy(sg => sg.Id),
-                "deadline" => (isDirectionProvided ? isDescending : false)
+                "deadline" => isDescending
                     ? query.OrderByDescending(sg => sg.TargetDate)
                     : query.OrderBy(sg => sg.TargetDate),
-                "amount" => (isDirectionProvided ? isDescending : true)
+                "amount" => isDescending
                     ? query.OrderByDescending(sg => sg.TargetAmount)
                     : query.OrderBy(sg => sg.TargetAmount),
-                "progress" => (isDirectionProvided ? isDescending : true)
+                "progress" => isDescending
                     ? query.OrderByDescending(sg =>
                         sg.TargetAmount > 0 ? sg.CurrentAmount / sg.TargetAmount : 0)
                     : query.OrderBy(sg =>
                         sg.TargetAmount > 0 ? sg.CurrentAmount / sg.TargetAmount : 0),
-                _ => throw new ArgumentException("Invalid sort parameter."),
+                _ => throw new ArgumentException("Invalid sort parameter. Use 'newest', 'deadline', 'amount', or 'progress'."),
             };
 
             return await query.ToListAsync();
