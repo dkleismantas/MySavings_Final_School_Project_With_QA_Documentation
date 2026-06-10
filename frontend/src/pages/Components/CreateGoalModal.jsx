@@ -25,7 +25,7 @@ function CreateGoalModal({ isOpen, onClose, onGoalCreated }) {
   
   const titleField = register("title", {
     required: "Title is required.",
-    maxLength: { value: 128, message: "Title cannot exceed 128 characters." },
+    maxLength: { value: 30, message: "Title cannot exceed 30 characters." },
   });
   const amountField = register("targetAmount", {
     required: "Target amount is required.",
