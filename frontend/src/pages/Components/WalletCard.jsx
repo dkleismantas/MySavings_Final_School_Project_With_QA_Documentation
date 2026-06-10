@@ -10,21 +10,17 @@ function WalletCard({ wallet, onUpdate }) {
 
   const handleSave = async () => {
     const parsed = Number(newBalance);
-
     if (isNaN(parsed) || parsed <= 0) {
       setError("Balance must be a number greater than 0.");
       return;
     }
-
     setError("");
     setLoading(true);
-
     try {
       await onUpdate(parsed);
       setEditing(false);
     } catch (err) {
-      const message =
-        err?.response?.data?.error ?? "Something went wrong. Please try again.";
+      const message = err?.response?.data?.error ?? "Something went wrong. Please try again.";
       setError(message);
     } finally {
       setLoading(false);
@@ -38,39 +34,38 @@ function WalletCard({ wallet, onUpdate }) {
   };
 
   return (
-    <div className="card w-full max-w-md bg-base-100 shadow-xl">
-      <div className="card-body">
-        <h2 className="card-title">Wallet balance</h2>
+    <div className="w-full bg-zinc-900/60 border border-zinc-800/60 rounded-3xl p-6 shadow-xl relative overflow-hidden group">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-medium text-gray-400 tracking-wide uppercase">Wallet balance</h2>
+          {!editing && (
+            <button
+              className="text-xs font-semibold text-[#FF5722] hover:text-[#e44d1e] bg-[#FF5722]/10 px-3 py-1.5 rounded-lg transition-colors"
+              onClick={() => {
+                setNewBalance(wallet?.totalBalance || 0);
+                setError("");
+                setEditing(true);
+              }}
+            >
+              Edit
+            </button>
+          )}
+        </div>
 
         {!editing ? (
-          <>
-            <p className="text-3xl font-bold">{wallet?.totalBalance ?? 0} €</p>
-
-            <div className="card-actions justify-end">
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={() => {
-                  setNewBalance(wallet?.totalBalance || 0);
-                  setError("");
-                  setEditing(true);
-                }}
-              >
-                Edit
-              </button>
-            </div>
-          </>
+          <div>
+            <p className="text-3xl sm:text-4xl font-bold tracking-tight text-white transition-all duration-300">
+              €{wallet?.totalBalance?.toLocaleString(undefined, { minimumFractionDigits: 2 }) ?? "0.00"}
+            </p>
+          </div>
         ) : (
-          <>
-            <label htmlFor={balanceFieldId} className="label">
-              <span className="label-text font-medium">Balance amount</span>
-            </label>
+          <div className="space-y-3 pt-1 animate-fadeIn">
             <input
               id={balanceFieldId}
               type="number"
               inputMode="decimal"
-              className={`input input-bordered w-full ${error ? "input-error" : ""}`}
+              className="w-full px-4 py-2.5 rounded-xl bg-[#101010] border border-zinc-800 text-white focus:outline-none focus:border-[#FF5722] transition-colors text-sm"
               value={newBalance}
-              aria-label="Wallet balance"
               aria-invalid={Boolean(error)}
               aria-describedby={error ? balanceErrorId : undefined}
               onChange={(e) => {
@@ -80,29 +75,28 @@ function WalletCard({ wallet, onUpdate }) {
             />
 
             {error && (
-              <p id={balanceErrorId} className="mt-1 text-sm text-error" role="alert">
+              <p id={balanceErrorId} className="text-xs text-[#FF5722]" role="alert">
                 {error}
               </p>
             )}
 
-            <div className="flex gap-2 justify-end mt-4">
+            <div className="flex gap-2 justify-end text-xs">
               <button
-                className="btn btn-success btn-sm"
-                onClick={handleSave}
-                disabled={loading}
-              >
-                {loading ? "Saving..." : "Save"}
-              </button>
-
-              <button
-                className="btn btn-ghost btn-sm"
+                className="px-3 py-1.5 rounded-lg bg-zinc-800 text-gray-400 hover:text-white transition-colors"
                 onClick={handleCancel}
                 disabled={loading}
               >
                 Cancel
               </button>
+              <button
+                className="px-3 py-1.5 rounded-lg bg-[#FF5722] hover:bg-[#e44d1e] text-white font-medium transition-colors"
+                onClick={handleSave}
+                disabled={loading}
+              >
+                {loading ? "Saving..." : "Save"}
+              </button>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

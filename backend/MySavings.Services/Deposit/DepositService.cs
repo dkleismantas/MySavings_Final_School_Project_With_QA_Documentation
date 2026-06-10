@@ -1,3 +1,4 @@
+using System.Globalization;
 using MySavings.Data;
 using MySavings.Entities;
 using MySavings.Entities.Models;
@@ -42,12 +43,21 @@ namespace MySavings.Services
             if (goal.UserId != userId)
                 throw new UnauthorizedAccessException("You do not have access to this goal.");
 
+            if (goal.Status == SavingGoalStatus.Completed)
+                throw new InvalidOperationException("This goal is already completed.");
+
             var wallet =
                 await _walletRepository.GetByUserIdAsync(userId)
                 ?? throw new KeyNotFoundException("Wallet not found.");
 
             if (wallet.TotalBalance < amount)
                 throw new InvalidOperationException("Insufficient wallet balance.");
+
+            var remaining = goal.TargetAmount - goal.CurrentAmount;
+            if (amount > remaining)
+                throw new InvalidOperationException(
+                    $"Amount exceeds remaining goal amount of {remaining:F2}."
+                );
 
             var deposit = new Deposit
             {
@@ -99,7 +109,10 @@ namespace MySavings.Services
                 .ThenBy(g => g.Key.Month)
                 .Select(g => new MonthlyDepositSummaryResponse
                 {
-                    Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMMM yyyy"),
+                    Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString(
+                        "MMMM yyyy",
+                        CultureInfo.InvariantCulture
+                    ),
                     TotalAmount = g.Sum(d => d.Amount),
                 })
                 .ToList();
