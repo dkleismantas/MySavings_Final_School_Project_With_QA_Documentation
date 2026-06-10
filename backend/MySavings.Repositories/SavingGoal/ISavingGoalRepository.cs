@@ -13,7 +13,8 @@ namespace MySavings.Repositories
             DateTime? targetDateFrom,
             DateTime? targetDateTo,
             string? name,
-            string? sortBy);
+            string? sortBy,
+            string? sortDirection);
 
         Task<IEnumerable<SavingGoal>> GetAllAsync();
 

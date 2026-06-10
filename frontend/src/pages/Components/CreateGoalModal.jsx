@@ -1,8 +1,16 @@
-import { useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { createGoal } from "../../services/Goal";
 
 function CreateGoalModal({ isOpen, onClose, onGoalCreated }) {
+  const titleId = useId();
+  const amountId = useId();
+  const dateId = useId();
+  const modalTitleId = useId();
+  const modalDescriptionId = useId();
+  const apiErrorId = useId();
+  const titleInputRef = useRef(null);
+
   const {
     register,
     handleSubmit,
@@ -13,8 +21,18 @@ function CreateGoalModal({ isOpen, onClose, onGoalCreated }) {
   });
 
   const [apiError, setApiError] = useState("");
-
-  if (!isOpen) return null;
+  const titleField = register("title", {
+    required: "Title is required.",
+  });
+  const amountField = register("targetAmount", {
+    required: "Target amount is required.",
+    min: { value: 0.01, message: "Amount must be greater than 0." },
+  });
+  const dateField = register("targetDate", {
+    required: "Target date is required.",
+    validate: (value) =>
+      new Date(value) > new Date() || "Target date must be in the future.",
+  });
 
   const handleCreate = async (formData) => {
     setApiError("");
@@ -31,81 +49,134 @@ function CreateGoalModal({ isOpen, onClose, onGoalCreated }) {
     }
   };
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     reset();
     setApiError("");
     onClose();
-  };
+  }, [onClose, reset]);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    titleInputRef.current?.focus();
+
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") {
+        handleClose();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isOpen, handleClose]);
+
+  if (!isOpen) return null;
 
   return (
-    // backdrop
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      role="presentation"
       onClick={handleClose}
     >
-      {/* modal box — stop click from closing when clicking inside */}
       <div
-        className="bg-base-100 rounded-box w-full max-w-md p-6 shadow-xl"
+        className="w-full max-w-md rounded-box bg-base-100 p-6 shadow-xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={modalTitleId}
+        aria-describedby={modalDescriptionId}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold">Create New Goal</h2>
-          <button className="btn btn-ghost btn-sm" onClick={handleClose}>✕</button>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 id={modalTitleId} className="text-lg font-bold">
+            Create New Goal
+          </h2>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={handleClose}
+            aria-label="Close dialog"
+          >
+            Close
+          </button>
         </div>
+        <p id={modalDescriptionId} className="sr-only">
+          Fill in this form to create a new savings goal.
+        </p>
 
         <form onSubmit={handleSubmit(handleCreate)} noValidate>
           <div className="flex flex-col gap-4">
-            <div>
-              <label className="label">Goal title</label>
+            <div className="form-control">
+              <label htmlFor={titleId} className="label">
+                <span className="label-text font-medium">Goal title</span>
+              </label>
               <input
+                id={titleId}
                 type="text"
                 className={`input w-full ${errors.title ? "input-error" : ""}`}
                 placeholder="Title"
-                {...register("title", {
-                  required: "Title is required.",
-                })}
+                aria-invalid={Boolean(errors.title)}
+                aria-describedby={errors.title ? `${titleId}-error` : undefined}
+                {...titleField}
+                ref={(node) => {
+                  titleField.ref(node);
+                  titleInputRef.current = node;
+                }}
               />
               {errors.title && (
-                <p className="text-error text-sm mt-1">{errors.title.message}</p>
+                <p id={`${titleId}-error`} className="mt-1 text-sm text-error" role="alert">
+                  {errors.title.message}
+                </p>
               )}
             </div>
 
-            <div>
-              <label className="label">Target amount</label>
+            <div className="form-control">
+              <label htmlFor={amountId} className="label">
+                <span className="label-text font-medium">Target amount</span>
+              </label>
               <input
+                id={amountId}
                 type="number"
+                inputMode="decimal"
                 className={`input w-full ${errors.targetAmount ? "input-error" : ""}`}
                 placeholder="Amount"
-                {...register("targetAmount", {
-                  required: "Target amount is required.",
-                  min: { value: 0.01, message: "Amount must be greater than 0." },
-                })}
+                aria-invalid={Boolean(errors.targetAmount)}
+                aria-describedby={errors.targetAmount ? `${amountId}-error` : undefined}
+                {...amountField}
               />
               {errors.targetAmount && (
-                <p className="text-error text-sm mt-1">{errors.targetAmount.message}</p>
+                <p id={`${amountId}-error`} className="mt-1 text-sm text-error" role="alert">
+                  {errors.targetAmount.message}
+                </p>
               )}
             </div>
 
-            <div>
-              <label className="label">Target date</label>
+            <div className="form-control">
+              <label htmlFor={dateId} className="label">
+                <span className="label-text font-medium">Target date</span>
+              </label>
               <input
+                id={dateId}
                 type="date"
                 className={`input w-full ${errors.targetDate ? "input-error" : ""}`}
-                {...register("targetDate", {
-                  required: "Target date is required.",
-                  validate: (value) =>
-                    new Date(value) > new Date() || "Target date must be in the future.",
-                })}
+                aria-invalid={Boolean(errors.targetDate)}
+                aria-describedby={errors.targetDate ? `${dateId}-error` : undefined}
+                {...dateField}
               />
               {errors.targetDate && (
-                <p className="text-error text-sm mt-1">{errors.targetDate.message}</p>
+                <p id={`${dateId}-error`} className="mt-1 text-sm text-error" role="alert">
+                  {errors.targetDate.message}
+                </p>
               )}
             </div>
           </div>
 
-          {apiError && <p className="text-error text-sm mt-4">{apiError}</p>}
+          {apiError && (
+            <p id={apiErrorId} className="mt-4 text-sm text-error" role="alert">
+              {apiError}
+            </p>
+          )}
 
-          <div className="flex gap-2 justify-end mt-6">
+          <div className="mt-6 flex justify-end gap-2">
             <button
               type="button"
               className="btn btn-ghost"
