@@ -1,3 +1,7 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}

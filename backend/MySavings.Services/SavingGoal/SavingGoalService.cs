@@ -61,7 +61,8 @@ namespace MySavings.Services
             DateTime? targetDateFrom,
             DateTime? targetDateTo,
             string? name,
-            string? sortBy)
+            string? sortBy,
+            string? sortDirection)
         {
             return await _savingGoalRepository.GetByUserIdAsync(
                 userId,
@@ -69,7 +70,8 @@ namespace MySavings.Services
                 targetDateFrom,
                 targetDateTo,
                 name,
-                sortBy);
+                sortBy,
+                sortDirection);
         }
 
         public async Task<bool> UpdateAsync(SavingGoal savingGoal)
