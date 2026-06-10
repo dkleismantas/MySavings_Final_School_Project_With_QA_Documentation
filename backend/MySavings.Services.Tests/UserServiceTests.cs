@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using MySavings.Data;
 using MySavings.Entities;
@@ -27,6 +28,7 @@ namespace MySavings.Services.Tests
                 userRepositoryMock.Object,
                 walletRepositoryMock.Object,
                 passwordHasherMock.Object,
+                Mock.Of<ILogger<UserService>>(),
                 dbContextMock.Object
             );
         }
