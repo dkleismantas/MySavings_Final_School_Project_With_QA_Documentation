@@ -38,11 +38,6 @@ namespace MySavings.Services
                 throw new ArgumentException("Target amount must be greater than 0.");
             }
 
-            if (savingGoal.TargetDate.Date <= DateTime.UtcNow.Date)
-            {
-                throw new ArgumentException("Target date must be in the future.");
-            }
-
             var userExists = await _userRepository.GetByIdAsync(savingGoal.UserId);
             if (userExists == null)
             {
@@ -95,7 +90,7 @@ namespace MySavings.Services
             var goal = await _savingGoalRepository.GetByIdAsync(savingGoalId);
             if (goal == null)
             {
-                throw new ArgumentException("Saving goal not found.");
+                throw new KeyNotFoundException("Saving goal not found.");
             }
 
             if (goal.UserId != userId)

@@ -8,12 +8,15 @@ namespace MySavings.API.Models.SavingGoal
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Title is required.")]
+        [StringLength(128, ErrorMessage = "Title cannot exceed 128 characters.")]
         public string Title { get; set; }
 
         [Required(ErrorMessage = "Target amount is required.")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Target amount must be greater than 0.")]
         public decimal TargetAmount { get; set; }
 
         [Required(ErrorMessage = "Target date is required.")]
+        [FutureDate(ErrorMessage = "Target date must be in the future.")]
         public DateTime TargetDate { get; set; }
     }
 }

@@ -12,6 +12,7 @@ namespace MySavings.API.Models.SavingGoal
         public decimal TargetAmount { get; set; }
 
         [Required(ErrorMessage = "Įgyvendinimo data yra būtina.")]
+        [FutureDate(ErrorMessage = "Data turi būti ateityje.")]
         public DateTime TargetDate { get; set; }
     }
 }
