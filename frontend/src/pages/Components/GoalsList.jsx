@@ -108,16 +108,12 @@ const GoalsList = ({
                 className="input input-bordered w-full"
                 placeholder="Search by name"
                 value={draftFilters.name}
-                onChange={(e) => {
-                  const value = e.target.value;
-
+                onChange={(e) =>
                   setDraftFilters((prev) => ({
                     ...prev,
-                    name: value,
-                  }));
-
-                  onFilterChange("name", value);
-                }}
+                    name: e.target.value,
+                  }))
+                }
               />
 
               <select
@@ -169,6 +165,7 @@ const GoalsList = ({
                   type="button"
                   className="btn btn-primary w-full"
                   onClick={() => {
+                    onFilterChange("name", draftFilters.name);
                     onFilterChange("status", draftFilters.status);
                     onFilterChange(
                       "targetDateFrom",
