@@ -28,21 +28,8 @@ namespace MySavings.Services
                 throw new ArgumentException("Saving goal cannot be empty.");
             }
 
-            if (savingGoal.Title.Length > 128)
-            {
-                throw new ArgumentException("Title cannot exceed 128 characters.");
-            }
-
-            if (savingGoal.TargetAmount <= 0)
-            {
-                throw new ArgumentException("Target amount must be greater than 0.");
-            }
-
             var userExists = await _userRepository.GetByIdAsync(savingGoal.UserId);
-            if (userExists == null)
-            {
-                throw new ArgumentException("Invalid user ID.");
-            }
+          
 
             return await _savingGoalRepository.AddAsync(savingGoal);
         }
