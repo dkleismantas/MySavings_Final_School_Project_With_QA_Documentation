@@ -78,6 +78,12 @@ namespace MySavings.Services
             {
                 throw new ArgumentException("Saving goal not found.");
             }
+
+            if (savingGoal.Status == SavingGoalStatus.Completed && savingGoal.CurrentAmount < savingGoal.TargetAmount)
+            {
+                savingGoal.Status = SavingGoalStatus.Active;
+            }
+
             return await _savingGoalRepository.UpdateAsync(savingGoal);
         }
 
