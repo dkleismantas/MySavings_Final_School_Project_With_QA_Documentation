@@ -20,31 +20,11 @@ namespace MySavings.API.Controllers
         public async Task<IActionResult> CreateAsync([FromBody]
             CreateUserRequest createUser)
         {
-            try
-            {
-                var userId = await userService.AddAsync(createUser.UserName,
-                    createUser.Email, createUser.Password);
-                return Created($"/api/user/get-user/{userId}", userId);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var userId = await userService.AddAsync(createUser.UserName,
+                createUser.Email, createUser.Password);
+            return Created($"/api/user/get-user/{userId}", userId);
         }
-
-        // Endpointas skirtas testavimui
-        [Authorize(Policy = "adminOnly")]
-        [HttpGet("get-user/{id}")]
-        public async Task<IActionResult> GetAsync(int id)
-        {
-            var user = await userService.GetAsync(id);
-            if (user == null)
-            {
-                return NoContent();
-            }
-            return Ok(user);
-        }
-
+        
 
         [Authorize(Policy = "adminOnly")]
         [HttpPost("change-password")]
