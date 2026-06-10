@@ -58,7 +58,7 @@ namespace MySavings.API.Controllers
         // GET: api/savinggoal/get-saving-goals
         [HttpGet("get-saving-goals")]
         public async Task<IActionResult> GetByUserIdAsync(
-            [FromQuery] SavingGoalStatus? status,
+            [FromQuery] SavingGoalFilterStatus? status,
             [FromQuery] DateTime? targetDateFrom,
             [FromQuery] DateTime? targetDateTo,
             [FromQuery] string? name,
@@ -66,9 +66,12 @@ namespace MySavings.API.Controllers
             [FromQuery] string? sortDirection
         )
         {
+            SavingGoalStatus? goalStatus = status.HasValue
+          ? (SavingGoalStatus)(int)status.Value
+            : null;
             var savingGoals = await _savingGoalService.GetByUserIdAsync(
                 GetUserId(),
-                status,
+                goalStatus,
                 targetDateFrom,
                 targetDateTo,
                 name,
@@ -106,15 +109,7 @@ namespace MySavings.API.Controllers
         [HttpDelete("delete-saving-goal/{savingGoalId}")]
         public async Task<IActionResult> DeleteAsync(int savingGoalId)
         {
-            var savingGoal = await _savingGoalService.GetByIdAsync(savingGoalId);
-
-            if (savingGoal == null)
-                return NotFound();
-
-            if (savingGoal.UserId != GetUserId())
-                return Forbid();
-
-            await _savingGoalService.DeleteAsync(savingGoalId);
+            await _savingGoalService.DeleteAsync(savingGoalId, GetUserId());
             return Ok();
         }
     }

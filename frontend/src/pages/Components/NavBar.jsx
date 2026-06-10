@@ -10,7 +10,10 @@ function NavBar({ onGoalCreated }) {
   return (
     <>
       <header className="bg-base-200">
-        <nav className="navbar mx-auto w-full max-w-6xl px-4 sm:px-6" aria-label="Main">
+        <nav
+          className="navbar mx-auto w-full max-w-6xl px-4 sm:px-6"
+          aria-label="Main"
+        >
           <div>
             <Link to="/" className="text-lg font-bold">
               MySavings
@@ -37,10 +40,25 @@ function NavBar({ onGoalCreated }) {
                   Menu
                 </button>
                 <ul className="dropdown-content menu rounded-box z-1 mt-2 w-52 bg-base-100 p-2 shadow-sm">
+                  {user.role === "admin" && (
+                    <li>
+                      <a
+                        href="http://localhost:8081/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-neutral mt-4 w-full"
+                      >
+                        Open Seq Dashboard
+                      </a>
+                    </li>
+                  )}
                   {user && (
                     <>
                       <li>
-                        <button onClick={logout} className="btn btn-neutral mt-2 w-full">
+                        <button
+                          onClick={logout}
+                          className="btn btn-neutral mt-2 w-full"
+                        >
                           Log Out
                         </button>
                       </li>

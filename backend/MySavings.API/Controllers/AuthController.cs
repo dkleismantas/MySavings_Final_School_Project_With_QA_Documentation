@@ -6,16 +6,22 @@ using Shop.API;
 
 namespace MySavings.API.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly TokenService tokenService;
         private readonly IUserService userService;
 
-        public AuthController(TokenService tokenService, IUserService userService)
+        private readonly ILogger<AuthController> _logger;
+
+        public AuthController(TokenService tokenService,
+             IUserService userService,
+             ILogger<AuthController> logger)
         {
             this.tokenService = tokenService;
             this.userService = userService;
+            _logger = logger;
         }
 
         [HttpPost("login")]
@@ -24,6 +30,11 @@ namespace MySavings.API.Controllers
             var user = await userService.LoginAsync(loginRequest.Email, loginRequest.Password);
             if (user != null)
             {
+                _logger.LogInformation(
+                    "User login successful. UserId: {UserId}, Email: {Email}",
+                    user.Id,
+                    user.Email
+                );
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -47,6 +58,11 @@ namespace MySavings.API.Controllers
 
                 return Ok(new { accessToken });
             }
+
+            _logger.LogWarning(
+                   "Failed login attempt. Email: {Email}",
+                   loginRequest.Email
+               );
 
             return Unauthorized();
         }
