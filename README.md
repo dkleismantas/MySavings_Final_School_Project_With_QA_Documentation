@@ -40,7 +40,8 @@ npm run dev
 #### 4. Seq (logging) docker konteinerio sukūrimo komanda
 
 ```
-docker run -d --name MySavings-seq -e ACCEPT_EULA=Y -p 5341:5341 -p 8081:80 datalust/seq:latest
+docker run -d --name seq -p 5341:5341 -p 8081:80 -e ACCEPT_EULA=Y -e SEQ_FIRSTRUN_NOAUTHENTICATION=True datalust/seq:latest
+
 
 ```
 
