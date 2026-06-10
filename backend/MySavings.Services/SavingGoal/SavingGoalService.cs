@@ -29,7 +29,7 @@ namespace MySavings.Services
             }
 
             var userExists = await _userRepository.GetByIdAsync(savingGoal.UserId);
-          
+
 
             return await _savingGoalRepository.AddAsync(savingGoal);
         }

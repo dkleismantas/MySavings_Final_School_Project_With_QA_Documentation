@@ -3,16 +3,16 @@ namespace MySavings.API.Models.SavingGoal
 {
     public class CreateSavingGoalRequest
     {
-        [Required(ErrorMessage = "Tikslo pavadinimas yra būtinas.")]
-        [StringLength(128, ErrorMessage = "Tikslo pavadinimas negali būti ilgesnis nei 128 simboliai.")]
+        [Required(ErrorMessage = "Goal title is required.")]
+        [StringLength(128, ErrorMessage = "Goal title cannot be longer than 128 characters.")]
         public string Title { get; set; }
 
-        [Required(ErrorMessage = "Norima sutaupyti suma yra būtina.")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Suma turi būti didesnė už 0.")]
+        [Required(ErrorMessage = "Target amount is required.")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than 0.")]
         public decimal TargetAmount { get; set; }
 
-        [Required(ErrorMessage = "Įgyvendinimo data yra būtina.")]
-        [FutureDate(ErrorMessage = "Data turi būti ateityje.")]
+        [Required(ErrorMessage = "Target date is required.")]
+        [FutureDate(ErrorMessage = "Date must be in the future.")]
         public DateTime TargetDate { get; set; }
     }
 }
