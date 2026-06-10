@@ -1,16 +1,35 @@
 import { useState } from "react";
 
-function AddDepositForm({ onSubmit, saving }) {
+function AddDepositForm({ onSubmit, saving, goal, walletBalance }) {
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    if (!amount || Number(amount) <= 0) return;
+    const parsed = Number(amount);
 
-    await onSubmit({ amount: Number(amount), note });
+    if (!amount || parsed <= 0) {
+      setError("Amount must be greater than 0.");
+      return;
+    }
 
+    // ✅ prevent depositing more than wallet balance
+    if (parsed > walletBalance) {
+      setError(`Insufficient wallet balance. Available: €${walletBalance.toFixed(2)}`);
+      return;
+    }
+
+    // ✅ prevent depositing more than remaining goal amount
+    const remaining = goal.targetAmount - goal.currentAmount;
+    if (parsed > remaining) {
+      setError(`Amount exceeds remaining goal amount. Remaining: €${remaining.toFixed(2)}`);
+      return;
+    }
+
+    await onSubmit({ amount: parsed, note });
     setAmount("");
     setNote("");
   };
@@ -25,12 +44,20 @@ function AddDepositForm({ onSubmit, saving }) {
             <label className="label text-white mb-2">Amount</label>
             <input
               type="number"
-              className="input input-bordered w-full"
+              className={`input input-bordered w-full ${error ? "input-error" : ""}`}
               placeholder="€ 0.00"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              min="0.01"
+              step="0.01"
+              // ✅ block e, E, +, - keys — these are valid in number inputs but meaningless here
+              onKeyDown={(e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()}
+              onChange={(e) => {
+                setAmount(e.target.value);
+                setError("");
+              }}
               required
             />
+            {error && <p className="text-error text-sm mt-1">{error}</p>}
           </div>
 
           <div>
