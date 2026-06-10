@@ -26,3 +26,18 @@ export const getSavingGoalById = async (id) => {
   const response = await axiosInstance.get(`/api/SavingGoal/get-by-id/${id}`);
   return response.data;
 };
+
+// UPDATE GOAL
+export const updateGoal = async (id, data) => {
+  const response = await axiosInstance.put("/api/SavingGoal/update-saving-goal", {
+    id,
+    ...data,
+  });
+  return response.data;
+};
+
+// DELETE GOAL
+export const deleteGoal = async (id) => {
+  const response = await axiosInstance.delete(`/api/SavingGoal/delete-saving-goal/${id}`);
+  return response.data;
+};

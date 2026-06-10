@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+
 namespace MySavings.API.Models.SavingGoal
 {
     public class UpdateSavingGoalRequest
@@ -14,7 +15,5 @@ namespace MySavings.API.Models.SavingGoal
 
         [Required(ErrorMessage = "Target date is required.")]
         public DateTime TargetDate { get; set; }
-        
-        public decimal CurrentAmount { get; set; }
     }
 }

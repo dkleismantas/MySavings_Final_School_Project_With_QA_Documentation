@@ -21,7 +21,10 @@ builder.Services.AddControllers();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("adminOnly", policy => policy.RequireClaim("Role", "admin"));
-    options.AddPolicy("userOnly", policy => policy.RequireClaim("Role", "admin", "user"));
+    options.AddPolicy("userOnly", policy =>
+        policy.RequireAssertion(context =>
+            context.User.HasClaim("Role", "user") ||
+            context.User.HasClaim("Role", "admin")));
 });
 
 builder

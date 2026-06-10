@@ -27,14 +27,7 @@ const GoalsList = ({
 }) => {
   const navigate = useNavigate();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const filterPanelId = useId();
-  const filterButtonId = useId();
-  const sortById = useId();
-  const sortDirectionId = useId();
-  const nameFilterId = useId();
-  const statusFilterId = useId();
-  const dateFromId = useId();
-  const dateToId = useId();
+  const [draftFilters, setDraftFilters] = useState(filters);
 
   return (
     <section className="mx-auto mt-6 w-full max-w-4xl">
@@ -101,70 +94,93 @@ const GoalsList = ({
             className="rounded-box border border-base-300 bg-base-100 p-4"
           >
             <div className="space-y-3">
-              <div className="form-control">
-                <label htmlFor={nameFilterId} className="label">
-                  <span className="label-text font-medium">Search by name</span>
-                </label>
+              <input
+                type="text"
+                className="input input-bordered w-full"
+                placeholder="Search by name"
+                value={draftFilters.name}
+                onChange={(e) =>
+                  setDraftFilters((prev) => ({
+                    ...prev,
+                    name: e.target.value,
+                  }))
+                }
+              />
+
+              <select
+                className="select select-bordered w-full"
+                value={draftFilters.status}
+                onChange={(e) =>
+                  setDraftFilters((prev) => ({
+                    ...prev,
+                    status: e.target.value,
+                  }))
+                }
+              >
+                <option value="">All goals</option>
+                <option value="0">In progress</option>
+                <option value="1">Completed</option>
+              </select>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <input
                   id={nameFilterId}
                   type="text"
                   className="input input-bordered w-full"
-                  value={filters.name}
-                  onChange={(e) => onFilterChange("name", e.target.value)}
+                  value={draftFilters.targetDateFrom}
+                  onChange={(e) =>
+                    setDraftFilters((prev) => ({
+                      ...prev,
+                      targetDateFrom: e.target.value,
+                    }))
+                  }
                 />
               </div>
 
-              <div className="form-control">
-                <label htmlFor={statusFilterId} className="label">
-                  <span className="label-text font-medium">Status</span>
-                </label>
-                <select
-                  id={statusFilterId}
-                  className="select select-bordered w-full"
-                  value={filters.status}
-                  onChange={(e) => onFilterChange("status", e.target.value)}
-                >
-                  <option value="">All goals</option>
-                  <option value="0">In progress</option>
-                  <option value="1">Completed</option>
-                  <option value="2">Paused</option>
-                  <option value="3">Cancelled</option>
-                </select>
+                <input
+                  type="date"
+                  className="input input-bordered w-full"
+                  value={draftFilters.targetDateTo}
+                  onChange={(e) =>
+                    setDraftFilters((prev) => ({
+                      ...prev,
+                      targetDateTo: e.target.value,
+                    }))
+                  }
+                />
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="form-control">
-                  <label htmlFor={dateFromId} className="label">
-                    <span className="label-text font-medium">Target date from</span>
-                  </label>
-                  <input
-                    id={dateFromId}
-                    type="date"
-                    className="input input-bordered w-full"
-                    value={filters.targetDateFrom}
-                    onChange={(e) => onFilterChange("targetDateFrom", e.target.value)}
-                  />
-                </div>
+                <button
+                  type="button"
+                  className="btn btn-primary w-full"
+                  onClick={() => {
+                    onFilterChange("name", draftFilters.name);
+                    onFilterChange("status", draftFilters.status);
+                    onFilterChange(
+                      "targetDateFrom",
+                      draftFilters.targetDateFrom,
+                    );
+                    onFilterChange("targetDateTo", draftFilters.targetDateTo);
+                  }}
+                >
+                  Apply filters
+                </button>
 
-                <div className="form-control">
-                  <label htmlFor={dateToId} className="label">
-                    <span className="label-text font-medium">Target date to</span>
-                  </label>
-                  <input
-                    id={dateToId}
-                    type="date"
-                    className="input input-bordered w-full"
-                    value={filters.targetDateTo}
-                    onChange={(e) => onFilterChange("targetDateTo", e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="pt-1">
                 <button
                   type="button"
                   className="btn btn-ghost w-full"
-                  onClick={onClearFilters}
+                  onClick={() => {
+                    const emptyFilters = {
+                      status: "",
+                      targetDateFrom: "",
+                      targetDateTo: "",
+                      name: "",
+                    };
+
+                    setDraftFilters(emptyFilters);
+                    onClearFilters();
+                  }}
                 >
                   Clear filters
                 </button>

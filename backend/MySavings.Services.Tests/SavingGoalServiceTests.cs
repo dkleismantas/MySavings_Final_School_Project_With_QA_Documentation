@@ -6,10 +6,8 @@ namespace MySavings.Services.Tests
 {
     public class SavingGoalServiceTests
     {
-        private readonly Mock<ISavingGoalRepository> savingGoalRepositoryMock =
-            new Mock<ISavingGoalRepository>();
-        private readonly Mock<IUserRepository> userRepositoryMock =
-            new Mock<IUserRepository>();
+        private readonly Mock<ISavingGoalRepository> savingGoalRepositoryMock = new();
+        private readonly Mock<IUserRepository> userRepositoryMock = new();
         private readonly SavingGoalService savingGoalService;
 
         public SavingGoalServiceTests()
@@ -78,6 +76,22 @@ namespace MySavings.Services.Tests
                         sortBy,
                         sortDirection
                     ),
+                .Setup(repo => repo.GetByUserIdAsync(
+                    userId,
+                    null,
+                    null,
+                    null,
+                    null,
+                    sortBy))
+                .ReturnsAsync(expectedGoals);
+
+            var result = await savingGoalService.GetByUserIdAsync(
+                userId, null, null, null, null, sortBy);
+
+            Assert.Equal(expectedGoals, result);
+            savingGoalRepositoryMock.Verify(
+                repo => repo.GetByUserIdAsync(
+                    userId, null, null, null, null, sortBy),
                 Times.Once
             );
         }
@@ -116,6 +130,12 @@ namespace MySavings.Services.Tests
                 sortBy,
                 sortDirection
             );
+                .Setup(repo => repo.GetByUserIdAsync(
+                    userId, null, null, null, null, "newest"))
+                .ReturnsAsync(expectedGoals);
+
+            var result = await savingGoalService.GetByUserIdAsync(
+                userId, null, null, null, null, "newest");
 
             Assert.Empty(result);
         }
