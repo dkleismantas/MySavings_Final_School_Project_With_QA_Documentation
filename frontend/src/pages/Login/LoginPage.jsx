@@ -33,8 +33,8 @@ return (
           {/* Logo Headers */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <img src={mainIcon} alt="Savings Tracker Logo" className="w-8 h-8 2xl:w-10 2xl:h-10 object-contain" />
-              <span className="text-xl 2xl:text-2xl font-semibold tracking-wide">Savings Tracker</span>
+              <img src={mainIcon} alt="MySavings Logo" className="w-8 h-8 2xl:w-10 2xl:h-10 object-contain" />
+              <span className="text-xl 2xl:text-2xl font-semibold tracking-wide">MySavings</span>
             </div>
             
             <div>

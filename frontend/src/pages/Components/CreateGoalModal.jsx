@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { createGoal } from "../../services/Goal";
+import { FiX } from "react-icons/fi";
 
 function CreateGoalModal({ isOpen, onClose, onGoalCreated }) {
   const titleId = useId();
@@ -21,6 +22,7 @@ function CreateGoalModal({ isOpen, onClose, onGoalCreated }) {
   });
 
   const [apiError, setApiError] = useState("");
+  
   const titleField = register("title", {
     required: "Title is required.",
     maxLength: { value: 128, message: "Title cannot exceed 128 characters." },
@@ -37,15 +39,13 @@ function CreateGoalModal({ isOpen, onClose, onGoalCreated }) {
 
   const handleCreate = async (formData) => {
     setApiError("");
-
     try {
-      await createGoal(formData); // ✅ no userId needed
+      await createGoal(formData);
       reset();
-      onGoalCreated?.(); // ✅ notify parent to refresh goals list
+      onGoalCreated?.();
       onClose();
     } catch (error) {
-      const message =
-        error.response?.data?.error ?? "Server error. Please try again.";
+      const message = error.response?.data?.error ?? "Server error. Please try again.";
       setApiError(message);
     }
   };
@@ -59,128 +59,137 @@ function CreateGoalModal({ isOpen, onClose, onGoalCreated }) {
   useEffect(() => {
     if (!isOpen) return undefined;
 
-    titleInputRef.current?.focus();
+    // Timeout delay guarantees focus runs smoothly after animation frames end
+    const timer = setTimeout(() => titleInputRef.current?.focus(), 50);
 
     const onKeyDown = (event) => {
-      if (event.key === "Escape") {
-        handleClose();
-      }
+      if (event.key === "Escape") handleClose();
     };
 
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      clearTimeout(timer);
+    };
   }, [isOpen, handleClose]);
 
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-fadeIn"
       role="presentation"
       onClick={handleClose}
     >
       <div
-        className="w-full max-w-md rounded-box bg-base-100 p-6 shadow-xl"
+        className="w-full max-w-md rounded-2xl bg-[#18181b] border border-zinc-800 p-6 shadow-2xl relative"
         role="dialog"
         aria-modal="true"
         aria-labelledby={modalTitleId}
         aria-describedby={modalDescriptionId}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 id={modalTitleId} className="text-lg font-bold">
+        {/* Header section with closing cross button triggers */}
+        <div className="mb-6 flex items-center justify-between">
+          <h2 id={modalTitleId} className="text-xl font-bold tracking-tight text-white">
             Create New Goal
           </h2>
           <button
             type="button"
-            className="btn btn-ghost btn-sm"
+            className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-900 transition-colors"
             onClick={handleClose}
             aria-label="Close dialog"
           >
-            Close
+            <FiX className="w-5 h-5" />
           </button>
         </div>
+        
         <p id={modalDescriptionId} className="sr-only">
           Fill in this form to create a new savings goal.
         </p>
 
-        <form onSubmit={handleSubmit(handleCreate)} noValidate>
-          <div className="flex flex-col gap-4">
-            <div className="form-control">
-              <label htmlFor={titleId} className="label">
-                <span className="label-text font-medium">Goal title</span>
-              </label>
-              <input
-                id={titleId}
-                type="text"
-                className={`input w-full ${errors.title ? "input-error" : ""}`}
-                placeholder="Title"
-                aria-invalid={Boolean(errors.title)}
-                aria-describedby={errors.title ? `${titleId}-error` : undefined}
-                {...titleField}
-                ref={(node) => {
-                  titleField.ref(node);
-                  titleInputRef.current = node;
-                }}
-              />
-              {errors.title && (
-                <p id={`${titleId}-error`} className="mt-1 text-sm text-error" role="alert">
-                  {errors.title.message}
-                </p>
-              )}
-            </div>
-
-            <div className="form-control">
-              <label htmlFor={amountId} className="label">
-                <span className="label-text font-medium">Target amount</span>
-              </label>
-              <input
-                id={amountId}
-                type="number"
-                inputMode="decimal"
-                className={`input w-full ${errors.targetAmount ? "input-error" : ""}`}
-                placeholder="Amount"
-                aria-invalid={Boolean(errors.targetAmount)}
-                aria-describedby={errors.targetAmount ? `${amountId}-error` : undefined}
-                {...amountField}
-              />
-              {errors.targetAmount && (
-                <p id={`${amountId}-error`} className="mt-1 text-sm text-error" role="alert">
-                  {errors.targetAmount.message}
-                </p>
-              )}
-            </div>
-
-            <div className="form-control">
-              <label htmlFor={dateId} className="label">
-                <span className="label-text font-medium">Target date</span>
-              </label>
-              <input
-                id={dateId}
-                type="date"
-                className={`input w-full ${errors.targetDate ? "input-error" : ""}`}
-                aria-invalid={Boolean(errors.targetDate)}
-                aria-describedby={errors.targetDate ? `${dateId}-error` : undefined}
-                {...dateField}
-              />
-              {errors.targetDate && (
-                <p id={`${dateId}-error`} className="mt-1 text-sm text-error" role="alert">
-                  {errors.targetDate.message}
-                </p>
-              )}
-            </div>
+        <form onSubmit={handleSubmit(handleCreate)} noValidate className="space-y-4">
+          
+          {/* Goal Title Field */}
+          <div className="flex flex-col space-y-1.5">
+            <label htmlFor={titleId} className="text-sm font-medium text-gray-300">
+              Goal title
+            </label>
+            <input
+              id={titleId}
+              type="text"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#101010] border border-zinc-800 text-white focus:outline-none focus:border-[#FF5722] transition-colors placeholder-zinc-600 text-sm"
+              placeholder="e.g., New Laptop, Summer Trip"
+              aria-invalid={Boolean(errors.title)}
+              aria-describedby={errors.title ? `${titleId}-error` : undefined}
+              {...titleField}
+              ref={(node) => {
+                titleField.ref(node);
+                titleInputRef.current = node;
+              }}
+            />
+            {errors.title && (
+              <p id={`${titleId}-error`} className="text-xs text-[#FF5722] font-medium" role="alert">
+                {errors.title.message}
+              </p>
+            )}
           </div>
 
+          {/* Target Amount Field */}
+          <div className="flex flex-col space-y-1.5">
+            <label htmlFor={amountId} className="text-sm font-medium text-gray-300">
+              Target amount (€)
+            </label>
+            <input
+              id={amountId}
+              type="number"
+              inputMode="decimal"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#101010] border border-zinc-800 text-white focus:outline-none focus:border-[#FF5722] transition-colors placeholder-zinc-600 text-sm"
+              placeholder="0.00"
+              aria-invalid={Boolean(errors.targetAmount)}
+              aria-describedby={errors.targetAmount ? `${amountId}-error` : undefined}
+              {...amountField}
+            />
+            {errors.targetAmount && (
+              <p id={`${amountId}-error`} className="text-xs text-[#FF5722] font-medium" role="alert">
+                {errors.targetAmount.message}
+              </p>
+            )}
+          </div>
+
+          {/* Target Date Field */}
+          <div className="flex flex-col space-y-1.5">
+            <label htmlFor={dateId} className="text-sm font-medium text-gray-300">
+              Target date
+            </label>
+            <input
+              id={dateId}
+              type="date"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#101010] border border-zinc-800 text-white focus:outline-none focus:border-[#FF5722] transition-colors text-sm color-scheme-dark secondary-date-picker"
+              style={{ colorScheme: 'dark' }} // Native browser date icon override dark utility
+              aria-invalid={Boolean(errors.targetDate)}
+              aria-describedby={errors.targetDate ? `${dateId}-error` : undefined}
+              {...dateField}
+            />
+            {errors.targetDate && (
+              <p id={`${dateId}-error`} className="text-xs text-[#FF5722] font-medium" role="alert">
+                {errors.targetDate.message}
+              </p>
+            )}
+          </div>
+
+          {/* API Server Warning Responses */}
           {apiError && (
-            <p id={apiErrorId} className="mt-4 text-sm text-error" role="alert">
+            <p id={apiErrorId} className="text-sm text-[#FF5722] bg-[#2a1410] p-3 rounded-xl border border-[#FF5722]/20 font-medium" role="alert">
               {apiError}
             </p>
           )}
 
-          <div className="mt-6 flex justify-end gap-2">
+          {/* Action Trigger Buttons Container */}
+          <div className="mt-6 flex justify-end gap-3 pt-2">
             <button
               type="button"
-              className="btn btn-ghost"
+              className="px-4 py-2.5 text-sm font-medium text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-900 transition-colors"
               onClick={handleClose}
               disabled={isSubmitting}
             >
@@ -188,12 +197,13 @@ function CreateGoalModal({ isOpen, onClose, onGoalCreated }) {
             </button>
             <button
               type="submit"
-              className="btn btn-neutral"
+              className="px-5 py-2.5 text-sm font-semibold bg-[#FF5722] hover:bg-[#e44d1e] text-white rounded-xl transition-all shadow-lg shadow-[#FF5722]/10"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Creating..." : "Create goal"}
             </button>
           </div>
+
         </form>
       </div>
     </div>
