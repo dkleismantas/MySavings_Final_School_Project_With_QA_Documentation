@@ -31,7 +31,8 @@ namespace MySavings.Repositories
             DateTime? targetDateFrom,
             DateTime? targetDateTo,
             string? name,
-            string? sortBy)
+            string? sortBy,
+            string? sortDirection)
         {
             var query = dbContext.SavingGoals
                 .Where(sg => sg.UserId == userId)
@@ -59,13 +60,31 @@ namespace MySavings.Repositories
                 query = query.Where(sg => sg.Title.Contains(searchName));
             }
 
+            var normalizedDirection = sortDirection?.Trim().ToLowerInvariant();
+            var isDirectionProvided = !string.IsNullOrWhiteSpace(normalizedDirection);
+            var isDescending = normalizedDirection switch
+            {
+                null or "" or "desc" or "descending" => true,
+                "asc" or "ascending" => false,
+                _ => throw new ArgumentException("Invalid sort direction."),
+            };
+
             query = sortBy?.ToLowerInvariant() switch
             {
-                null or "" or "newest" => query.OrderByDescending(sg => sg.Id),
-                "deadline" => query.OrderBy(sg => sg.TargetDate),
-                "amount" => query.OrderByDescending(sg => sg.TargetAmount),
-                "progress" => query.OrderByDescending(sg =>
-                    sg.TargetAmount > 0 ? sg.CurrentAmount / sg.TargetAmount : 0),
+                null or "" or "newest" => (isDirectionProvided ? isDescending : true)
+                    ? query.OrderByDescending(sg => sg.Id)
+                    : query.OrderBy(sg => sg.Id),
+                "deadline" => (isDirectionProvided ? isDescending : false)
+                    ? query.OrderByDescending(sg => sg.TargetDate)
+                    : query.OrderBy(sg => sg.TargetDate),
+                "amount" => (isDirectionProvided ? isDescending : true)
+                    ? query.OrderByDescending(sg => sg.TargetAmount)
+                    : query.OrderBy(sg => sg.TargetAmount),
+                "progress" => (isDirectionProvided ? isDescending : true)
+                    ? query.OrderByDescending(sg =>
+                        sg.TargetAmount > 0 ? sg.CurrentAmount / sg.TargetAmount : 0)
+                    : query.OrderBy(sg =>
+                        sg.TargetAmount > 0 ? sg.CurrentAmount / sg.TargetAmount : 0),
                 _ => throw new ArgumentException("Invalid sort parameter."),
             };
 

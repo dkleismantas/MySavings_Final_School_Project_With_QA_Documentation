@@ -62,7 +62,8 @@ namespace MySavings.API.Controllers
             [FromQuery] DateTime? targetDateFrom,
             [FromQuery] DateTime? targetDateTo,
             [FromQuery] string? name,
-            [FromQuery] string? sortBy
+            [FromQuery] string? sortBy,
+            [FromQuery] string? sortDirection
         )
         {
             var savingGoals = await _savingGoalService.GetByUserIdAsync(
@@ -71,7 +72,8 @@ namespace MySavings.API.Controllers
                 targetDateFrom,
                 targetDateTo,
                 name,
-                sortBy
+                sortBy,
+                sortDirection
             );
 
             if (savingGoals == null || !savingGoals.Any())

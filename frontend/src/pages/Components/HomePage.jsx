@@ -35,6 +35,7 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
   const [goalsLoading, setGoalsLoading] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
+  const [sortDirection, setSortDirection] = useState("desc");
   const [refreshKey, setRefreshKey] = useState(0);
 
 
@@ -68,7 +69,11 @@ function HomePage() {
 
       try {
         setGoalsLoading(true);
-        const goalsRes = await getSavingGoalsByUserId({ ...goalFilters, sortBy });
+        const goalsRes = await getSavingGoalsByUserId({
+          ...goalFilters,
+          sortBy,
+          sortDirection,
+        });
         setGoals(goalsRes);
       } catch (error) {
         console.error("Failed to fetch sorted goals:", error);
@@ -78,7 +83,7 @@ function HomePage() {
     };
 
     fetchSortedGoals();
-  }, [user, goalFilters, sortBy, refreshKey]);
+  }, [user, goalFilters, sortBy, sortDirection, refreshKey]);
 
   // MONTHLY CHART DATA
   useEffect(() => {
@@ -141,7 +146,9 @@ function HomePage() {
         <GoalsList
           goals={goals}
           sortBy={sortBy}
+          sortDirection={sortDirection}
           onSortChange={setSortBy}
+          onSortDirectionChange={setSortDirection}
           loading={goalsLoading}
           filters={goalFilters}
           onFilterChange={handleGoalFilterChange}

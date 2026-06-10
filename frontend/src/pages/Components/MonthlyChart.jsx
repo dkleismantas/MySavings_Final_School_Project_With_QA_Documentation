@@ -20,13 +20,16 @@ ChartJS.register(
 );
 
 const MonthlyChart = ({ data }) => {
-
   if (!data || data.length === 0) {
     return (
-      <div className="card bg-base-100 shadow p-4">
-        <h2 className="text-lg font-bold mb-4">Monthly deposits</h2>
-        <p className="text-base-content/50 text-sm">No deposit data yet.</p>
-      </div>
+      <section className="card bg-base-100 p-4 shadow" aria-labelledby="monthly-chart-heading">
+        <h2 id="monthly-chart-heading" className="mb-4 text-lg font-bold">
+          Monthly deposits
+        </h2>
+        <p role="status" aria-live="polite" className="text-sm text-base-content">
+          No deposit data available yet.
+        </p>
+      </section>
     );
   }
 
@@ -36,7 +39,7 @@ const MonthlyChart = ({ data }) => {
       {
         label: "Monthly deposits",
         data: data.map((item) => item.totalAmount),
-        backgroundColor: "#4f46e5",
+        backgroundColor: "#1d4ed8",
       },
     ],
   };
@@ -52,15 +55,24 @@ const MonthlyChart = ({ data }) => {
   };
 
   return (
-    <div className="card bg-base-100 shadow p-4">
-        <h2 className="text-lg font-bold mb-4">
-            Monthly deposits
-        </h2>
+    <section className="card bg-base-100 p-4 shadow" aria-labelledby="monthly-chart-heading">
+      <h2 id="monthly-chart-heading" className="mb-4 text-lg font-bold">
+        Monthly deposits
+      </h2>
+      <p id="monthly-chart-description" className="sr-only">
+        Bar chart of monthly deposited amounts.
+      </p>
 
-        <div className="h-80">
-            <Bar data={chartData} options={options} />
-        </div>
-    </div>
+      <div className="h-64 sm:h-80">
+        <Bar
+          data={chartData}
+          options={options}
+          role="img"
+          aria-label="Monthly deposits bar chart"
+          aria-describedby="monthly-chart-description"
+        />
+      </div>
+    </section>
   );
 };
 

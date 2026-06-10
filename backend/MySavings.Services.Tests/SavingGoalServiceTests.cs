@@ -23,6 +23,11 @@ namespace MySavings.Services.Tests
         {
             const int userId = 7;
             const string sortBy = "deadline";
+            const string sortDirection = "asc";
+            SavingGoalStatus? status = null;
+            DateTime? targetDateFrom = null;
+            DateTime? targetDateTo = null;
+            string? name = null;
             var expectedGoals = new List<SavingGoal>
             {
                 new SavingGoal
@@ -37,6 +42,40 @@ namespace MySavings.Services.Tests
             };
 
             savingGoalRepositoryMock
+                .Setup(repository =>
+                    repository.GetByUserIdAsync(
+                        userId,
+                        status,
+                        targetDateFrom,
+                        targetDateTo,
+                        name,
+                        sortBy,
+                        sortDirection
+                    ))
+                .ReturnsAsync(expectedGoals);
+
+            var result = await savingGoalService.GetByUserIdAsync(
+                userId,
+                status,
+                targetDateFrom,
+                targetDateTo,
+                name,
+                sortBy,
+                sortDirection
+            );
+
+            Assert.Equal(expectedGoals, result);
+            savingGoalRepositoryMock.Verify(
+                repository =>
+                    repository.GetByUserIdAsync(
+                        userId,
+                        status,
+                        targetDateFrom,
+                        targetDateTo,
+                        name,
+                        sortBy,
+                        sortDirection
+                    ),
                 .Setup(repo => repo.GetByUserIdAsync(
                     userId,
                     null,
@@ -61,9 +100,36 @@ namespace MySavings.Services.Tests
         public async Task GetByUserIdAsync_ReturnsEmptyList_WhenRepositoryHasNoGoals()
         {
             const int userId = 7;
+            const string sortBy = "newest";
+            const string sortDirection = "desc";
+            SavingGoalStatus? status = null;
+            DateTime? targetDateFrom = null;
+            DateTime? targetDateTo = null;
+            string? name = null;
             var expectedGoals = Enumerable.Empty<SavingGoal>();
 
             savingGoalRepositoryMock
+                .Setup(repository =>
+                    repository.GetByUserIdAsync(
+                        userId,
+                        status,
+                        targetDateFrom,
+                        targetDateTo,
+                        name,
+                        sortBy,
+                        sortDirection
+                    ))
+                .ReturnsAsync(expectedGoals);
+
+            var result = await savingGoalService.GetByUserIdAsync(
+                userId,
+                status,
+                targetDateFrom,
+                targetDateTo,
+                name,
+                sortBy,
+                sortDirection
+            );
                 .Setup(repo => repo.GetByUserIdAsync(
                     userId, null, null, null, null, "newest"))
                 .ReturnsAsync(expectedGoals);
