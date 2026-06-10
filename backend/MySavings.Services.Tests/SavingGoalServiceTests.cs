@@ -28,17 +28,18 @@ namespace MySavings.Services.Tests
             DateTime? targetDateFrom = null;
             DateTime? targetDateTo = null;
             string? name = null;
+
             var expectedGoals = new List<SavingGoal>
             {
-                new SavingGoal
+                new()
                 {
                     Id = 1,
                     Title = "Trip",
                     UserId = userId,
                     TargetAmount = 1000,
                     CurrentAmount = 250,
-                    TargetDate = DateTime.UtcNow.AddMonths(2)
-                }
+                    TargetDate = DateTime.UtcNow.AddMonths(2),
+                },
             };
 
             savingGoalRepositoryMock
@@ -51,7 +52,8 @@ namespace MySavings.Services.Tests
                         name,
                         sortBy,
                         sortDirection
-                    ))
+                    )
+                )
                 .ReturnsAsync(expectedGoals);
 
             var result = await savingGoalService.GetByUserIdAsync(
@@ -76,22 +78,6 @@ namespace MySavings.Services.Tests
                         sortBy,
                         sortDirection
                     ),
-                .Setup(repo => repo.GetByUserIdAsync(
-                    userId,
-                    null,
-                    null,
-                    null,
-                    null,
-                    sortBy))
-                .ReturnsAsync(expectedGoals);
-
-            var result = await savingGoalService.GetByUserIdAsync(
-                userId, null, null, null, null, sortBy);
-
-            Assert.Equal(expectedGoals, result);
-            savingGoalRepositoryMock.Verify(
-                repo => repo.GetByUserIdAsync(
-                    userId, null, null, null, null, sortBy),
                 Times.Once
             );
         }
@@ -106,6 +92,7 @@ namespace MySavings.Services.Tests
             DateTime? targetDateFrom = null;
             DateTime? targetDateTo = null;
             string? name = null;
+
             var expectedGoals = Enumerable.Empty<SavingGoal>();
 
             savingGoalRepositoryMock
@@ -118,7 +105,8 @@ namespace MySavings.Services.Tests
                         name,
                         sortBy,
                         sortDirection
-                    ))
+                    )
+                )
                 .ReturnsAsync(expectedGoals);
 
             var result = await savingGoalService.GetByUserIdAsync(
@@ -130,12 +118,6 @@ namespace MySavings.Services.Tests
                 sortBy,
                 sortDirection
             );
-                .Setup(repo => repo.GetByUserIdAsync(
-                    userId, null, null, null, null, "newest"))
-                .ReturnsAsync(expectedGoals);
-
-            var result = await savingGoalService.GetByUserIdAsync(
-                userId, null, null, null, null, "newest");
 
             Assert.Empty(result);
         }
