@@ -142,12 +142,23 @@ function DetailsPage() {
             <GoalCardDetails goal={goal} />
           </div>
           <div>
-            <AddDepositForm 
-              onSubmit={handleSubmit} 
-              saving={saving} 
-              goal={goal}                              
-              walletBalance={wallet?.totalBalance ?? 0}
-            />
+            {goal.status === 0 ? (
+              <AddDepositForm
+                onSubmit={handleSubmit}
+                saving={saving}
+                goal={goal}
+                walletBalance={wallet?.totalBalance ?? 0}
+              />
+            ) : (
+              <div className="card bg-base-100 shadow-xl">
+                <div className="card-body">
+                  <h2 className="card-title">🎉 Goal Completed!</h2>
+                  <p className="text-base-content/60">
+                    This goal has been reached. No more deposits needed.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

@@ -16,13 +16,11 @@ function AddDepositForm({ onSubmit, saving, goal, walletBalance }) {
       return;
     }
 
-    // ✅ prevent depositing more than wallet balance
     if (parsed > walletBalance) {
       setError(`Insufficient wallet balance. Available: €${walletBalance.toFixed(2)}`);
       return;
     }
 
-    // ✅ prevent depositing more than remaining goal amount
     const remaining = goal.targetAmount - goal.currentAmount;
     if (parsed > remaining) {
       setError(`Amount exceeds remaining goal amount. Remaining: €${remaining.toFixed(2)}`);
@@ -49,7 +47,6 @@ function AddDepositForm({ onSubmit, saving, goal, walletBalance }) {
               value={amount}
               min="0.01"
               step="0.01"
-              // ✅ block e, E, +, - keys — these are valid in number inputs but meaningless here
               onKeyDown={(e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()}
               onChange={(e) => {
                 setAmount(e.target.value);
