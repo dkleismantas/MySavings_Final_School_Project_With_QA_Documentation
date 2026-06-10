@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Moq;
 using MySavings.Entities;
 using MySavings.Repositories;
@@ -16,7 +17,8 @@ namespace MySavings.Services.Tests
             savingGoalService = new SavingGoalService(
                 savingGoalRepositoryMock.Object,
                 userRepositoryMock.Object,
-                walletServiceMock.Object
+                walletServiceMock.Object,
+                Mock.Of<ILogger<SavingGoalService>>()
             );
         }
 

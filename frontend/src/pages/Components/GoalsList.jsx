@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiSliders, FiArrowDown, FiArrowUp } from "react-icons/fi";
 import GoalCard from "./GoalCard";
@@ -25,6 +25,30 @@ const GoalsList = ({
   const filterPanelId = useId();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [draftFilters, setDraftFilters] = useState(filters);
+  const searchTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleNameSearchChange = (value) => {
+    setDraftFilters((prev) => ({
+      ...prev,
+      name: value,
+    }));
+
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      onFilterChange("name", value);
+    }, 1000);
+  };
 
   const toggleDirection = () => {
     onSortDirectionChange(sortDirection === "desc" ? "asc" : "desc");
@@ -96,7 +120,7 @@ const GoalsList = ({
                 className="w-full px-4 py-2.5 rounded-xl bg-[#1c1c21] border border-zinc-800 text-white text-sm focus:outline-none focus:border-zinc-700 placeholder-zinc-600"
                 placeholder="Search by name..."
                 value={draftFilters.name ?? ""}
-                onChange={(e) => setDraftFilters(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) => handleNameSearchChange(e.target.value)}
               />
             </div>
 
@@ -145,6 +169,9 @@ const GoalsList = ({
               className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
               onClick={() => {
                 const emptyFilters = { status: "", targetDateFrom: "", targetDateTo: "", name: "" };
+                if (searchTimeoutRef.current) {
+                  clearTimeout(searchTimeoutRef.current);
+                }
                 setDraftFilters(emptyFilters);
                 onClearFilters();
               }}

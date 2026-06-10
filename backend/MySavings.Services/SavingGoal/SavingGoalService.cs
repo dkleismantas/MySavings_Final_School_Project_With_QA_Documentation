@@ -13,15 +13,17 @@ namespace MySavings.Services
 
         private readonly ILogger<SavingGoalService> _logger;
 
-       public SavingGoalService(
-            ISavingGoalRepository savingGoalRepository,
-            IUserRepository userRepository,
-            IWalletService walletService
-        )
+        public SavingGoalService(
+             ISavingGoalRepository savingGoalRepository,
+             IUserRepository userRepository,
+             IWalletService walletService,
+             ILogger<SavingGoalService> logger
+         )
         {
             _savingGoalRepository = savingGoalRepository;
             _userRepository = userRepository;
             _walletService = walletService;
+            _logger = logger;
         }
 
         public async Task<int> AddAsync(SavingGoal savingGoal)
