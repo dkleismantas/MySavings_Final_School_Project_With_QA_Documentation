@@ -72,6 +72,7 @@ function EditGoalModal({ isOpen, onClose, goal, onGoalUpdated }) {
                 placeholder="Title"
                 {...register("title", {
                   required: "Title is required.",
+                  maxLength: { value: 30, message: "Title cannot exceed 30 characters." },
                 })}
               />
               {errors.title && (
