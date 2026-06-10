@@ -35,7 +35,7 @@ dotnet run
 *\*leidžiama iš ./frontend/ direktorijos*
 ```
 npm run dev
-```
+```git
 
 #### 4. Seq (logging) docker konteinerio sukūrimo komanda
 
