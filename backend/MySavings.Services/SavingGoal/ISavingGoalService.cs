@@ -19,6 +19,6 @@ namespace MySavings.Services
         Task<IEnumerable<SavingGoal>> GetAllAsync();
 
         Task<bool> UpdateAsync(SavingGoal savingGoal);
-        Task<bool> DeleteAsync(int savingGoalId);
+        Task<bool> DeleteAsync(int savingGoalId, int userId);
     }
 }
