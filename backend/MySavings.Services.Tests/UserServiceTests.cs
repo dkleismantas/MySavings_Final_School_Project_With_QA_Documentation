@@ -112,7 +112,7 @@ namespace MySavings.Services.Tests
             userRepositoryMock.Setup(dbContext => dbContext.GetByEmailAsync(email))
                 .ReturnsAsync(user);
 
-            passwordHasherMock.Setup(hasher => hasher.VerifyHashedPassword(user, 
+            passwordHasherMock.Setup(hasher => hasher.VerifyHashedPassword(user,
                 user.PasswordHash, password)).Returns(PasswordVerificationResult.Success);
 
             var result = await userService.LoginAsync(email, password);
