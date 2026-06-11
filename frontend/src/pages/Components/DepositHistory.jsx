@@ -6,7 +6,7 @@ function DepositHistory({ deposits }) {
       <div className="flex items-center justify-between border-b border-zinc-800/60 pb-4 mb-2">
         <h2 className="text-xl md:text-2xl font-bold text-zinc-100 tracking-tight">Deposit history</h2>
         {deposits.length > 0 && (
-          <span className="text-xs md:text-sm font-semibold text-zinc-500 bg-zinc-900 px-3 py-1 rounded-full border border-zinc-800/40">
+          <span className="text-xs md:text-sm font-semibold text-zinc-300 bg-zinc-900 px-3 py-1 rounded-full border border-zinc-800/40">
             {deposits.length} {deposits.length === 1 ? "deposit" : "deposits"}
           </span>
         )}

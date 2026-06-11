@@ -152,7 +152,7 @@ function EditGoalModal({ isOpen, onClose, goal, onGoalUpdated }) {
             </button>
             <button
               type="submit"
-              className="px-6 py-3 rounded-full bg-[#FF4E11] text-sm font-bold text-white shadow-lg shadow-[#FF4E11]/10 hover:bg-[#E24009] transition-all active:scale-95 disabled:opacity-50"
+              className="px-6 py-3 rounded-full bg-[#E03400] text-sm font-bold text-white shadow-lg shadow-[#FF4E11]/10 hover:bg-[#E24009] transition-all active:scale-95 disabled:opacity-50"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Saving..." : "Save changes"}

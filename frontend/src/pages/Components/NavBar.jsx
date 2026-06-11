@@ -4,7 +4,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { FiMenu, FiX, FiLogOut, FiTrendingUp } from "react-icons/fi";
 import mainIcon from "../../assets/main-icon.svg";
 
-function NavBar({ onOpenModal }) {
+function NavBar() {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -87,18 +87,6 @@ function NavBar({ onOpenModal }) {
             >
               Open Seq Dashboard
             </a>
-          )}
-
-          {user && (
-            <button
-              onClick={() => {
-                setMenuOpen(false);
-                onOpenModal();
-              }}
-              className="w-full text-left px-3 py-2 text-base font-medium text-zinc-300 hover:bg-zinc-900 rounded-xl"
-            >
-              Create New Goal
-            </button>
           )}
 
           {user ? (
