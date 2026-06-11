@@ -38,7 +38,7 @@ function AddDepositForm({ onSubmit, saving, goal, walletBalance }) {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-zinc-400 mb-2">Amount</label>
+          <label className="block text-sm font-medium text-zinc-300 mb-2">Amount</label>
           <div className="relative">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-medium text-base">€</span>
             <input
@@ -62,7 +62,7 @@ function AddDepositForm({ onSubmit, saving, goal, walletBalance }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-zinc-400 mb-2">Note (optional)</label>
+          <label className="block text-sm font-medium text-zinc-300 mb-2">Note (optional)</label>
           <textarea
             placeholder="e.g. Monthly savings"
             className="w-full h-24 rounded-2xl border border-zinc-800/60 bg-[#1E1E22] p-4 text-zinc-100 placeholder-zinc-600 focus:border-[#FF4E11] focus:outline-none focus:ring-1 focus:ring-[#FF4E11] transition-all resize-none text-base"
@@ -73,7 +73,7 @@ function AddDepositForm({ onSubmit, saving, goal, walletBalance }) {
 
         <button
           type="submit"
-          className="w-full rounded-full bg-[#FF4E11] py-4 font-bold text-white transition-all hover:bg-[#E24009] active:scale-[0.99] disabled:opacity-50 text-base shadow-lg shadow-[#FF4E11]/10 mt-2"
+          className="w-full rounded-full bg-[#E03400] py-4 font-bold text-white transition-all hover:bg-[#E24009] active:scale-[0.99] disabled:opacity-50 text-base shadow-lg shadow-[#FF4E11]/10 mt-2"
           disabled={saving}
         >
           {saving ? "Saving..." : "Add funds"}

@@ -55,7 +55,7 @@ const GoalsList = ({
 
           {/* Sort Selection Box Component */}
           <div className="bg-[#18181b] border border-zinc-800 rounded-xl px-3 py-1 flex items-center gap-2 focus-within:border-zinc-700 transition-colors">
-            <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider pl-1">Sort by</span>
+            <label className="text-xs font-medium text-zinc-300 uppercase tracking-wider pl-1">Sort by
             <select
               className="bg-transparent text-sm font-semibold text-zinc-200 focus:outline-none py-1.5 pr-2 cursor-pointer"
               value={sortBy}
@@ -67,6 +67,7 @@ const GoalsList = ({
                 </option>
               ))}
             </select>
+            </label>
           </div>
 
           {/* Direction Order Handler Button Toggle */}

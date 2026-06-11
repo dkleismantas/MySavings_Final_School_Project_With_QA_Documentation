@@ -88,7 +88,7 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#101010] text-white">
-      <NavBar onOpenModal={() => setModalOpen(true)} />
+      <NavBar />
       
       <main className="w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
         {/* Important Feature Action Block */}
@@ -99,7 +99,7 @@ function HomePage() {
           </div>
           <button
             onClick={() => setModalOpen(true)}
-            className="px-5 py-3 rounded-xl bg-[#FF5722] hover:bg-[#e44d1e] text-white text-sm font-semibold transition-all shadow-md shadow-[#FF5722]/10 hover:scale-[1.02] active:scale-[0.98] self-start sm:self-auto"
+            className="px-5 py-3 rounded-xl bg-[#E03400] hover:bg-[#e83c08] text-white text-sm font-semibold transition-all shadow-md shadow-[#FF5722]/10 hover:scale-[1.02] active:scale-[0.98] self-start sm:self-auto"
           >
             + New goal
           </button>

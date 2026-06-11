@@ -197,7 +197,7 @@ function CreateGoalModal({ isOpen, onClose, onGoalCreated }) {
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 text-sm font-semibold bg-[#FF5722] hover:bg-[#e44d1e] text-white rounded-xl transition-all shadow-lg shadow-[#FF5722]/10"
+              className="px-5 py-2.5 text-sm font-semibold bg-[#E03400] hover:bg-[#e44d1e] text-white rounded-xl transition-all shadow-lg shadow-[#FF5722]/10"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Creating..." : "Create goal"}

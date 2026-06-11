@@ -26,7 +26,7 @@ function DepositHistoryItem({ deposit }) {
 
         <div className="min-w-0">
           <p className="font-bold text-zinc-200 text-base md:text-lg truncate">{deposit.note || "Deposit"}</p>
-          <p className="text-xs md:text-sm font-medium text-zinc-500 mt-0.5">{date}</p>
+          <p className="text-xs md:text-sm font-medium text-zinc-400 mt-0.5">{date}</p>
         </div>
       </div>
 
