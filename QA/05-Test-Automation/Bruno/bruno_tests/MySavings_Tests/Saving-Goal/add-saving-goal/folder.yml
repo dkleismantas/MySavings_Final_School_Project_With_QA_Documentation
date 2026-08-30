@@ -1,0 +1,7 @@
+info:
+  name: add-saving-goal
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit

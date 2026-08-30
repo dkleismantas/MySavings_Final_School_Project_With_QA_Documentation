@@ -1,0 +1,28 @@
+info:
+  name: amount-exceeds-wallet
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/Deposit/create"
+  body:
+    type: json
+    data: |-
+      {
+      "savingGoalId": {{user1_savingGoalId}},
+      "amount": 1001
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "409"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

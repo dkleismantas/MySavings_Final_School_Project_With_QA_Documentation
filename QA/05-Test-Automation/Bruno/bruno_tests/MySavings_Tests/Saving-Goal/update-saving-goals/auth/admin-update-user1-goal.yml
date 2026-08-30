@@ -1,0 +1,35 @@
+info:
+  name: admin-update-user1-goal
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/SavingGoal/update-saving-goal"
+  body:
+    type: json
+    data: |-
+      {
+      "id": {{user1_savingGoalId}},
+      "title": "Admin Edit Attempt",
+      "targetAmount": 500,
+      "targetDate": "{{$randomDateFuture}}"
+      }
+  auth:
+    type: bearer
+    token: "{{adminToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: res.status === 403
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "403"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

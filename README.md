@@ -1,87 +1,19 @@
-# TECHIN_sudormrf
+# MySavings
 
-Baigiamasis projektas
+MySavings is a savings-goal tracking web application built as a final project for a vocational school (TECHIN), by a team of 6 developers and 1 tester. Users can register and log in, manage a wallet, create and track savings goals, log deposits toward those goals, and view monthly statistics. The app also has an admin role and a logging dashboard for monitoring.
 
-## Setup prieš paleidžiant projektą
+## Technologies
 
-- #### Įsirašyti .NET 10 SDK
+- **Backend:** C#, .NET 10, ASP.NET Core Web API, Clean Architecture (API / Data / Entities / Repositories / Services layers), Entity Framework Core, MySQL, JWT authentication, Swagger.
+- **Frontend:** React 19, Vite, Tailwind CSS + daisyUI, Chart.js, React Router, React Hook Form, Axios.
+- **Infrastructure & tools:** Docker (database + Seq logging containers), Seq, Git/GitHub (incl. GitHub Actions).
+- **Testing (QA):** Bruno (API tests), Selenium + JUnit 5 (UI tests) — see [`QA/README.md`](./QA/README.md) for the full testing stack and results.
 
-    https://dotnet.microsoft.com/en-us/download
+This repository is split into two parts:
 
-- #### Įsirašyti React projekto dependencies
+- **[`MySavingsApp/`](./MySavingsApp)** — the application source code (backend and frontend). See [`MySavingsApp/README.md`](./MySavingsApp/README.md) for setup and instructions on how to run the project locally.
+- **[`QA/`](./QA)** — the full QA documentation for the project: requirements, test plans, test design, test execution results, and test automation (API and UI tests). See [`QA/README.md`](./QA/README.md) for details.
 
-    *\*leidžiama iš ./frontend/ direktorijos*
-    ```
-    npm install
-    ```
+## My role
 
-## Projekto paleidimas
-
-#### 1. Duomenų bazės docker konteinerio sukūrimo komanda
-
-```
-docker run --name MySavings -e MYSQL_ROOT_PASSWORD=root -d -p 3306:3306 mysql:lts
-```
-
-#### 2. API projekto paleidimas
-
-*\*leidžiama iš ./backend/MySavings.API/ direktorijos*
-```
-dotnet run
-```
-
-#### 3. React projekto paleidimas
-
-*\*leidžiama iš ./frontend/ direktorijos*
-```
-npm run dev
-```git
-
-#### 4. Seq (logging) docker konteinerio sukūrimo komanda
-
-```
-docker run -d --name seq -p 5341:5341 -p 8081:80 -e ACCEPT_EULA=Y -e SEQ_FIRSTRUN_NOAUTHENTICATION=True datalust/seq:latest
-
-
-```
-
-### DB migracijos komandos
-
-#### Migracijų atnaujinimas rankiniu būdu
-
-```
-dotnet ef database update
-```
-
-#### Migracijos pridėjimas
-
-*\*leidžiama iš projekto root direktorijos*  
-*\*Čia pavyzdys. Kuriant naują migraciją reikia pakeisti pavadinimą*
-```
-dotnet ef migrations add UpdateUserTable -p ./backend/MySavings.Data/ -s ./backend/MySavings.API/
-```
-
-### Swagger nuoroda
-
-http://localhost:5141/swagger/index.html
-
-
-### JWT debugger (skaityti JWT tokenams)
-
-https://jwt.io
-
-
-### Postman (tikrinti autorizavimui)
-
-https://www.postman.com/downloads/
-
-### Serilog (logų serveris)
-http://localhost:8081/
-
-
-### Unit test paleidimas
-
-*\*leidžiama iš ./backend/MysSavings.Services.Tests direktorijos*
-```
-dotnet test
-```
+I was the tester on this project. I did not write any of the application code — my work was exclusively QA: requirements review, test planning, test design, manual and automated testing (Bruno for the API, Selenium for the UI), and reporting results. The `QA/` folder is where all of that work lives.

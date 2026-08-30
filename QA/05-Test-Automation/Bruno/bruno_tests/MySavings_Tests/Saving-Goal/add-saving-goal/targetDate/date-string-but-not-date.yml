@@ -1,0 +1,29 @@
+info:
+  name: date-string-but-not-date
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/SavingGoal/add-saving-goal"
+  body:
+    type: json
+    data: |-
+      {
+      "title": "Goal",
+      "targetAmount": 100,
+      "targetDate": "2024-99-99"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "400"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

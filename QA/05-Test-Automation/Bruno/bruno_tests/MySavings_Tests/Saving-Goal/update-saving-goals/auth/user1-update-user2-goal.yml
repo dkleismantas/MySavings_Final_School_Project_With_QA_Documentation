@@ -1,0 +1,32 @@
+info:
+  name: user1-update-user2-goal
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/SavingGoal/update-saving-goal"
+  body:
+    type: json
+    data: |-
+      {
+      "id": {{user2_savingGoalId}},
+      "title": "Hacked Goal",
+      "targetAmount": 500,
+      "targetDate": "{{$randomDateFuture}}"
+      }
+  auth:
+    type: bearer
+    token: "{{user1Token}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "403"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

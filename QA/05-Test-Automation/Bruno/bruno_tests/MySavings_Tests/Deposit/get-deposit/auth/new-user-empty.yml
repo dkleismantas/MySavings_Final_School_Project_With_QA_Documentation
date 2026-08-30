@@ -1,0 +1,26 @@
+info:
+  name: new-user-empty
+  type: http
+  seq: 6
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/Deposit"
+  auth:
+    type: bearer
+    token: "{{user3Token}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.length
+      operator: eq
+      value: "0"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

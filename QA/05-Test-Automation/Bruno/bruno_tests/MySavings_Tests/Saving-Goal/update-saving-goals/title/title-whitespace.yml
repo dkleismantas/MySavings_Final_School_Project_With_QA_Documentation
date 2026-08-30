@@ -1,0 +1,30 @@
+info:
+  name: title-whitespace
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/SavingGoal/update-saving-goal"
+  body:
+    type: json
+    data: |-
+      {
+      "id": {{user1_savingGoalId}},
+      "title": "   ",
+      "targetAmount": 100,
+      "targetDate": "{{$randomDateFuture}}"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "400"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,38 @@
+info:
+  name: sort-valid-newest
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/SavingGoal/get-saving-goals/?sortBy=Newest"
+  params:
+    - name: sortBy
+      value: Newest
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("Data is sorted from newest goal", () => {
+          const items = res.body;
+          expect(items).to.be.an('array');
+
+          for (let i = 0; i < items.length - 1; i++) {
+            expect(Number(items[i].id)).to.be.at.least(Number(items[i + 1].id),
+              `Error at index ${i}: ID ${items[i].id} should not be smaller than ${items[i + 1].id}`
+            );
+          }
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,34 @@
+info:
+  name: deposit-valid
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/Deposit/create"
+  body:
+    type: json
+    data: |-
+      {
+      "savingGoalId": "{{user1_savingGoalId}}",
+      "amount": 25,
+      "note": "Deposit test"
+      }
+  auth:
+    type: bearer
+    token: "{{user1Token}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.amount
+      operator: neq
+      value: undefined
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

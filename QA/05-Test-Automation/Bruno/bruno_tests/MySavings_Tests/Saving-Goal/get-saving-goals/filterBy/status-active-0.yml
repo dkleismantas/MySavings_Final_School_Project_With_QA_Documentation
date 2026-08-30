@@ -1,0 +1,46 @@
+info:
+  name: status-active-0
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/SavingGoal/get-saving-goals?status=0"
+  params:
+    - name: status
+      value: "0"
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("All goals are not completed (progress < 1)", () => {
+          const items = res.body;
+          expect(items).to.be.an('array');
+
+          items.forEach((item, index) => {
+            const target = Number(item.targetAmount);
+
+            if (target === 0) {
+              return;
+            }
+
+            const progress = Number(item.currentAmount) / target;
+
+            expect(progress).to.be.below(1,
+              `Error at index ${index} (ID: ${item.id}): progress is ${progress}, should be < 1`
+            );
+          });
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

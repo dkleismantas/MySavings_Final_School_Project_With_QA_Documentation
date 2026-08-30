@@ -1,0 +1,27 @@
+info:
+  name: balance-null
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/Wallet/update"
+  body:
+    type: json
+    data: |-
+      {
+      "newBalance": null
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: in
+      value: "[400, 422]"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

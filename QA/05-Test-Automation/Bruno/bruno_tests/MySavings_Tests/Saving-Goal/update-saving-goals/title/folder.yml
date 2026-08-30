@@ -1,0 +1,9 @@
+info:
+  name: title
+  type: folder
+  seq: 4
+
+request:
+  auth:
+    type: bearer
+    token: "{{user1Token}}"

@@ -1,0 +1,29 @@
+info:
+  name: username-duplicate
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/User/create-user"
+  body:
+    type: json
+    data: |-
+      {
+      "userName": "{{userName}}",
+      "email": "{{$randomEmail}}",
+      "password": "{{userPassword}}"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: in
+      value: "[400, 409]"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

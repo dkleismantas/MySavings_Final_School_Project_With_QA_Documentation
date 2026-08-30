@@ -1,0 +1,44 @@
+info:
+  name: create-valid-user3-noSavingGoals
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/User/create-user"
+  body:
+    type: json
+    data: |-
+      {
+      "userName": "{{$randomUserName}}",
+      "email": "{{user3email}}",
+      "password": "{{userPassword}}"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const randomNum = Math.floor(Math.random() * 100000);
+        const generatedEmail = `user${randomNum}@example.com`;
+        bru.setEnvVar("user3email", generatedEmail);
+    - type: after-response
+      code: |-
+        const rawValue = res.getBody().toString().trim();
+        if (rawValue !== "" && !isNaN(rawValue)) {
+          bru.setEnvVar("user3Id", rawValue);
+        };
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "201"
+    - expression: res.body
+      operator: neq
+      value: '""'
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

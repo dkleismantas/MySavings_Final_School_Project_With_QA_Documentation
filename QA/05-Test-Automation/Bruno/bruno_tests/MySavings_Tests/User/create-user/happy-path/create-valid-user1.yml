@@ -1,0 +1,46 @@
+info:
+  name: create-valid-user1
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/User/create-user"
+  body:
+    type: json
+    data: |-
+      {
+      "userName": "{{userName}}",
+      "email": "{{user1email}}",
+      "password": "{{userPassword}}"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const randomNum = Math.floor(Math.random() * 100000);
+        const generatedUserName = `User_Name${randomNum}`;
+        bru.setEnvVar("userName", generatedUserName);
+        const generatedEmail = `user${randomNum}@example.com`;
+        bru.setEnvVar("user1email", generatedEmail);
+    - type: after-response
+      code: |-
+        const rawValue = res.getBody().toString().trim();
+        if (rawValue !== "" && !isNaN(rawValue)) {
+          bru.setEnvVar("user1Id", rawValue);
+        };
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "201"
+    - expression: res.body
+      operator: neq
+      value: '""'
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

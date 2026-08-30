@@ -1,0 +1,32 @@
+info:
+  name: email-duplicate
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/User/create-user"
+  body:
+    type: json
+    data: |-
+      {
+      "userName": "{{$randomUserName}}",
+      "email": "{{user1email}}",
+      "password": "{{userPassword}}"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: in
+      value: "[400, 409]"
+    - expression: res.body.error
+      operator: eq
+      value: '"Email is already in use."'
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,30 @@
+info:
+  name: user2-to-user1-goal
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/Deposit/create"
+  body:
+    type: json
+    data: |-
+      {
+      "savingGoalId": "{{user1_savingGoalId}}",
+      "amount": 10
+      }
+  auth:
+    type: bearer
+    token: "{{user2Token}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "403"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

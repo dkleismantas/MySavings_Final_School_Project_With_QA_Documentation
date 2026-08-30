@@ -1,0 +1,27 @@
+info:
+  name: balance-string
+  type: http
+  seq: 1
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/Wallet/update"
+  body:
+    type: json
+    data: |-
+      {
+      "newBalance": "abc"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "400"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,26 @@
+info:
+  name: valid-user1-own-goal
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/SavingGoal/get-by-id/{{user1_savingGoalId}}"
+  auth:
+    type: bearer
+    token: "{{user1Token}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.id
+      operator: eq
+      value: "{{user1_savingGoalId}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

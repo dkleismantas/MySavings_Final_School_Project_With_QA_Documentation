@@ -1,0 +1,29 @@
+info:
+  name: date-invalid-day
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/SavingGoal/add-saving-goal"
+  body:
+    type: json
+    data: |-
+      {
+      "title": "Goal",
+      "targetAmount": 100,
+      "targetDate": "2024-02-30T10:00:00Z"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "400"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

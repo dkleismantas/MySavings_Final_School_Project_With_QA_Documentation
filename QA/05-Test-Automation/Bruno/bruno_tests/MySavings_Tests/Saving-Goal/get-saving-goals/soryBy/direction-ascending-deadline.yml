@@ -1,0 +1,48 @@
+info:
+  name: direction-ascending-deadline
+  type: http
+  seq: 10
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/SavingGoal/get-saving-goals?sortBy=deadline&sortDirection=asc"
+  params:
+    - name: sortBy
+      value: deadline
+      type: query
+    - name: sortDirection
+      value: asc
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("Data is sorted by targetDate in ascending order", () => {
+          const items = res.body;
+          expect(items).to.be.an('array');
+
+          for (let i = 0; i < items.length - 1; i++) {
+            if (items[i].targetDate?.startsWith("0001") || items[i + 1].targetDate?.startsWith("0001")) {
+              continue;
+            }
+
+            const currentDate = new Date(items[i].targetDate).getTime();
+            const nextDate = new Date(items[i + 1].targetDate).getTime();
+
+            expect(currentDate).to.be.at.most(nextDate,
+              `Error at index ${i}: date ${items[i].targetDate} should not be later than ${items[i+1].targetDate}`
+            );
+          }
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

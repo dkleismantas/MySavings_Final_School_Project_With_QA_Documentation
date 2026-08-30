@@ -1,0 +1,39 @@
+info:
+  name: create-valid-user-named-admin
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/User/create-user"
+  body:
+    type: json
+    data: |-
+      {
+      "userName": "admin",
+      "email": "admin@mysavings.com",
+      "password": "Admin123."
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const rawValue = res.getBody().toString().trim();
+        if (rawValue !== "" && !isNaN(rawValue)) {
+          bru.setEnvVar("adminId", rawValue);
+        };
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "201"
+    - expression: res.body
+      operator: neq
+      value: '""'
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

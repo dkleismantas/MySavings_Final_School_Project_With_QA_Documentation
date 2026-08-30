@@ -1,0 +1,28 @@
+info:
+  name: amount-string
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/Deposit/create"
+  body:
+    type: json
+    data: |-
+      {
+      "savingGoalId": {{user1_savingGoalId}},
+      "amount": "abc"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "400"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

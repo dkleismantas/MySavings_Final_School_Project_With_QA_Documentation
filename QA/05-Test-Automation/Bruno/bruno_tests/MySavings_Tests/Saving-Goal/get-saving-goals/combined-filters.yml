@@ -1,0 +1,72 @@
+info:
+  name: combined-filters
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/SavingGoal/get-saving-goals?status=0&name=Go&sortBy=deadline&sortDirection=asc"
+  params:
+    - name: status
+      value: "0"
+      type: query
+    - name: name
+      value: Go
+      type: query
+    - name: sortBy
+      value: deadline
+      type: query
+    - name: sortDirection
+      value: asc
+      type: query
+  auth:
+    type: bearer
+    token: "{{user1Token}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("Query result validation (not completed, name=Go, sortBy=deadline asc)", () => {
+          const items = res.body;
+          expect(items).to.be.an('array', "Server did not return an array");
+
+          if (items.length === 0) {
+            return;
+          }
+          items.forEach((item, index) => {
+            const target = Number(item.targetAmount);
+            if (target !== 0) {
+              const progress = Number(item.currentAmount) / target;
+              expect(progress).to.be.below(1,
+                `Error at index ${index} (ID: ${item.id}): status=0, but progress is ${progress} (should be < 1)`
+              );
+            }
+            expect(item.title).to.be.a('string');
+            expect(item.title.startsWith("Go")).to.equal(true,
+              `Error at index ${index} (ID: ${item.id}): title '${item.title}' does not start with 'Go'`
+            );
+          });
+          for (let i = 0; i < items.length - 1; i++) {
+            if (items[i].targetDate?.startsWith("0001") || items[i + 1].targetDate?.startsWith("0001")) {
+              continue;
+            }
+
+            const currentDate = new Date(items[i].targetDate).getTime();
+            const nextDate = new Date(items[i + 1].targetDate).getTime();
+
+            expect(currentDate).to.be.at.most(nextDate,
+              `Sort error at index ${i}: date ${items[i].targetDate} is later than the next date ${items[i+1].targetDate}`
+            );
+          }
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

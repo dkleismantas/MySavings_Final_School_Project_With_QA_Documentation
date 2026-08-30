@@ -1,0 +1,23 @@
+info:
+  name: delete-valid-goal
+  type: http
+  seq: 1
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/SavingGoal/delete-saving-goal/{{user1_savingGoalId_forDelete}}"
+  auth:
+    type: bearer
+    token: "{{user1Token}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: in
+      value: "[200, 204]"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,28 @@
+info:
+  name: login-email-invalid-format
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/Auth/login"
+  body:
+    type: json
+    data: |-
+      {
+      "email": "not-an-email",
+      "password": "{{userPassword}}"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "401"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

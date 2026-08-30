@@ -1,0 +1,29 @@
+info:
+  name: invalid-token
+  type: http
+  seq: 2
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/Wallet/update"
+  body:
+    type: json
+    data: |-
+      {
+      "newBalance": 100
+      }
+  auth:
+    type: bearer
+    token: "{{invalidToken}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "401"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

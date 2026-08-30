@@ -1,0 +1,44 @@
+info:
+  name: admin-updates-goal
+  type: http
+  seq: 1
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/SavingGoal/update-saving-goal"
+  body:
+    type: json
+    data: |-
+      {
+      "id": {{admin_savingGoalId}},
+      "title": "Admin Updated Goal",
+      "targetAmount": 200,
+      "targetDate": "{{$randomDateFuture}}"
+      }
+  auth:
+    type: bearer
+    token: "{{adminToken}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.title
+      operator: eq
+      value: Admin Updated Goal
+    - expression: res.body.id
+      operator: eq
+      value: "{{admin_savingGoalId}}"
+    - expression: res.body.targetAmount
+      operator: eq
+      value: "200"
+    - expression: res.body.userId
+      operator: eq
+      value: "{{adminId}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,27 @@
+info:
+  name: login-email-missing
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/Auth/login"
+  body:
+    type: json
+    data: |-
+      {
+      "password": "{{userPassword}}"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "400"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

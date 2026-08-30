@@ -1,0 +1,32 @@
+info:
+  name: update-valid-user2
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/Wallet/update"
+  body:
+    type: json
+    data: |-
+      {
+      "newBalance": 500
+      }
+  auth:
+    type: bearer
+    token: "{{user2Token}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.totalBalance
+      operator: neq
+      value: undefined
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

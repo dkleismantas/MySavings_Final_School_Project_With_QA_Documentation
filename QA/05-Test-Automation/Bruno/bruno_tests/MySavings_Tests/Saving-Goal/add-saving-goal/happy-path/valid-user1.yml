@@ -1,0 +1,41 @@
+info:
+  name: valid-user1
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/SavingGoal/add-saving-goal"
+  body:
+    type: json
+    data: |-
+      {
+      "title": "Goal{{$randomInt}}",
+      "targetAmount": 5000,
+      "targetDate": "{{$randomDateFuture}}"
+      }
+  auth:
+    type: bearer
+    token: "{{user1Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const rawValue = res.getBody().toString().trim();
+        if (rawValue !== "" && !isNaN(rawValue)) {
+          bru.setEnvVar("user1_savingGoalId", rawValue);
+        };
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "201"
+    - expression: res.body
+      operator: neq
+      value: "null"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

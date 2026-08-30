@@ -1,0 +1,29 @@
+info:
+  name: amount-negative
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/SavingGoal/add-saving-goal"
+  body:
+    type: json
+    data: |-
+      {
+      "title": "Goal",
+      "targetAmount": -10,
+      "targetDate": "{{$randomDateFuture}}"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "400"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,30 @@
+info:
+  name: invalid-id-invalid-body
+  type: http
+  seq: 7
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/SavingGoal/update-saving-goal"
+  body:
+    type: json
+    data: |-
+      {
+      "id": -5,
+      "title": "",
+      "targetAmount": -10,
+      "targetDate": "not-a-date"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: in
+      value: "[400, 404]"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

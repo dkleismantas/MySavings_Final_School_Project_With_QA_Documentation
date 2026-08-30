@@ -1,0 +1,16 @@
+# Maven build output
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Crash / debug dumps
+hs_err_pid*.log
+replay_pid*.log
+*.hprof

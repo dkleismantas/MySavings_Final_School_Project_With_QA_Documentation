@@ -1,0 +1,44 @@
+info:
+  name: sort-valid-progress
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/SavingGoal/get-saving-goals/?sortBy=Progress"
+  params:
+    - name: sortBy
+      value: Progress
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("Data is sorted by progress in descending order", () => {
+          const items = res.body;
+          expect(items).to.be.an('array');
+
+          for (let i = 0; i < items.length - 1; i++) {
+            const currentTarget = Number(items[i].targetAmount);
+            const currentProgress = currentTarget === 0 ? 0 : Number(items[i].currentAmount) / currentTarget;
+
+            const nextTarget = Number(items[i + 1].targetAmount);
+            const nextProgress = nextTarget === 0 ? 0 : Number(items[i + 1].currentAmount) / nextTarget;
+            
+            expect(currentProgress).to.be.at.least(nextProgress,
+              `Error at index ${i}: progress (${currentProgress}) should not be smaller than the next one (${nextProgress})`
+            );
+          }
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

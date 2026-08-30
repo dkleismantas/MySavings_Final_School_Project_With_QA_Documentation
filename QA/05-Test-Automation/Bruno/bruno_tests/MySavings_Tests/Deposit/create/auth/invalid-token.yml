@@ -1,0 +1,31 @@
+info:
+  name: invalid-token
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/Deposit/create"
+  body:
+    type: json
+    data: |-
+      {
+      "savingGoalId": {{user1_savingGoalId}},
+      "amount": 10,
+      "note": "test"
+      }
+  auth:
+    type: bearer
+    token: "{{invalidToken}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "401"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

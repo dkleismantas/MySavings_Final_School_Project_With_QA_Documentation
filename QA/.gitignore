@@ -1,0 +1,15 @@
+# Java / Maven (Selenium projects: ModernTests, Automatic_tests, Automatic_tests_2)
+target/
+*.class
+*.hprof
+hs_err_pid*.log
+replay_pid*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

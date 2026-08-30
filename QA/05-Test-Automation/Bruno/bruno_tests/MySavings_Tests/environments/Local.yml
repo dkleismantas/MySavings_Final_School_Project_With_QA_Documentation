@@ -1,0 +1,40 @@
+name: Local
+variables:
+  - name: baseUrl
+    value: http://localhost:5141
+  - name: adminId
+    value: "1"
+  - name: user1Id
+    value: "50"
+  - name: user2Id
+    value: "51"
+  - name: user3Id
+    value: "52"
+  - name: userName
+    value: User_Name929
+  - name: user1email
+    value: user929@example.com
+  - name: user2email
+    value: user42338@example.com
+  - name: user3email
+    value: user87784@example.com
+  - name: admin_savingGoalId
+    value: "62"
+  - name: user1_savingGoalId
+    value: "63"
+  - name: user2_savingGoalId
+    value: "64"
+  - name: user1_savingGoalId_forDelete
+    value: "65"
+  - name: userPassword
+    value: Password123!
+  - name: invalidToken
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhZG1pbkBteXNhdmluZ3MuY29tIiwiUm9sZSI6ImFkbWluIiwiZXhwIjoxNzg3NDE1OTk0LCJpc3MiOiJNeVNhdmluZ3NfYXV0aCIsImF1ZCI6Ik15U2F2aW5nc19hcGlfYXVkaWVuY2UifQ.n9U1kIBNgFe3VUAjFgDtDg4fmfBJYsypYrJKgZmen7a
+  - secret: true
+    name: adminToken
+  - secret: true
+    name: user1Token
+  - secret: true
+    name: user2Token
+  - secret: true
+    name: user3Token

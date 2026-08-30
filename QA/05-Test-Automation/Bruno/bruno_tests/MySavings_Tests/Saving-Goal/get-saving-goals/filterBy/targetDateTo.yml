@@ -1,0 +1,46 @@
+info:
+  name: targetDateTo
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/SavingGoal/get-saving-goals?targetDateTo=2027-12-31T23:59:59Z"
+  params:
+    - name: targetDateTo
+      value: 2027-12-31T23:59:59Z
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("All goals have targetDate up to 2027-12-31T23:59:59Z", () => {
+          const items = res.body;
+          expect(items).to.be.an('array');
+
+          const maxDate = new Date("2027-12-31T23:59:59Z").getTime();
+
+          items.forEach((item, index) => {
+            if (!item.targetDate || item.targetDate.startsWith("0001")) {
+              return;
+            }
+
+            const itemDate = new Date(item.targetDate).getTime();
+
+            expect(itemDate).to.be.at.most(maxDate,
+              `Error at index ${index} (ID: ${item.id}): date ${item.targetDate} exceeds the deadline (is later than 2027-12-31)`
+            );
+          });
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
