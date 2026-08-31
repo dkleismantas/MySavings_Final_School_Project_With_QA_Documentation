@@ -6,7 +6,7 @@ MySavings is a savings-goal tracking web application built as a final project fo
 
 - **Backend:** C#, .NET 10, ASP.NET Core Web API, Clean Architecture (API / Data / Entities / Repositories / Services layers), Entity Framework Core, MySQL, JWT authentication, Swagger.
 - **Frontend:** React 19, Vite, Tailwind CSS + daisyUI, Chart.js, React Router, React Hook Form, Axios.
-- **Infrastructure & tools:** Docker (database + Seq logging containers), Seq, Git/GitHub (incl. GitHub Actions).
+- **Infrastructure & tools:** Docker (database + Seq logging containers), Seq, Git/GitHub.
 - **Testing (QA):** Bruno (API tests), Selenium + JUnit 5 (UI tests) — see [`QA/README.md`](./QA/README.md) for the full testing stack and results.
 
 This repository is split into two parts:
