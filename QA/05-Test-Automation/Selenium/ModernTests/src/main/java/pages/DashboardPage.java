@@ -8,7 +8,7 @@ public class DashboardPage extends BasePage {
     private final By heading = By.xpath("//h1[normalize-space()='Your Financial Overview']");
     private final By logoutButton = By.cssSelector("button[title='Log Out']");
     private final By newGoalButton = By.xpath("//button[normalize-space()='+ New goal']");
-    private final By sortSelect = By.xpath("//span[normalize-space()='Sort by']/following-sibling::select");
+    private final By sortSelect = By.xpath("//label[contains(normalize-space(), 'Sort by')]/select");
     private final By filterButton = By.xpath("//button[normalize-space()='Filters']");
     private final By searchInput = By.cssSelector("input[placeholder='Search by name...']");
     private final By applyFiltersButton = By.xpath("//button[normalize-space()='Apply Filters']");
