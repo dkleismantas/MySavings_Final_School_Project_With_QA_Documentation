@@ -49,4 +49,8 @@ public class LoginPage extends BasePage {
         return text(apiError);
     }
 
+    public boolean isEmailFieldVisible() {
+        return isDisplayed(emailInput);
+    }
+
 }

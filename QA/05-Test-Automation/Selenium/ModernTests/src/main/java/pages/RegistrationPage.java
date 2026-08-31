@@ -9,6 +9,7 @@ public class RegistrationPage extends BasePage {
     private final By passwordInput = By.id("password");
     private final By confirmPasswordInput = By.id("confirmPassword");
     private final By createAccountButton = By.xpath("//button[@type='submit' and normalize-space()='Create Account']");
+    private final By confirmPasswordError = By.xpath("//input[@id='confirmPassword']/following-sibling::p");
 
     public RegistrationPage(WebDriver driver) {
         super(driver);
@@ -20,6 +21,10 @@ public class RegistrationPage extends BasePage {
         type(passwordInput, password);
         type(confirmPasswordInput, confirmPassword);
         click(createAccountButton);
+    }
+
+    public String confirmPasswordError() {
+        return text(confirmPasswordError);
     }
 
 }

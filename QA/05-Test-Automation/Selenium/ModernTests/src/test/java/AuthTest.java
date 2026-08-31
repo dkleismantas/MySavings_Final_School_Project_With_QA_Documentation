@@ -1,6 +1,5 @@
 import config.TestConfig;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
 import pages.DashboardPage;
 import pages.LoginPage;
 import pages.RegistrationPage;
@@ -37,7 +36,7 @@ class AuthTest extends BaseUiTest {
         loginPage.loginAs("wrong@example.com", "WrongPassword123!");
 
         assertThat(driver.getCurrentUrl()).endsWith("/login");
-        assertThat(driver.findElement(By.id("email")).isDisplayed()).isTrue();
+        assertThat(loginPage.isEmailFieldVisible()).isTrue();
         assertThat(loginPage.apiError()).isEqualTo("Failed to log in. Please check your email and password.");
     }
 
@@ -49,6 +48,6 @@ class AuthTest extends BaseUiTest {
 
         registrationPage.register("SeleniumUser", "selenium@example.com", "Password123!", "Different123!");
 
-        assertThat(driver.getPageSource()).contains("Passwords do not match");
+        assertThat(registrationPage.confirmPasswordError()).isEqualTo("Passwords do not match");
     }
 }

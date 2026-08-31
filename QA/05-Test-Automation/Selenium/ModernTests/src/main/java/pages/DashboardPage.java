@@ -25,8 +25,9 @@ public class DashboardPage extends BasePage {
         click(logoutButton);
     }
 
-    public void openNewGoalModal() {
+    public CreateGoalModal openNewGoalModal() {
         click(newGoalButton);
+        return new CreateGoalModal(driver);
     }
 
     public void sortBy(String value) {

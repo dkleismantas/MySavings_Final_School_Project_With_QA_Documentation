@@ -1,6 +1,7 @@
 import config.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pages.CreateGoalModal;
 import pages.DashboardPage;
 import pages.LoginPage;
 
@@ -18,11 +19,11 @@ class GoalCreationTest extends BaseUiTest {
 
     @Test
     void createGoalModalOpensWithRequiredFields() {
-        dashboard.openNewGoalModal();
+        CreateGoalModal modal = dashboard.openNewGoalModal();
 
-        assertThat(driver.getPageSource()).contains("Create New Goal");
-        assertThat(driver.getPageSource()).contains("Goal title");
-        assertThat(driver.getPageSource()).contains("Target amount (€)");
-        assertThat(driver.getPageSource()).contains("Target date");
+        assertThat(modal.isLoaded()).isTrue();
+        assertThat(modal.hasGoalTitleField()).isTrue();
+        assertThat(modal.hasTargetAmountField()).isTrue();
+        assertThat(modal.hasTargetDateField()).isTrue();
     }
 }
