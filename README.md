@@ -1,6 +1,6 @@
 # MySavings
 
-MySavings is a savings-goal tracking web application built as a final project for a vocational school (TECHIN), by a team of 7 developers and 1 tester. Users can register and log in, manage a wallet, create and track savings goals, log deposits toward those goals, and view monthly statistics. The app also has an admin role and a logging dashboard for monitoring.
+MySavings is a savings-goal tracking web application built as a final project for a vocational school (TECHIN), by a team of 6 developers and 1 tester. Users can register and log in, manage a wallet, create and track savings goals, log deposits toward those goals, and view monthly statistics. The app also has an admin role and a logging dashboard for monitoring.
 
 ## Technologies
 
